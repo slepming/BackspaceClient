@@ -1,0 +1,11 @@
+﻿{
+  "solution": {
+    "path": "BackspaceClient.sln",
+    "projects": [
+      "BackspaceClient.Desktop\\BackspaceClient.Desktop.csproj",
+      "BackspaceClient.Game\\BackspaceClient.Game.csproj",
+      "BackspaceClient.Game.Tests\\BackspaceClient.Game.Tests.csproj",
+      "BackspaceClient.Resources\\BackspaceClient.Resources.csproj"
+    ]
+  }
+}
