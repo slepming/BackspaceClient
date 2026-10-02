@@ -10,6 +10,7 @@ using osu.Framework.Graphics.Containers;
 using osu.Framework.Graphics.Shapes;
 using osu.Framework.Graphics.Sprites;
 using osu.Framework.Graphics.UserInterface;
+using osu.Framework.Input;
 using osu.Framework.Logging;
 using osu.Framework.Screens;
 using osuTK;
@@ -21,6 +22,7 @@ namespace BackspaceClient.Game
     {
         private readonly Vector2 text_box_size = new(.5f, .05f);
         private BackspaceClientTextBox loginTextBox, passwordTextBox;
+        private FillFlowContainer loginContainer;
 
         [Resolved]
         private ScreenStack stack { get; set; }
@@ -30,7 +32,7 @@ namespace BackspaceClient.Game
         {
             InternalChildren = new Drawable[]
             {
-                new FillFlowContainer
+                loginContainer = new FillFlowContainer
                 {
                     Anchor = Anchor.Centre,
                     Origin = Anchor.Centre,
@@ -52,7 +54,8 @@ namespace BackspaceClient.Game
                             Size = text_box_size,
                             PlaceholderText = "Login",
                             Anchor = Anchor.TopCentre,
-                            Origin = Anchor.TopCentre
+                            Origin = Anchor.TopCentre,
+                            TabbableContentContainer = this,
                         },
                         passwordTextBox = new()
                         {
@@ -60,18 +63,20 @@ namespace BackspaceClient.Game
                             Size = text_box_size,
                             PlaceholderText = "Password",
                             Anchor = Anchor.TopCentre,
-                            Origin = Anchor.TopCentre
+                            Origin = Anchor.TopCentre,
+                            InputProperties = new TextInputProperties(TextInputType.Password),
+                            TabbableContentContainer = this,
                         },
                         new BasicButton
                         {
                             RelativeSizeAxes = Axes.Both,
+                            Text = "Apply",
                             Size = text_box_size,
                             Anchor = Anchor.TopCentre,
                             Origin = Anchor.TopCentre,
                             Action = () => {
                                 var login = loginTextBox.Text;
                                 var passwd = passwordTextBox.Text;
-                                Logger.Log($"User {login} with password {passwd}");
 
                                 authorize(login, passwd);
                             }
