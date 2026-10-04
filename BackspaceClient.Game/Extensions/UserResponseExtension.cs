@@ -1,0 +1,11 @@
+using BackspaceClient.Game.Online.API.Response;
+
+namespace BackspaceClient.Game.Extensions;
+
+public static class UserResponseExtesion
+{
+    public static string CanonicalKey(this UserResponse user)
+        => user.HomeInstance is null
+            ? user.Id
+            : $"{user.HomeInstance}:{user.HomeUserId}";
+}
