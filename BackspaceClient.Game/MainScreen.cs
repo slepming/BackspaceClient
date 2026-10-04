@@ -46,7 +46,7 @@ namespace BackspaceClient.Game
                             Text = "Login authorization",
                             Anchor = Anchor.TopCentre,
                             Origin = Anchor.TopCentre,
-                            Font = new(family: BackspaceFonts.BigBluePlusNerdFont, size: 64),
+                            Font = new(family: BackspaceFonts.Inter, size: 64),
                         },
                         loginTextBox = new()
                         {

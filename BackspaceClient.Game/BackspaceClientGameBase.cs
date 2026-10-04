@@ -37,6 +37,7 @@ namespace BackspaceClient.Game
             AddFont(Resources, @"Fonts/adwaita/adwaita");
             AddFont(Resources, @"Fonts/agave/agave_bold");
             AddFont(Resources, @"Fonts/bigblueplus/bigblueplus");
+            AddFont(Resources, @"Fonts/inter/interfont");
         }
     }
 }
