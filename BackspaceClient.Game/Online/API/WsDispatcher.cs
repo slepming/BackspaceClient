@@ -33,7 +33,7 @@ public class WsDispatcher
 
         if (!handlers.TryGetValue(type, out var handler))
         {
-            Logger.Log($"Unknown message type: {type}", level: LogLevel.Error);
+            Logger.Log($"Unknown message type: {type} and raw: {raw}", level: LogLevel.Error);
             return;
         }
 
