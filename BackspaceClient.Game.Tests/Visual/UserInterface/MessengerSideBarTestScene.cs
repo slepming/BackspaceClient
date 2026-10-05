@@ -35,18 +35,13 @@ public partial class MessengerSideBarTestScene : BackspaceClientTestScene
     {
         AddStep("Increment cards count", () =>
         {
-            sideBar.AddOrUpdateUser(new() {
-                Id = RandomString(15),
-                Username = RandomString(10)
-            });
-        });
-
-        AddStep("Add selected", () =>
-        {
-            sideBar.AddOrUpdateUser(new() {
-                Id = RandomString(15),
-                Username = RandomString(10),
-            });
+            for (int i = 0; i <= 5; ++i)
+            {
+                sideBar.AddOrUpdateUser(new() {
+                    Id = RandomString(15),
+                    Username = RandomString(10)
+                });
+            }
         });
     }
 

@@ -29,7 +29,7 @@ public partial class UserCardContainer : Container
     public UserCardContainer()
     {
         RelativeSizeAxes = Axes.Both;
-        Size = new Vector2(1f, .1f);
+        Size = new Vector2(1f, .08f);
         Padding = new MarginPadding { Vertical = 1, Horizontal = 2 };
     }
 
