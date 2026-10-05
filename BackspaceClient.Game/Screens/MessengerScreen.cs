@@ -10,7 +10,7 @@ using osuTK;
 
 namespace BackspaceClient.Game.Screens;
 
-public partial class MessangerScreen(APIProvider api) : Screen
+public partial class MessengerScreen(APIProvider api) : Screen
 {
     private APIProvider provider = api;
     private WebSocketClient webSocketClient;

@@ -1,20 +1,15 @@
 using System;
-using System.Threading;
-using System.Threading.Tasks;
 using BackspaceClient.Game.Graphics.UserInterface;
 using BackspaceClient.Game.Online.API;
 using BackspaceClient.Game.Screens;
 using osu.Framework.Allocation;
 using osu.Framework.Graphics;
 using osu.Framework.Graphics.Containers;
-using osu.Framework.Graphics.Shapes;
 using osu.Framework.Graphics.Sprites;
 using osu.Framework.Graphics.UserInterface;
 using osu.Framework.Input;
-using osu.Framework.Logging;
 using osu.Framework.Screens;
 using osuTK;
-using osuTK.Graphics;
 
 namespace BackspaceClient.Game
 {
@@ -30,8 +25,8 @@ namespace BackspaceClient.Game
         [BackgroundDependencyLoader]
         private void load()
         {
-            InternalChildren = new Drawable[]
-            {
+            InternalChildren =
+            [
                 loginContainer = new FillFlowContainer
                 {
                     Anchor = Anchor.Centre,
@@ -83,7 +78,7 @@ namespace BackspaceClient.Game
                         },
                     ]
                 }
-            };
+            ];
         }
 
         private void authorize(string username, string password)
@@ -93,7 +88,7 @@ namespace BackspaceClient.Game
             if (!provider.HasKey)
                 throw new Exception("Provider don't contain api key");
 
-            stack.Push(new MessangerScreen(provider));
+            stack.Push(new MessengerScreen(provider));
         }
     }
 }
