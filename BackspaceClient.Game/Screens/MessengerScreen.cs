@@ -1,6 +1,8 @@
+using System.Linq;
 using System.Threading.Tasks;
 using BackspaceClient.Game.Graphics.UserInterface;
 using BackspaceClient.Game.Online.API;
+using BackspaceClient.Game.Online.API.Response;
 using Newtonsoft.Json;
 using osu.Framework.Allocation;
 using osu.Framework.Graphics;
@@ -14,6 +16,7 @@ public partial class MessengerScreen(APIProvider api) : Screen
 {
     private APIProvider provider = api;
     private WebSocketClient webSocketClient;
+    private WsDispatcher webSocketDispatcher = new();
 
     private MessengerSideBar sideBar;
 
@@ -23,7 +26,7 @@ public partial class MessengerScreen(APIProvider api) : Screen
         webSocketClient = new(null, 3005);
         webSocketClient.MessageReceived += m =>
         {
-            Logger.Log($"WebSocket: {m}");
+            webSocketDispatcher.Dispatch(m);
         };
         webSocketClient.Closed += () =>
         {
@@ -35,9 +38,11 @@ public partial class MessengerScreen(APIProvider api) : Screen
             RelativeSizeAxes = Axes.Both,
             Size = new Vector2(.2f, 1f),
         });
+
+        initializeDispatchers();
     }
 
-    protected override void LoadAsyncComplete()
+    protected override void LoadComplete()
     {
         base.LoadAsyncComplete();
         Scheduler.Add(() =>
@@ -47,6 +52,23 @@ public partial class MessengerScreen(APIProvider api) : Screen
                 await webSocketClient.Start();
                 await webSocketClient.SendAsync(JsonConvert.SerializeObject(new AuthMessage() { Token = provider.AccessKey }));
             });
+        });
+    }
+
+    private void initializeDispatchers()
+    {
+        webSocketDispatcher.Register<ReadyPayload>("ready", wsHandleReady);
+    }
+
+    private void wsHandleReady(ReadyPayload ready)
+    {
+        Logger.Log($"Channels count: {ready.DmChannels.Count}");
+        Schedule(() =>
+        {
+            foreach (var channel in ready.DmChannels)
+            {
+                sideBar.AddOrUpdateUser(channel.Members.Last());
+            }
         });
     }
 }

@@ -4,7 +4,7 @@ using Newtonsoft.Json;
 
 namespace BackspaceClient.Game.Online.API.Response;
 
-public sealed class UserResponse
+public sealed class User
 {
     [JsonProperty("id")]
     public string Id { get; set; } = string.Empty;

@@ -86,7 +86,7 @@ namespace BackspaceClient.Game
             var provider = new APIProvider(username, password);
 
             if (!provider.HasKey)
-                throw new Exception("Provider don't contain api key");
+                throw new Exception("Provider don't contain api key(Might be server is unavailable)");
 
             stack.Push(new MessengerScreen(provider));
         }
