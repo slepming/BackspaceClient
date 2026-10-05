@@ -1,9 +1,7 @@
 using System;
-using System.Collections.Generic;
 using System.Linq;
 using BackspaceClient.Game.Graphics.UserInterface;
 using NUnit.Framework;
-using osu.Framework.Bindables;
 using osu.Framework.Graphics;
 using osuTK;
 
@@ -37,7 +35,8 @@ public partial class MessengerSideBarTestScene : BackspaceClientTestScene
         {
             for (int i = 0; i <= 5; ++i)
             {
-                sideBar.AddOrUpdateUser(new() {
+                sideBar.AddOrUpdateUser(new()
+                {
                     Id = RandomString(15),
                     Username = RandomString(10)
                 });
@@ -48,7 +47,6 @@ public partial class MessengerSideBarTestScene : BackspaceClientTestScene
     public string RandomString(int length)
     {
         const string chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789abcdefghijklmnopqrstuvwxyz";
-        return new string(Enumerable.Repeat(chars, length)
-                                    .Select(s => s[Random.Next(s.Length)]).ToArray());
+        return new string([.. Enumerable.Repeat(chars, length).Select(s => s[Random.Next(s.Length)])]);
     }
 }

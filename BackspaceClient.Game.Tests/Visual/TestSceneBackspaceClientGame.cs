@@ -1,5 +1,5 @@
-using osu.Framework.Allocation;
 using NUnit.Framework;
+using osu.Framework.Allocation;
 
 namespace BackspaceClient.Game.Tests.Visual
 {

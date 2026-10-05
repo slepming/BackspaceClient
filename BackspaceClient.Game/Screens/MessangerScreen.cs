@@ -21,7 +21,8 @@ public partial class MessangerScreen(APIProvider api) : Screen
     private void load()
     {
         webSocketClient = new(null, 3005);
-        webSocketClient.MessageReceived += m => {
+        webSocketClient.MessageReceived += m =>
+        {
             Logger.Log($"WebSocket: {m}");
         };
         webSocketClient.Closed += () =>
@@ -29,7 +30,8 @@ public partial class MessangerScreen(APIProvider api) : Screen
             Logger.Log("Closed");
         };
 
-        AddInternal(sideBar = new() {
+        AddInternal(sideBar = new()
+        {
             RelativeSizeAxes = Axes.Both,
             Size = new Vector2(.2f, 1f),
         });
@@ -38,7 +40,8 @@ public partial class MessangerScreen(APIProvider api) : Screen
     protected override void LoadAsyncComplete()
     {
         base.LoadAsyncComplete();
-        Scheduler.Add(() => {
+        Scheduler.Add(() =>
+        {
             Task.Run(async () =>
             {
                 await webSocketClient.Start();
