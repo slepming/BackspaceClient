@@ -1,4 +1,6 @@
+using System;
 using System.Collections.Generic;
+using System.Linq;
 using BackspaceClient.Game.Extensions;
 using BackspaceClient.Game.Online.API.Response;
 using osu.Framework.Allocation;
@@ -29,7 +31,7 @@ public partial class MessengerSideBar : Container
 
     public string DmSectionTitle { get; } = "Direct Messages";
 
-    public IDictionary<string, UserCardContainer> Users { get; } = new Dictionary<string, UserCardContainer>();
+    public IDictionary<string, UserCardContainer> Channels { get; } = new Dictionary<string, UserCardContainer>();
 
     private Box backgroundBox;
     private Container searchBarContainer;
@@ -131,35 +133,49 @@ public partial class MessengerSideBar : Container
         ];
     }
 
-    public void AddOrUpdateUser(User data)
+    /// <summary>
+    /// Add user into side bar messages(aka dm channels)
+    /// </summary>
+    public void AddOrUpdateUser(DmChannel data)
     {
-        var key = data.CanonicalKey();
+        var key = data.Id;
+        if (string.IsNullOrEmpty(data.Id)) throw new ArgumentNullException("Channel id equals null");
 
-        if (!Users.TryGetValue(key, out var card))
+        if (data.Members == null || data.Members.Count < 1) {
+            if (Channels.TryGetValue(key, out var userCard)) userCard.Show();
+            else throw new ArgumentNullException("Channel members less than 1 and Channels haven't this channel");
+
+            return;
+        }
+
+        var user = data.Members.Last();
+
+        if (!Channels.TryGetValue(key, out var card))
         {
             card = new UserCardContainer { Id = key };
-            Users[key] = card;
+            Channels[key] = card;
             cardsContainer.Add(card);
         }
 
-        card.Username.Value = data.Username;
-        card.DisplayName.Value = data.DisplayName ?? data.Username;
-        card.AvatarUrl.Value = data.Avatar;
-        card.Status.Value = data.Status;
-        card.AvatarColor.Value = data.AvatarColor;
+        card.Username.Value = user.Username;
+        card.DisplayName.Value = user.DisplayName ?? user?.Username;
+        card.AvatarUrl.Value = user.Avatar;
+        card.Status.Value = user.Status;
+        card.AvatarColor.Value = user.AvatarColor;
+        card.Show();
     }
 
-    public void RemoveUser(string canonicalKey)
+    public void RemoveDmChannel(string key)
     {
-        if (!Users.Remove(canonicalKey, out var card))
+        if (!Channels.TryGetValue(key, out var card))
             return;
 
-        cardsContainer.Remove(card, true);
+        card.Hide();
     }
 
-    public void ClearUsers()
+    public void ClearChannels()
     {
         cardsContainer.Clear();
-        Users.Clear();
+        Channels.Clear();
     }
 }

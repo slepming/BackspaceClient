@@ -89,7 +89,7 @@ public partial class UserCardContainer : Container
                                         Size = new Vector2(10),
                                         Colour = Colour4.LimeGreen,
                                         BorderColour = Colour4.Black,
-                                        BorderThickness = 2,
+                                        BorderThickness = 1.5f,
                                         Position = new Vector2(-3, -3),
                                     },
                                 ],

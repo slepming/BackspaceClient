@@ -58,6 +58,31 @@ public partial class MessengerScreen(APIProvider api) : Screen
     private void initializeDispatchers()
     {
         webSocketDispatcher.Register<ReadyPayload>("ready", wsHandleReady);
+        webSocketDispatcher.Register<DmChannel>("dm_channel_created", dmChannelCreated);
+        webSocketDispatcher.Register<WsDmChannelClosed>("dm_channel_closed", dmChannelClosed);
+        webSocketDispatcher.Register<WsChannelAck>("channel_ack", channelAck);
+    }
+
+    private void channelAck(WsChannelAck ack)
+    {
+        dmChannelCreated(new() { Id = ack.ChannelId });
+    }
+
+    private void dmChannelClosed(WsDmChannelClosed channel)
+    {
+        Schedule(() =>
+        {
+            if (!string.IsNullOrEmpty(channel.Id)) sideBar.RemoveDmChannel(channel.Id);
+            else Logger.Log("Channel id equals null", level: LogLevel.Important);
+        });
+    }
+
+    private void dmChannelCreated(DmChannel channel)
+    {
+        Schedule(() =>
+        {
+            sideBar.AddOrUpdateUser(channel);
+        });
     }
 
     private void wsHandleReady(ReadyPayload ready)
@@ -67,8 +92,13 @@ public partial class MessengerScreen(APIProvider api) : Screen
         {
             foreach (var channel in ready.DmChannels)
             {
-                sideBar.AddOrUpdateUser(channel.Members.Last());
+                sideBar.AddOrUpdateUser(channel);
             }
         });
+    }
+
+    protected override void Dispose(bool k)
+    {
+        webSocketClient.Dispose();
     }
 }

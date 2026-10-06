@@ -1,6 +1,7 @@
 using System;
 using System.Linq;
 using BackspaceClient.Game.Graphics.UserInterface;
+using BackspaceClient.Game.Online.API.Response;
 using NUnit.Framework;
 using osu.Framework.Graphics;
 using osuTK;
@@ -38,7 +39,11 @@ public partial class MessengerSideBarTestScene : BackspaceClientTestScene
                 sideBar.AddOrUpdateUser(new()
                 {
                     Id = RandomString(15),
-                    Username = RandomString(10)
+                    Members = [
+                        new User {
+                            Username = RandomString(10)
+                        }
+                    ]
                 });
             }
         });

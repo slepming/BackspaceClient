@@ -14,6 +14,7 @@ public class WsDispatcher
     {
         handlers[type] = raw =>
         {
+            Logger.Log($"{raw}");
             if (string.IsNullOrEmpty(type)) return;
 
             var deserializedRaw = JsonConvert.DeserializeObject<T>(raw);
@@ -29,6 +30,10 @@ public class WsDispatcher
         string type;
 
         var snowball = JsonConvert.DeserializeObject<WsResponse>(raw);
+        if (string.IsNullOrEmpty(snowball.Type)) {
+            Logger.Log($"Websocket message have empty type, raw: {raw}");
+        }
+
         type = snowball.Type ?? string.Empty;
 
         if (!handlers.TryGetValue(type, out var handler))
