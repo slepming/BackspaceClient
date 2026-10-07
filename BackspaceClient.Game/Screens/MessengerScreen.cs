@@ -61,6 +61,15 @@ public partial class MessengerScreen(APIProvider api) : Screen
         webSocketDispatcher.Register<DmChannel>("dm_channel_created", dmChannelCreated);
         webSocketDispatcher.Register<WsDmChannelClosed>("dm_channel_closed", dmChannelClosed);
         webSocketDispatcher.Register<WsChannelAck>("channel_ack", channelAck);
+        webSocketDispatcher.Register<WsUserUpdated>("user_updated", updateUser);
+    }
+
+    private void updateUser(WsUserUpdated user)
+    {
+        Schedule(() =>
+        {
+            sideBar.UpdateUser(user.User);
+        });
     }
 
     private void channelAck(WsChannelAck ack)
@@ -81,7 +90,7 @@ public partial class MessengerScreen(APIProvider api) : Screen
     {
         Schedule(() =>
         {
-            sideBar.AddOrUpdateUser(channel);
+            sideBar.AddOrUpdateChannel(channel);
         });
     }
 
@@ -92,7 +101,7 @@ public partial class MessengerScreen(APIProvider api) : Screen
         {
             foreach (var channel in ready.DmChannels)
             {
-                sideBar.AddOrUpdateUser(channel);
+                sideBar.AddOrUpdateChannel(channel);
             }
         });
     }

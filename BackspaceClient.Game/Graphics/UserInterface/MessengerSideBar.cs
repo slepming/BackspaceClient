@@ -32,6 +32,10 @@ public partial class MessengerSideBar : Container
     public string DmSectionTitle { get; } = "Direct Messages";
 
     public IDictionary<string, UserCardContainer> Channels { get; } = new Dictionary<string, UserCardContainer>();
+    /// <summary>
+    /// User canonical id->channel id
+    /// <summary>
+    public IDictionary<string, string> Users { get; } = new Dictionary<string, string>();
 
     private Box backgroundBox;
     private Container searchBarContainer;
@@ -136,7 +140,7 @@ public partial class MessengerSideBar : Container
     /// <summary>
     /// Add user into side bar messages(aka dm channels)
     /// </summary>
-    public void AddOrUpdateUser(DmChannel data)
+    public void AddOrUpdateChannel(DmChannel data)
     {
         var key = data.Id;
         if (string.IsNullOrEmpty(data.Id)) throw new ArgumentNullException("Channel id equals null");
@@ -153,16 +157,37 @@ public partial class MessengerSideBar : Container
         if (!Channels.TryGetValue(key, out var card))
         {
             card = new UserCardContainer { Id = key };
+            Users[user.CanonicalKey()] = key;
             Channels[key] = card;
             cardsContainer.Add(card);
         }
 
         card.Username.Value = user.Username;
-        card.DisplayName.Value = user.DisplayName ?? user?.Username;
+        card.DisplayName.Value = user.DisplayName ?? user.Username;
         card.AvatarUrl.Value = user.Avatar;
         card.Status.Value = user.Status;
         card.AvatarColor.Value = user.AvatarColor;
         card.Show();
+    }
+
+    public void UpdateUser(User data)
+    {
+        var key = data.CanonicalKey();
+        if (!Users.TryGetValue(key, out var channelKey))
+        {
+            throw new KeyNotFoundException($"User key with canonical id {key} not found; More information: Id={data.Id},HomeInstance={data.HomeInstance},HomeUserId={data.HomeUserId}");
+        }
+
+        if (!Channels.TryGetValue(channelKey, out var card))
+        {
+            throw new KeyNotFoundException($"Channel key with id {channelKey} not found");
+        }
+
+        card.Username.Value = data.Username;
+        card.DisplayName.Value = data.DisplayName ?? data.Username;
+        card.AvatarUrl.Value = data.Avatar;
+        card.Status.Value = data.Status;
+        card.AvatarColor.Value = data.AvatarColor;
     }
 
     public void RemoveDmChannel(string key)

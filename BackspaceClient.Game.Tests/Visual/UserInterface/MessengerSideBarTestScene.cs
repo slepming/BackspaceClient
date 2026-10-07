@@ -36,7 +36,7 @@ public partial class MessengerSideBarTestScene : BackspaceClientTestScene
         {
             for (int i = 0; i <= 5; ++i)
             {
-                sideBar.AddOrUpdateUser(new()
+                sideBar.AddOrUpdateChannel(new()
                 {
                     Id = RandomString(15),
                     Members = [
