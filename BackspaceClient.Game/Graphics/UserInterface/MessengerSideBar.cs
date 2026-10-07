@@ -34,7 +34,7 @@ public partial class MessengerSideBar : Container
     public IDictionary<string, UserCardContainer> Channels { get; } = new Dictionary<string, UserCardContainer>();
     /// <summary>
     /// User canonical id->channel id
-    /// <summary>
+    /// </summary>
     public IDictionary<string, string> Users { get; } = new Dictionary<string, string>();
 
     private Box backgroundBox;
