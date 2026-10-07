@@ -18,7 +18,7 @@ public partial class MessengerSideBar : Container
 {
     private static readonly Vector2 sidebar_size = new(0.2f, 1f);
 
-    // TODO: In the future I have to create theme creating
+    // TODO: In the future I have to create theme management
     private static readonly Colour4 surface_channel = Colour4.FromHex("1a1a23");
     private static readonly Colour4 surface_input = Colour4.White.Opacity(0.03f);
     private static readonly Colour4 border_hard = Colour4.White.Opacity(0.06f);

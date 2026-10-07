@@ -76,11 +76,9 @@ public partial class UserCardContainer : Container
                                     {
                                         RelativeSizeAxes = Axes.Both,
                                         Masking = true,
-                                        Child = new Box
-                                        {
-                                            RelativeSizeAxes = Axes.Both,
-                                            Colour = Colour4.White,
-                                        },
+                                        Child = new DelayedLoadUnloadWrapper(() => {
+                                            return new BindableOnlineAvatar(AvatarUrl);
+                                        },500, 500),
                                     },
                                     new Circle
                                     {
@@ -154,6 +152,7 @@ public partial class UserCardContainer : Container
         base.LoadComplete();
 
         Username.BindValueChanged(u => usernameText.Text = u.NewValue, true);
+        DisplayName.BindValueChanged(d => usernameText.Text = $"{Username.Value}({d.NewValue})", true);
         LastMessage.BindValueChanged(m => previewText.Text = m.NewValue, true);
         LastMessageTime.BindValueChanged(t => timestampText.Text = t.NewValue, true);
         Selected.BindValueChanged(_ => updateVisualState(), true);

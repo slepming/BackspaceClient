@@ -4,6 +4,7 @@ using Newtonsoft.Json;
 
 namespace BackspaceClient.Game.Online.API.Response;
 
+[JsonObject(MemberSerialization.OptIn)]
 public sealed class User
 {
     [JsonProperty("id")]
