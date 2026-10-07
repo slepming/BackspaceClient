@@ -24,13 +24,15 @@ public class WsDispatcher
         };
     }
 
-    public void Dispatch(string raw) {
+    public void Dispatch(string raw)
+    {
         if (raw == null) return;
 
         string type;
 
         var snowball = JsonConvert.DeserializeObject<WsResponse>(raw);
-        if (string.IsNullOrEmpty(snowball.Type)) {
+        if (string.IsNullOrEmpty(snowball.Type))
+        {
             Logger.Log($"Websocket message have empty type, raw: {raw}", target: LoggingTarget.Network);
         }
 

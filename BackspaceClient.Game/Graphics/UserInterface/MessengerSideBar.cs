@@ -145,7 +145,8 @@ public partial class MessengerSideBar : Container
         var key = data.Id;
         if (string.IsNullOrEmpty(data.Id)) throw new ArgumentNullException("Channel id equals null");
 
-        if (data.Members == null || data.Members.Count < 1) {
+        if (data.Members == null || data.Members.Count < 1)
+        {
             if (Channels.TryGetValue(key, out var userCard)) userCard.Show();
             else throw new ArgumentNullException("Channel members less than 1 and Channels haven't this channel");
 

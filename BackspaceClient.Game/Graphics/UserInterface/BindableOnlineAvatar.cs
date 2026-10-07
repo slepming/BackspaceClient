@@ -13,9 +13,11 @@ public partial class BindableOnlineAvatar(Bindable<string> url) : Sprite
     {
         if (url == null) return;
 
-        url.BindValueChanged(v => {
+        url.BindValueChanged(v =>
+        {
             if (string.IsNullOrEmpty(v.NewValue)) return;
-            Texture = textureStore.Get($"http://localhost:3005/api/uploads/{v.NewValue}");
+
+            Texture = textureStore.Get($"http://localhost:3005/api/uploads/{v.NewValue}"); // TODO: find out why webp avatar calls exception
         }, true);
     }
 }

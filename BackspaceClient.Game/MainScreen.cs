@@ -80,7 +80,8 @@ namespace BackspaceClient.Game
                 }
             ];
 
-            passwordTextBox.OnCommit += (s, n) => {
+            passwordTextBox.OnCommit += (s, n) =>
+            {
                 if (n) authorize(loginTextBox.Text, s.Text);
             };
         }
