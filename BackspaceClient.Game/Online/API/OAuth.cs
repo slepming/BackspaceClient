@@ -56,7 +56,6 @@ public class OAuth(string username, [NotNull] string password)
         public AccessTokenRequest()
         {
             Method = HttpMethod.Post;
-            AllowInsecureRequests = true;
             ContentType = "application/json";
         }
 
