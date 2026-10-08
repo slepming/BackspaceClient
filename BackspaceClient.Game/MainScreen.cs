@@ -1,5 +1,6 @@
 using System;
 using BackspaceClient.Game.Graphics.UserInterface;
+using BackspaceClient.Game.Graphics.UserInterface.Buttons;
 using BackspaceClient.Game.Online.API;
 using BackspaceClient.Game.Screens;
 using osu.Framework.Allocation;
@@ -8,6 +9,7 @@ using osu.Framework.Graphics.Containers;
 using osu.Framework.Graphics.Sprites;
 using osu.Framework.Graphics.UserInterface;
 using osu.Framework.Input;
+using osu.Framework.Logging;
 using osu.Framework.Screens;
 using osuTK;
 
@@ -62,7 +64,7 @@ namespace BackspaceClient.Game
                             InputProperties = new TextInputProperties(TextInputType.Password),
                             TabbableContentContainer = this,
                         },
-                        new BasicButton
+                        new LoginButton
                         {
                             RelativeSizeAxes = Axes.Both,
                             Text = "Apply",
@@ -88,10 +90,14 @@ namespace BackspaceClient.Game
 
         private void authorize(string username, string password)
         {
+            if (string.IsNullOrEmpty(password) || string.IsNullOrEmpty(username)) return;
             var provider = new APIProvider(username, password);
 
             if (!provider.HasKey)
-                throw new Exception("Provider don't contain api key(Might be server is unavailable)");
+            {
+                Logger.Log("Provider don't contain api key(Might be server is unavailable)");
+                return;
+            }
 
             stack.Push(new MessengerScreen(provider));
         }

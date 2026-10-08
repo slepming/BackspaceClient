@@ -20,6 +20,9 @@ public partial class MessengerScreen(APIProvider api) : Screen
 
     private MessengerSideBar sideBar;
 
+    [Resolved]
+    private ScreenStack screenStack { get; set; }
+
     [BackgroundDependencyLoader]
     private void load()
     {
@@ -31,6 +34,10 @@ public partial class MessengerScreen(APIProvider api) : Screen
         webSocketClient.Closed += () =>
         {
             Logger.Log("Closed");
+            Schedule(() =>
+            {
+                screenStack.Push(new MainScreen());
+            });
         };
 
         AddInternal(sideBar = new()
