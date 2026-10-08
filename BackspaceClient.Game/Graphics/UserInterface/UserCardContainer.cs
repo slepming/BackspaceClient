@@ -77,9 +77,9 @@ public partial class UserCardContainer : Container
                                     {
                                         RelativeSizeAxes = Axes.Both,
                                         Masking = true,
-                                        Child = new DelayedLoadUnloadWrapper(() => {
-                                            return new BindableOnlineAvatar(AvatarUrl);
-                                        },500, 500),
+                                        Child = new BindableAvatar(AvatarUrl, AvatarColor) {
+                                            RelativeSizeAxes = Axes.Both
+                                        },
                                     },
                                     new Circle
                                     {
