@@ -20,7 +20,7 @@ public class MessageModel
     public BindableList<Embed> Embeds { get; private set; } = new();
     public BindableList<Attachment> Attachments { get; private set; } = new();
 
-    public MessageModel(MessageWithUserResponse msg)
+    public MessageModel(DmChatMessageResponse msg)
     {
         Id = msg.Id;
         ChannelId = msg.ChannelId;
@@ -29,7 +29,7 @@ public class MessageModel
         UpdateFromResponse(msg);
     }
 
-    public void UpdateFromResponse(MessageWithUserResponse msg)
+    public void UpdateFromResponse(DmChatMessageResponse msg)
     {
         Content.Value = msg.Content;
         EditedAt.Value = msg.EditedAt;

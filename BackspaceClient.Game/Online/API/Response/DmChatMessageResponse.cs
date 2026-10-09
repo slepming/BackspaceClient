@@ -1,10 +1,12 @@
 #nullable enable
+
 using System.Collections.Generic;
 using Newtonsoft.Json;
 
 namespace BackspaceClient.Game.Online.API.Response;
 
-public class MessageWithUserResponse
+
+public class DmChatMessageResponse
 {
     [JsonProperty("id")]
     public string Id { get; set; } = string.Empty;
@@ -40,7 +42,7 @@ public class MessageWithUserResponse
     public List<Reaction> Reactions { get; set; } = new();
 
     [JsonProperty("replyTo")]
-    public MessageWithUserResponse? ReplyTo { get; set; }
+    public DmChatMessageResponse? ReplyTo { get; set; }
 }
 
 public class Attachment

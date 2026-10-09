@@ -21,20 +21,22 @@ public partial class BindableAvatar(Bindable<string> avatarUrl, Bindable<string>
     {
         AddRangeInternal(
             [
-                new DelayedLoadUnloadWrapper(() => onlineAvatar, 500, 500),
                 circleAvatar = new()
                 {
                     RelativeSizeAxes = Axes.Both,
                     Colour = Colour4.Black,
-                }
+                },
+                new DelayedLoadUnloadWrapper(() => onlineAvatar, 500, 500),
             ]
         );
 
         color.BindValueChanged(v =>
         {
+            if(string.IsNullOrEmpty(v.NewValue)) return;
+
             Logger.Log(v.NewValue);
             circleAvatar.Colour = ColourParsing.Parse(v.NewValue);
             Logger.Log(circleAvatar.Colour.ToString());
-        });
+        }, true);
     }
 }

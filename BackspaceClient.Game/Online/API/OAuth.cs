@@ -1,10 +1,8 @@
 using System.Net.Http;
-using System.Text.Json.Nodes;
 using BackspaceClient.Game.Online.API.Response;
 using JetBrains.Annotations;
 using Newtonsoft.Json;
 using osu.Framework.Bindables;
-using osu.Framework.Logging;
 
 namespace BackspaceClient.Game.Online.API;
 

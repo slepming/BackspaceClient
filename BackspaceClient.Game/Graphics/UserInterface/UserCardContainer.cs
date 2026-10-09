@@ -8,7 +8,7 @@ using osu.Framework.Graphics.Sprites;
 using osu.Framework.Input.Events;
 using osuTK;
 
-public partial class UserCardContainer : Container
+public partial class UserCardContainer : ClickableContainer
 {
     public string Id { get; set; } = string.Empty;
 
