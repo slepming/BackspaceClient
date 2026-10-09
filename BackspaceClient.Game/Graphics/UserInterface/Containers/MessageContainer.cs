@@ -1,12 +1,12 @@
+using BackspaceClient.Game.Online.API.Models;
+using BackspaceClient.Game.Online.API.Response;
 using osu.Framework.Allocation;
 using osu.Framework.Graphics;
 using osu.Framework.Graphics.Containers;
+using osu.Framework.Graphics.Containers.Markdown;
+using osu.Framework.Graphics.Shapes;
 using osu.Framework.Graphics.Sprites;
 using osuTK;
-using BackspaceClient.Game.Online.API.Models;
-using BackspaceClient.Game.Online.API.Response;
-using osu.Framework.Graphics.Shapes;
-using osu.Framework.Graphics.Containers.Markdown;
 
 namespace BackspaceClient.Game.Graphics.UserInterface.Containers;
 

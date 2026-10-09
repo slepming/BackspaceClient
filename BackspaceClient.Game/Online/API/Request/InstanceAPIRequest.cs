@@ -5,4 +5,6 @@ public abstract class InstanceAPIRequest<T> : APIRequest<T> where T : class
     protected override string URI => $@"{URL}/api/{Target}";
 
     public string URL { get; protected set; }
+
+    public void SetURL(string url) => URL = url;
 }

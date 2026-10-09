@@ -27,7 +27,8 @@ public abstract partial class DataTestScene : BackspaceClientTestScene
     protected DmChatMessageResponse CreateMessage(bool edited = false)
     {
         var user = CreateUser();
-        return new() {
+        return new()
+        {
             Id = RandomString(15),
             ChannelId = RandomString(15),
             UserId = user.Id,

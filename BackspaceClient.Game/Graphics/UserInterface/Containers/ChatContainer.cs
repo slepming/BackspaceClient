@@ -75,7 +75,8 @@ public partial class ChatContainer : Container
     /// </summary>
     public void RemoveMessage(string messageId, bool mark = false)
     {
-        if (mark) {
+        if (mark)
+        {
             if (messagesById.TryGetValue(messageId, out var markMessage))
                 markMessage.Model.MarkDeleted();
             return;

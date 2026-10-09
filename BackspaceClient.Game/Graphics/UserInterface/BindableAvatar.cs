@@ -32,7 +32,7 @@ public partial class BindableAvatar(Bindable<string> avatarUrl, Bindable<string>
 
         color.BindValueChanged(v =>
         {
-            if(string.IsNullOrEmpty(v.NewValue)) return;
+            if (string.IsNullOrEmpty(v.NewValue)) return;
 
             Logger.Log(v.NewValue);
             circleAvatar.Colour = ColourParsing.Parse(v.NewValue);

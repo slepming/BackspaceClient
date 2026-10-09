@@ -4,6 +4,8 @@ using System.Linq;
 using BackspaceClient.Game.Extensions;
 using BackspaceClient.Game.Online.API.Response;
 using osu.Framework.Allocation;
+using osu.Framework.Bindables;
+using osu.Framework.Extensions.IEnumerableExtensions;
 using osu.Framework.Graphics;
 using osu.Framework.Graphics.Containers;
 using osu.Framework.Graphics.Shapes;
@@ -29,6 +31,8 @@ public partial class MessengerSideBar : Container
     private const float horizontal_gutter = 8;
 
     public string DmSectionTitle { get; } = "Direct Messages";
+
+    public readonly Bindable<string> Selected = new();
 
     public IDictionary<string, UserCardContainer> Channels { get; } = new Dictionary<string, UserCardContainer>();
     /// <summary>
@@ -158,7 +162,16 @@ public partial class MessengerSideBar : Container
 
         if (!Channels.TryGetValue(key, out var card))
         {
-            card = new UserCardContainer { Id = key };
+            card = new UserCardContainer { Id = key, Action = (id, s) =>
+            {
+                if (s.Value)
+                    return;
+
+                s.Value = true;
+                Selected.Value = id;
+                Channels.Values.Where(c => c.Id != id).ForEach(c => c.Selected.Value = false); // lol
+            }
+            };
             Users[user.CanonicalKey()] = key;
             Channels[key] = card;
             cardsContainer.Add(card);

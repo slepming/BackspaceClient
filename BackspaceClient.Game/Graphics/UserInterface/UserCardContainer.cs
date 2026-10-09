@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using BackspaceClient.Game.Graphics.UserInterface;
 using osu.Framework.Allocation;
@@ -10,16 +11,20 @@ using osu.Framework.Input.Events;
 using osu.Framework.Localisation;
 using osuTK;
 
-public partial class UserCardContainer : ClickableContainer, IFilterable
+public partial class UserCardContainer : Container, IFilterable
 {
     public string Id { get; set; } = string.Empty;
 
-    public bool MatchingFilter { set {
+    public bool MatchingFilter
+    {
+        set
+        {
             if (value)
                 Show();
             else
                 Hide();
-    } }
+        }
+    }
 
     public bool FilteringActive { set; get; }
 
@@ -33,6 +38,17 @@ public partial class UserCardContainer : ClickableContainer, IFilterable
     public Bindable<string> LastMessage = new();
     public Bindable<string> LastMessageTime = new();
     public BindableBool Selected = new();
+    public readonly BindableBool Enabled = new();
+
+    public Action<string, BindableBool> Action
+    {
+        get;
+        set
+        {
+            field = value;
+            Enabled.Value = field != null;
+        }
+    }
 
     private Box backgroundBox;
     private Box accentBar;
@@ -184,6 +200,14 @@ public partial class UserCardContainer : ClickableContainer, IFilterable
     {
         updateVisualState();
         base.OnHoverLost(e);
+    }
+
+    protected override bool OnClick(ClickEvent e)
+    {
+        if (Enabled.Value)
+            Action?.Invoke(Id, Selected);
+
+        return true;
     }
 
     private void updateVisualState()

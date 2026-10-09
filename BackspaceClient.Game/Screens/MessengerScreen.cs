@@ -3,6 +3,7 @@ using System.Threading.Tasks;
 using BackspaceClient.Game.Graphics.UserInterface;
 using BackspaceClient.Game.Graphics.UserInterface.Containers;
 using BackspaceClient.Game.Online.API;
+using BackspaceClient.Game.Online.API.Request;
 using BackspaceClient.Game.Online.API.Response;
 using Newtonsoft.Json;
 using osu.Framework.Allocation;
@@ -59,6 +60,24 @@ public partial class MessengerScreen(APIProvider api) : Screen
                     RelativeSizeAxes = Axes.Both,
                 }
             ]
+        });
+
+        sideBar.Selected.BindValueChanged(c =>
+        {
+            if (string.IsNullOrEmpty(c.NewValue)) return;
+
+            var messageRequest = new GetMessagesRequest(c.NewValue);
+            messageRequest.AttachApi(provider);
+            messageRequest.SetURL("http://localhost:3005");
+
+            messageRequest.Perform();
+
+            chatContainer.ClearMessages();
+
+            foreach(var message in messageRequest.Response)
+            {
+                chatContainer.AddOrUpdateMessage(message);
+            }
         });
 
         initializeDispatchers();
