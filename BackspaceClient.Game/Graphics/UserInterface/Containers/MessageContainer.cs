@@ -6,6 +6,7 @@ using osuTK;
 using BackspaceClient.Game.Online.API.Models;
 using BackspaceClient.Game.Online.API.Response;
 using osu.Framework.Graphics.Shapes;
+using osu.Framework.Graphics.Containers.Markdown;
 
 namespace BackspaceClient.Game.Graphics.UserInterface.Containers;
 
@@ -16,7 +17,7 @@ public partial class MessageView : Container
     public MessageModel Model { get; }
 
     private SpriteText usernameText;
-    private SpriteText contentText;
+    private MarkdownContainer contentText;
     private SpriteText editedMarker;
 
     private Box background;
@@ -72,12 +73,12 @@ public partial class MessageView : Container
                             },
                         ],
                     },
-                    contentText = new SpriteText
+                    contentText = new()
                     {
                         RelativeSizeAxes = Axes.X,
-                        Font = new FontUsage(size: 15),
+                        AutoSizeAxes = Axes.Y,
                         Colour = Colour4.FromHex("d0d0d8"),
-                        Padding = new MarginPadding { Top = 1 },
+                        //Padding = new MarginPadding { Top = 1 },
                     },
                 ],
             },

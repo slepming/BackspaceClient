@@ -34,6 +34,13 @@ public partial class ChatContainerTestScene : DataTestScene
         {
             chat.AddOrUpdateMessage(CreateMessage());
         }, 5);
+
+        AddStep("Add markdown message", () =>
+        {
+            var mes = CreateMessage();
+            mes.Content = "# Hello\n ## Hello2 \n Why i'm freak: \n - Cuz I Have github account\n - I haven't work";
+            chat.AddOrUpdateMessage(mes);
+        });
     }
 
     [Test]
