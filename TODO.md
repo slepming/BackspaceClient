@@ -1,7 +1,7 @@
 # General
  - [X] Log in
  - [X] Sidebar with users and avatars;
- - [ ] Sidebar search container;
+ - [X] Sidebar search container;
  - [ ] Chat with user;
  - [ ] Groups chats and sidebar update;
  - [ ] Instance profiles;
