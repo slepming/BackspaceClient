@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using BackspaceClient.Game.Graphics.UserInterface;
 using osu.Framework.Allocation;
 using osu.Framework.Bindables;
@@ -6,11 +7,23 @@ using osu.Framework.Graphics.Containers;
 using osu.Framework.Graphics.Shapes;
 using osu.Framework.Graphics.Sprites;
 using osu.Framework.Input.Events;
+using osu.Framework.Localisation;
 using osuTK;
 
-public partial class UserCardContainer : ClickableContainer
+public partial class UserCardContainer : ClickableContainer, IFilterable
 {
     public string Id { get; set; } = string.Empty;
+
+    public bool MatchingFilter { set {
+            if (value)
+                Show();
+            else
+                Hide();
+    } }
+
+    public bool FilteringActive { set; get; }
+
+    public IEnumerable<LocalisableString> FilterTerms => [Username.Value, DisplayName.Value, LastMessage.Value];
 
     public Bindable<string> Username = new();
     public Bindable<string> DisplayName = new();

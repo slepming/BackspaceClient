@@ -20,7 +20,7 @@ public partial class MessengerSideBar : Container
     // TODO: In the future I have to create theme management
     private static readonly Colour4 surface_channel = Colour4.FromHex("1a1a23");
     private static readonly Colour4 surface_input = Colour4.White.Opacity(0.03f);
-    private static readonly Colour4 border_hard = Colour4.White.Opacity(0.06f);
+    private static readonly Colour4 border_hard = Colour4.White.Opacity(0.1f);
     private static readonly Colour4 text_tertiary = Colour4.White.Opacity(0.45f);
 
     private const float search_bar_height = 48;
@@ -44,7 +44,7 @@ public partial class MessengerSideBar : Container
     private Container sectionHeaderContainer;
     private SpriteText sectionTitleText;
     private Container cardsAreaContainer;
-    private FillFlowContainer cardsContainer;
+    private SearchContainer cardsContainer;
 
     public MessengerSideBar()
     {
@@ -126,7 +126,7 @@ public partial class MessengerSideBar : Container
                     Top = search_bar_height + section_header_height,
                     Bottom = cards_bottom_padding,
                 },
-                Child = cardsContainer = new FillFlowContainer
+                Child = cardsContainer = new SearchContainer
                 {
                     RelativeSizeAxes = Axes.Both,
                     Direction = FillDirection.Vertical,
@@ -134,6 +134,8 @@ public partial class MessengerSideBar : Container
                 },
             },
         ];
+
+        searchTextBox.Current.BindValueChanged(v => cardsContainer.SearchTerm = v.NewValue);
     }
 
     /// <summary>
