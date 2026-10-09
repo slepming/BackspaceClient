@@ -7,7 +7,7 @@ namespace BackspaceClient.Game.Tests
     {
         public static void Main()
         {
-            using (GameHost host = Host.GetSuitableDesktopHost("visual-tests"))
+            using (GameHost host = Host.GetSuitableDesktopHost("BackspaceClient(development)"))
             using (var game = new BackspaceClientTestBrowser())
                 host.Run(game);
         }

@@ -6,6 +6,6 @@
     <ProjectReference Include="..\BackspaceClient.Resources\BackspaceClient.Resources.csproj" />
   </ItemGroup>
   <ItemGroup>
-    <PackageReference Include="ppy.osu.Framework" Version="2026.930.0" />
+    <ProjectReference Include="../osu-framework/osu.Framework/osu.Framework.csproj" />
   </ItemGroup>
 </Project>
