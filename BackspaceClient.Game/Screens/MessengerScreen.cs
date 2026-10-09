@@ -1,11 +1,13 @@
 using System.Linq;
 using System.Threading.Tasks;
 using BackspaceClient.Game.Graphics.UserInterface;
+using BackspaceClient.Game.Graphics.UserInterface.Containers;
 using BackspaceClient.Game.Online.API;
 using BackspaceClient.Game.Online.API.Response;
 using Newtonsoft.Json;
 using osu.Framework.Allocation;
 using osu.Framework.Graphics;
+using osu.Framework.Graphics.Containers;
 using osu.Framework.Logging;
 using osu.Framework.Screens;
 using osuTK;
@@ -19,6 +21,7 @@ public partial class MessengerScreen(APIProvider api) : Screen
     private WsDispatcher webSocketDispatcher = new();
 
     private MessengerSideBar sideBar;
+    private ChatContainer chatContainer;
 
     [Resolved]
     private ScreenStack screenStack { get; set; }
@@ -40,10 +43,22 @@ public partial class MessengerScreen(APIProvider api) : Screen
             });
         };
 
-        AddInternal(sideBar = new()
+        AddInternal(new FillFlowContainer()
         {
+            Direction = FillDirection.Horizontal,
             RelativeSizeAxes = Axes.Both,
-            Size = new Vector2(.2f, 1f),
+            Children =
+            [
+                sideBar = new()
+                {
+                    RelativeSizeAxes = Axes.Both,
+                    Size = new Vector2(.2f, 1f),
+                },
+                chatContainer = new()
+                {
+                    RelativeSizeAxes = Axes.Both,
+                }
+            ]
         });
 
         initializeDispatchers();
@@ -51,7 +66,7 @@ public partial class MessengerScreen(APIProvider api) : Screen
 
     protected override void LoadComplete()
     {
-        base.LoadAsyncComplete();
+        base.LoadComplete();
         Scheduler.Add(() =>
         {
             Task.Run(async () =>

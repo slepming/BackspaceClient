@@ -1,6 +1,5 @@
 using BackspaceClient.Game.Graphics.UserInterface.Buttons;
 using NUnit.Framework;
-using osu.Framework.Graphics;
 
 namespace BackspaceClient.Game.Tests.Visual.UserInterface;
 

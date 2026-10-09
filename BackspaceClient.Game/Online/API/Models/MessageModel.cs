@@ -16,9 +16,12 @@ public class MessageModel
     public Bindable<string?> Content { get; } = new();
     public Bindable<long?> EditedAt { get; } = new();
     public Bindable<string?> ReplyToId { get; } = new();
+    public BindableBool IsDeleted { get; } = new();
     public BindableList<Reaction> Reactions { get; private set; } = new();
     public BindableList<Embed> Embeds { get; private set; } = new();
     public BindableList<Attachment> Attachments { get; private set; } = new();
+
+    public User User { get; }
 
     public MessageModel(DmChatMessageResponse msg)
     {
@@ -26,6 +29,7 @@ public class MessageModel
         ChannelId = msg.ChannelId;
         UserId = msg.UserId;
         CreatedAt = msg.CreatedAt;
+        User = msg.User;
         UpdateFromResponse(msg);
     }
 
@@ -34,9 +38,12 @@ public class MessageModel
         Content.Value = msg.Content;
         EditedAt.Value = msg.EditedAt;
         ReplyToId.Value = msg.ReplyToId;
-        Reactions = new(msg.Reactions ?? new List<Reaction>());
-        Embeds = new(msg.Embeds ?? new List<Embed>());
-        Attachments = new(msg.Attachments ?? new List<Attachment>());
+        Reactions.Clear();
+        Reactions.AddRange(msg.Reactions ?? new List<Reaction>());
+        Embeds.Clear();
+        Embeds.AddRange(msg.Embeds ?? new List<Embed>());
+        Attachments.Clear();
+        Attachments.AddRange(msg.Attachments ?? new List<Attachment>());
     }
 
     public void AddReaction(Reaction reaction)
@@ -56,5 +63,23 @@ public class MessageModel
         var updated = Reactions.ToList();
         updated.RemoveAll(r => r.User.Id == userId && r.Emoji == emoji);
         Reactions = new(updated);
+    }
+
+    public void MarkDeleted()
+    {
+        IsDeleted.Value = true;
+    }
+
+    public void UpdateFrom(DmChatMessageResponse msg)
+    {
+        Content.Value = msg.Content;
+        EditedAt.Value = msg.EditedAt;
+        ReplyToId.Value = msg.ReplyToId;
+        Reactions.Clear();
+        Reactions.AddRange(msg.Reactions ?? new List<Reaction>());
+        Embeds.Clear();
+        Embeds.AddRange(msg.Embeds ?? new List<Embed>());
+        Attachments.Clear();
+        Attachments.AddRange(msg.Attachments ?? new List<Attachment>());
     }
 }
