@@ -5,6 +5,7 @@ using osu.Framework.Allocation;
 using osu.Framework.Graphics;
 using osu.Framework.Graphics.Containers;
 using osu.Framework.Graphics.Shapes;
+using osu.Framework.Graphics.UserInterface;
 using osuTK;
 
 namespace BackspaceClient.Game.Graphics.UserInterface.Containers;
@@ -19,6 +20,7 @@ public partial class ChatContainer : Container
     private BasicScrollContainer scrollContainer;
     private FillFlowContainer messagesFlow;
     private Drawable bottomSpacer;
+    private TextBox messageTextBox;
 
     public ChatContainer()
     {
@@ -28,26 +30,40 @@ public partial class ChatContainer : Container
     [BackgroundDependencyLoader]
     private void load()
     {
-        InternalChildren = new Drawable[]
-        {
+        InternalChildren =
+        [
             backgroundBox = new Box
             {
                 RelativeSizeAxes = Axes.Both,
                 Colour = surface_chat,
             },
-            scrollContainer = new()
+            new FillFlowContainer
             {
                 RelativeSizeAxes = Axes.Both,
-                ScrollbarOverlapsContent = false,
-                Child = messagesFlow = new FillFlowContainer
-                {
-                    RelativeSizeAxes = Axes.X,
-                    AutoSizeAxes = Axes.Y,
-                    Direction = FillDirection.Vertical,
-                    Padding = new MarginPadding { Vertical = 12 },
-                },
-            },
-        };
+                Direction = FillDirection.Vertical,
+                Children =
+                [
+                    scrollContainer = new()
+                    {
+                        RelativeSizeAxes = Axes.Both,
+                        Size = new(1.0f, .93f),
+                        ScrollbarOverlapsContent = false,
+                        Child = messagesFlow = new FillFlowContainer
+                        {
+                            RelativeSizeAxes = Axes.X,
+                            AutoSizeAxes = Axes.Y,
+                            Direction = FillDirection.Vertical,
+                            Padding = new MarginPadding { Vertical = 12 },
+                        },
+                    },
+                    messageTextBox = new BasicTextBox
+                    {
+                        RelativeSizeAxes = Axes.Both,
+                        Size = new(1.0f, .07f),
+                    }
+                ]
+            }
+        ];
     }
 
     /// <summary>
