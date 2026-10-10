@@ -17,7 +17,7 @@ public partial class BindableOnlineAvatar(Bindable<string> url) : Sprite
         {
             if (string.IsNullOrEmpty(v.NewValue)) return;
 
-            Texture = textureStore.Get($"http://localhost:3005/api/uploads/{v.NewValue}"); // TODO: find out why webp avatar calls exception
+            Texture = textureStore.Get($"{v.NewValue}/api/uploads/{v.NewValue}"); // TODO: find out why webp avatar calls exception
         }, true);
     }
 }

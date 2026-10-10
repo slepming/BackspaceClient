@@ -15,7 +15,7 @@ public class OAuth(string username, [NotNull] string password)
 
     public readonly Bindable<OAuthToken> Token = new();
 
-    private bool userAuthorization()
+    private bool userAuthorization(string url)
     {
         try
         {
@@ -23,7 +23,7 @@ public class OAuth(string username, [NotNull] string password)
             {
                 Username = username,
                 Password = password,
-                Url = "http://127.0.0.1:3005/api/auth/login"
+                Url = $@"{url}/api/auth/login"
             };
 
             using (tokenRequest)
@@ -39,9 +39,9 @@ public class OAuth(string username, [NotNull] string password)
         }
     }
 
-    internal string RequestAccessToken()
+    internal string RequestAccessToken(string url)
     {
-        if (!userAuthorization()) return null;
+        if (!userAuthorization(url)) return null;
 
         return Token.Value.Token;
     }

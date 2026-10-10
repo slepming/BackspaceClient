@@ -56,7 +56,7 @@ public partial class ChatContainer : Container
                             Padding = new MarginPadding { Vertical = 12 },
                         },
                     },
-                    messageTextBox = new BasicTextBox
+                    messageTextBox = new BackspaceClientTextBox
                     {
                         RelativeSizeAxes = Axes.Both,
                         Size = new(1.0f, .07f),

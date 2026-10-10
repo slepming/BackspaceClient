@@ -1,5 +1,7 @@
+using System;
 using System.Linq;
 using System.Threading.Tasks;
+using BackspaceClient.Game.Configuration;
 using BackspaceClient.Game.Graphics.UserInterface;
 using BackspaceClient.Game.Graphics.UserInterface.Containers;
 using BackspaceClient.Game.Online.API;
@@ -15,12 +17,14 @@ using osuTK;
 
 namespace BackspaceClient.Game.Screens;
 
-public partial class MessengerScreen(APIProvider api) : Screen
+public partial class MessengerScreen(APIProvider api, InstanceObserver instanceObserver) : Screen
 {
+    // Network
     private APIProvider provider = api;
     private WebSocketClient webSocketClient;
     private WsDispatcher webSocketDispatcher = new();
 
+    // Design
     private MessengerSideBar sideBar;
     private ChatContainer chatContainer;
 
@@ -30,19 +34,7 @@ public partial class MessengerScreen(APIProvider api) : Screen
     [BackgroundDependencyLoader]
     private void load()
     {
-        webSocketClient = new(null, 3005);
-        webSocketClient.MessageReceived += m =>
-        {
-            webSocketDispatcher.Dispatch(m);
-        };
-        webSocketClient.Closed += () =>
-        {
-            Logger.Log("Closed");
-            Schedule(() =>
-            {
-                screenStack.Push(new MainScreen());
-            });
-        };
+        webSocketClient = new(instanceObserver.Current.Value);
 
         AddInternal(new FillFlowContainer()
         {
@@ -68,9 +60,7 @@ public partial class MessengerScreen(APIProvider api) : Screen
 
             var messageRequest = new GetMessagesRequest(c.NewValue);
             messageRequest.AttachApi(provider);
-            messageRequest.SetURL("http://localhost:3005");
-
-            messageRequest.Perform();
+            instanceObserver.PerformAPIRequest(messageRequest);
 
             chatContainer.ClearMessages();
 
@@ -79,20 +69,37 @@ public partial class MessengerScreen(APIProvider api) : Screen
                 chatContainer.AddOrUpdateMessage(message);
             }
         });
-
-        initializeDispatchers();
     }
 
     protected override void LoadComplete()
     {
         base.LoadComplete();
-        Scheduler.Add(() =>
+        webSocketClient.MessageReceived += m =>
         {
-            Task.Run(async () =>
+            webSocketDispatcher.Dispatch(m);
+        };
+        webSocketClient.Closed += () =>
+        {
+            Logger.Log("Closed");
+            Schedule(() =>
+            {
+                screenStack.Push(new MainScreen());
+            });
+        };
+
+        initializeDispatchers();
+
+        Task.Run(async () =>
+        {
+            try
             {
                 await webSocketClient.Start();
                 await webSocketClient.SendAsync(JsonConvert.SerializeObject(new AuthMessage() { Token = provider.AccessKey }));
-            });
+            }
+            catch (Exception e)
+            {
+                Logger.Error(e, "Websocket error");
+            }
         });
     }
 
@@ -142,7 +149,7 @@ public partial class MessengerScreen(APIProvider api) : Screen
         {
             foreach (var channel in ready.DmChannels)
             {
-                sideBar.AddOrUpdateChannel(channel);
+                sideBar.AddOrUpdateChannel(channel, ready.User.Username);
             }
         });
     }

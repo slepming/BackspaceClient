@@ -1,10 +1,8 @@
 namespace BackspaceClient.Game.Online.API.Request;
 
-public abstract class InstanceAPIRequest<T> : APIRequest<T> where T : class
+public abstract class InstanceAPIRequest<T> : APIRequest<T>, IHaveInstanceUrl where T : class
 {
     protected override string URI => $@"{URL}/api/{Target}";
 
-    public string URL { get; protected set; }
-
-    public void SetURL(string url) => URL = url;
+    public string URL { get; set; }
 }

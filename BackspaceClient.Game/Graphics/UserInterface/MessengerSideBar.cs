@@ -145,7 +145,7 @@ public partial class MessengerSideBar : Container
     /// <summary>
     /// Add user into side bar messages(aka dm channels)
     /// </summary>
-    public void AddOrUpdateChannel(DmChannel data)
+    public void AddOrUpdateChannel(DmChannel data, string username = null)
     {
         var key = data.Id;
         if (string.IsNullOrEmpty(data.Id)) throw new ArgumentNullException("Channel id equals null");
@@ -158,7 +158,7 @@ public partial class MessengerSideBar : Container
             return;
         }
 
-        var user = data.Members.Last();
+        var user = data.Members.Last(u => u.Username != username);
 
         if (!Channels.TryGetValue(key, out var card))
         {

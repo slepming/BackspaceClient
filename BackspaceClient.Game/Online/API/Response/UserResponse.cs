@@ -56,7 +56,7 @@ public sealed class User
     public string? HomeUserId { get; set; }
 
     [JsonProperty("replicatedInstances")]
-    public List<string> ReplicatedInstances { get; set; } = new();
+    public List<ReplicatedInstance> ReplicatedInstances { get; set; } = new();
 
     [JsonProperty("showActivity")]
     public bool ShowActivity { get; set; }
@@ -69,4 +69,10 @@ public sealed class User
 
     [JsonIgnore]
     public bool IsNative => HomeInstance == null;
+}
+
+public class ReplicatedInstance
+{
+    [JsonProperty("origin")]   public string Origin { get; set; } = string.Empty;
+    [JsonProperty("username")] public string Username { get; set; } = string.Empty;
 }

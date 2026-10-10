@@ -8,7 +8,7 @@ public partial class APIProvider : Component
     public string AccessKey { get; private set; }
     public bool HasKey => AccessKey != null;
 
-    public APIProvider(string username, string passw)
+    public APIProvider(string username, string passw, string instance)
     {
         oauth = new OAuth(username, passw);
         oauth.Token.BindValueChanged(a =>
@@ -16,6 +16,6 @@ public partial class APIProvider : Component
             if (a.NewValue != null)
                 AccessKey = a.NewValue.Token;
         });
-        oauth.RequestAccessToken();
+        oauth.RequestAccessToken(instance);
     }
 }

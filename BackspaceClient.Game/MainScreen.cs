@@ -1,13 +1,15 @@
 using System;
+using System.Net;
+using BackspaceClient.Game.Configuration;
 using BackspaceClient.Game.Graphics.UserInterface;
 using BackspaceClient.Game.Graphics.UserInterface.Buttons;
+using BackspaceClient.Game.Graphics.UserInterface.Containers;
 using BackspaceClient.Game.Online.API;
 using BackspaceClient.Game.Screens;
 using osu.Framework.Allocation;
 using osu.Framework.Graphics;
 using osu.Framework.Graphics.Containers;
 using osu.Framework.Graphics.Sprites;
-using osu.Framework.Graphics.UserInterface;
 using osu.Framework.Input;
 using osu.Framework.Logging;
 using osu.Framework.Screens;
@@ -18,15 +20,25 @@ namespace BackspaceClient.Game
     public partial class MainScreen : Screen
     {
         private readonly Vector2 text_box_size = new(.5f, .05f);
+
         private BackspaceClientTextBox loginTextBox, passwordTextBox;
+
         private FillFlowContainer loginContainer;
+        private ShakerContainer shakeContainer;
+
 
         [Resolved]
         private ScreenStack stack { get; set; }
 
+        private InstanceObserver instanceObserver;
+
         [BackgroundDependencyLoader]
-        private void load()
+        private void load(InstanceConfiguration instanceConfig)
         {
+            var instance = instanceConfig.Get<string>(InstanceSettings.Home);
+            instanceObserver = new();
+            instanceObserver.Current.Value = instance;
+
             InternalChildren =
             [
                 loginContainer = new FillFlowContainer
@@ -64,20 +76,34 @@ namespace BackspaceClient.Game
                             InputProperties = new TextInputProperties(TextInputType.Password),
                             TabbableContentContainer = this,
                         },
-                        new LoginButton
+                        shakeContainer = new()
                         {
                             RelativeSizeAxes = Axes.Both,
-                            Text = "Apply",
-                            Size = text_box_size,
                             Anchor = Anchor.TopCentre,
                             Origin = Anchor.TopCentre,
-                            Action = () => {
-                                var login = loginTextBox.Text;
-                                var passwd = passwordTextBox.Text;
+                            Size = text_box_size,
+                            Child = new LoginButton
+                            {
+                                RelativeSizeAxes = Axes.Both,
+                                Text = "Apply",
+                                Anchor = Anchor.TopCentre,
+                                Origin = Anchor.TopCentre,
+                                Action = () => {
+                                    var login = loginTextBox.Text;
+                                    var passwd = passwordTextBox.Text;
 
-                                authorize(login, passwd);
-                            }
-                        },
+                                    try
+                                    {
+                                        authorize(login, passwd);
+                                    }
+                                    catch(Exception e)
+                                    {
+                                        shakeContainer.Shake();
+                                        Logger.Error(e, "Login runtime error");
+                                    }
+                                }
+                            },
+                        }
                     ]
                 }
             ];
@@ -90,16 +116,25 @@ namespace BackspaceClient.Game
 
         private void authorize(string username, string password)
         {
-            if (string.IsNullOrEmpty(password) || string.IsNullOrEmpty(username)) return;
-            var provider = new APIProvider(username, password);
+            if (string.IsNullOrEmpty(password) || string.IsNullOrEmpty(username)) throw new ArgumentNullException("Password or username empty");
 
-            if (!provider.HasKey)
+            try
             {
-                Logger.Log("Provider don't contain api key(Might be server is unavailable)");
-                return;
+                var provider = new APIProvider(username, password, instanceObserver.Current.Value);
+                if (!provider.HasKey)
+                    throw new ArgumentNullException("Provider don't contain api key(Might be server is unavailable)");
+
+                stack.Push(new MessengerScreen(provider, instanceObserver));
+            }
+            catch(WebException webExc)
+            {
+                if (webExc.HResult == 401) shakeContainer.Shake(300);
+            }
+            catch
+            {
+                throw;
             }
 
-            stack.Push(new MessengerScreen(provider));
-        }
+            }
     }
 }
