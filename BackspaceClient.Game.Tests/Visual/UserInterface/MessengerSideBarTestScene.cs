@@ -44,7 +44,7 @@ public partial class MessengerSideBarTestScene : BackspaceClientTestScene
                             Username = RandomString(10)
                         }
                     ]
-                });
+                }, null);
             }
         });
     }

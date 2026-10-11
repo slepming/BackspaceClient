@@ -73,6 +73,6 @@ public sealed class User
 
 public class ReplicatedInstance
 {
-    [JsonProperty("origin")]   public string Origin { get; set; } = string.Empty;
+    [JsonProperty("origin")] public string Origin { get; set; } = string.Empty;
     [JsonProperty("username")] public string Username { get; set; } = string.Empty;
 }

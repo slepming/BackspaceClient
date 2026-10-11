@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using BackspaceClient.Game.Configuration;
@@ -64,7 +65,7 @@ public partial class MessengerScreen(APIProvider api, InstanceObserver instanceO
 
             chatContainer.ClearMessages();
 
-            foreach(var message in messageRequest.Response)
+            foreach (var message in messageRequest.Response)
             {
                 chatContainer.AddOrUpdateMessage(message);
             }
@@ -116,7 +117,14 @@ public partial class MessengerScreen(APIProvider api, InstanceObserver instanceO
     {
         Schedule(() =>
         {
-            sideBar.UpdateUser(user.User);
+            try
+            {
+                sideBar.UpdateUser(user.User);
+            }
+            catch (KeyNotFoundException k)
+            {
+                Logger.Error(k, "KeyNotFoundError");
+            }
         });
     }
 
@@ -138,7 +146,7 @@ public partial class MessengerScreen(APIProvider api, InstanceObserver instanceO
     {
         Schedule(() =>
         {
-            sideBar.AddOrUpdateChannel(channel);
+            sideBar.AddOrUpdateChannel(channel, instanceObserver.Current.Value);
         });
     }
 
@@ -149,7 +157,7 @@ public partial class MessengerScreen(APIProvider api, InstanceObserver instanceO
         {
             foreach (var channel in ready.DmChannels)
             {
-                sideBar.AddOrUpdateChannel(channel, ready.User.Username);
+                sideBar.AddOrUpdateChannel(channel, instance: instanceObserver.Current.Value, ready.User);
             }
         });
     }

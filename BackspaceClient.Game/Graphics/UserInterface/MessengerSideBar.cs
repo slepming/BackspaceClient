@@ -11,6 +11,7 @@ using osu.Framework.Graphics.Containers;
 using osu.Framework.Graphics.Shapes;
 using osu.Framework.Graphics.Sprites;
 using osu.Framework.Graphics.UserInterface;
+using osu.Framework.Logging;
 using osuTK;
 
 namespace BackspaceClient.Game.Graphics.UserInterface;
@@ -145,7 +146,7 @@ public partial class MessengerSideBar : Container
     /// <summary>
     /// Add user into side bar messages(aka dm channels)
     /// </summary>
-    public void AddOrUpdateChannel(DmChannel data, string username = null)
+    public void AddOrUpdateChannel(DmChannel data, string instance, User client = null)
     {
         var key = data.Id;
         if (string.IsNullOrEmpty(data.Id)) throw new ArgumentNullException("Channel id equals null");
@@ -158,19 +159,22 @@ public partial class MessengerSideBar : Container
             return;
         }
 
-        var user = data.Members.Last(u => u.Username != username);
+        var user = data.Members.Last(u => u.CanonicalKey() != client?.CanonicalKey());
 
         if (!Channels.TryGetValue(key, out var card))
         {
-            card = new UserCardContainer { Id = key, Action = (id, s) =>
+            card = new UserCardContainer(instance)
             {
-                if (s.Value)
-                    return;
+                Id = key,
+                Action = (id, s) =>
+                {
+                    if (s.Value)
+                        return;
 
-                s.Value = true;
-                Selected.Value = id;
-                Channels.Values.Where(c => c.Id != id).ForEach(c => c.Selected.Value = false); // lol
-            }
+                    s.Value = true;
+                    Selected.Value = id;
+                    Channels.Values.Where(c => c.Id != id).ForEach(c => c.Selected.Value = false); // lol
+                }
             };
             Users[user.CanonicalKey()] = key;
             Channels[key] = card;
@@ -189,14 +193,10 @@ public partial class MessengerSideBar : Container
     {
         var key = data.CanonicalKey();
         if (!Users.TryGetValue(key, out var channelKey))
-        {
             throw new KeyNotFoundException($"User key with canonical id {key} not found; More information: Id={data.Id},HomeInstance={data.HomeInstance},HomeUserId={data.HomeUserId}");
-        }
 
         if (!Channels.TryGetValue(channelKey, out var card))
-        {
             throw new KeyNotFoundException($"Channel key with id {channelKey} not found");
-        }
 
         card.Username.Value = data.Username;
         card.DisplayName.Value = data.DisplayName ?? data.Username;

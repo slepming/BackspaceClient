@@ -126,15 +126,10 @@ namespace BackspaceClient.Game
 
                 stack.Push(new MessengerScreen(provider, instanceObserver));
             }
-            catch(WebException webExc)
+            catch (WebException webExc)
             {
                 if (webExc.HResult == 401) shakeContainer.Shake(300);
             }
-            catch
-            {
-                throw;
-            }
-
-            }
+        }
     }
 }

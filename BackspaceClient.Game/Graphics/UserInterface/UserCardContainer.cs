@@ -9,6 +9,7 @@ using osu.Framework.Graphics.Shapes;
 using osu.Framework.Graphics.Sprites;
 using osu.Framework.Input.Events;
 using osu.Framework.Localisation;
+using osu.Framework.Logging;
 using osuTK;
 
 public partial class UserCardContainer : Container, IFilterable
@@ -56,11 +57,14 @@ public partial class UserCardContainer : Container, IFilterable
     private SpriteText timestampText;
     private SpriteText previewText;
 
-    public UserCardContainer()
+    private readonly string instanceUrl;
+
+    public UserCardContainer(string currentInstance)
     {
         RelativeSizeAxes = Axes.Both;
         Size = new Vector2(1f, .08f);
         Padding = new MarginPadding { Vertical = 1, Horizontal = 2 };
+        instanceUrl = currentInstance;
     }
 
     [BackgroundDependencyLoader]
@@ -106,7 +110,7 @@ public partial class UserCardContainer : Container, IFilterable
                                     {
                                         RelativeSizeAxes = Axes.Both,
                                         Masking = true,
-                                        Child = new BindableAvatar(AvatarUrl, AvatarColor) {
+                                        Child = new BindableAvatar(AvatarUrl, AvatarColor, instanceUrl) {
                                             RelativeSizeAxes = Axes.Both
                                         },
                                     },

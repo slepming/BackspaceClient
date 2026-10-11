@@ -1,3 +1,4 @@
+using System.Net;
 using System.Net.Http;
 using BackspaceClient.Game.Online.API.Response;
 using JetBrains.Annotations;
@@ -32,6 +33,10 @@ public class OAuth(string username, [NotNull] string password)
                 Token.Value = tokenRequest.ResponseObject;
                 return true;
             }
+        }
+        catch (WebException)
+        {
+            throw;
         }
         catch
         {

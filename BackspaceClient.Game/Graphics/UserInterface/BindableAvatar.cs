@@ -11,9 +11,9 @@ namespace BackspaceClient.Game.Graphics.UserInterface;
 /// <summary>
 /// The avatar bindable that changes when a bindable value one of a bindable
 /// </summary>
-public partial class BindableAvatar(Bindable<string> avatarUrl, Bindable<string> color) : CompositeDrawable
+public partial class BindableAvatar(Bindable<string> avatarUrl, Bindable<string> color, string instanceUrl) : CompositeDrawable
 {
-    private BindableOnlineAvatar onlineAvatar = new(avatarUrl);
+    private BindableOnlineAvatar onlineAvatar = new(avatarUrl, instanceUrl);
     private Circle circleAvatar;
 
     [BackgroundDependencyLoader]
