@@ -61,8 +61,11 @@ public partial class UserCardContainer : Container, IFilterable
 
     public UserCardContainer(string currentInstance)
     {
-        RelativeSizeAxes = Axes.Both;
-        Size = new Vector2(1f, .08f);
+        RelativeSizeAxes = Axes.X;
+        AutoSizeAxes = Axes.Y;
+        AutoSizeDuration = 300f;
+        AutoSizeEasing = Easing.OutCubic;
+        //Size = new Vector2(1f, .08f);
         Padding = new MarginPadding { Vertical = 1, Horizontal = 2 };
         instanceUrl = currentInstance;
     }
@@ -74,7 +77,8 @@ public partial class UserCardContainer : Container, IFilterable
         [
             new Container
             {
-                RelativeSizeAxes = Axes.Both,
+                RelativeSizeAxes = Axes.X,
+                Height = 50,
                 CornerRadius = 6,
                 Masking = true,
                 Children =

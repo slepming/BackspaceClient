@@ -46,7 +46,7 @@ namespace BackspaceClient.Game
                 {
                     Anchor = Anchor.Centre,
                     Origin = Anchor.Centre,
-                    Width = 400,
+                    Width = 600,
                     AutoSizeAxes = Axes.Y,
                     AutoSizeDuration = 300f,
                     AutoSizeEasing = Easing.OutCubic,

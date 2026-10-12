@@ -55,7 +55,15 @@ namespace BackspaceClient.Game
             AddFont(Resources, @"Fonts/adwaita/adwaita");
             AddFont(Resources, @"Fonts/agave/agave_bold");
             AddFont(Resources, @"Fonts/bigblueplus/bigblueplus");
-            AddFont(Resources, @"Fonts/inter/interfont");
+
+            AddFont(Resources, @"Fonts/Inter/Inter-Regular");
+            AddFont(Resources, @"Fonts/Inter/Inter-RegularItalic");
+            AddFont(Resources, @"Fonts/Inter/Inter-Light");
+            AddFont(Resources, @"Fonts/Inter/Inter-LightItalic");
+            AddFont(Resources, @"Fonts/Inter/Inter-SemiBold");
+            AddFont(Resources, @"Fonts/Inter/Inter-SemiBoldItalic");
+            AddFont(Resources, @"Fonts/Inter/Inter-Bold");
+            AddFont(Resources, @"Fonts/Inter/Inter-BoldItalic");
         }
     }
 }
