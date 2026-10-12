@@ -18,19 +18,54 @@ public sealed class WebSocketClient(string? url = null, int? port = null) : IDis
 
     public async Task Start(CancellationToken cancellationToken = default)
     {
-        if (url != null && (url.Contains("http://") || url.Contains("https://")))
+        if (string.IsNullOrEmpty(url))
         {
-            Logger.Log("URL contains web protocols", level: LogLevel.Error);
-            url = new Uri(url).Host;
+            Logger.Log("URL is empty or null", level: LogLevel.Error);
+            return;
         }
 
-        Logger.Log($"Websocket URL {url}", target: LoggingTarget.Network);
+        string wsScheme = "ws";
+        string hostAndPort = url;
+
+        if (url.Contains("://"))
+        {
+            try
+            {
+                Uri instanceUri = new Uri(url);
+                hostAndPort = instanceUri.Authority;
+
+                if (instanceUri.Scheme == Uri.UriSchemeHttps || instanceUri.Scheme == "wss")
+                {
+                    wsScheme = "wss";
+                }
+            }
+            catch (UriFormatException ex)
+            {
+                Logger.Log($"Invalid URL format: {ex.Message}", level: LogLevel.Error);
+                return;
+            }
+        }
+        else
+        {
+            if (port != null && !hostAndPort.Contains(":"))
+            {
+                hostAndPort = $"{hostAndPort}:{port}";
+            }
+        }
+
+        var finalUri = new Uri($"{wsScheme}://{hostAndPort}/ws");
+        Logger.Log($"Websocket URL {finalUri}", target: LoggingTarget.Network);
+
+        if (finalUri.Host == "localhost" && finalUri.Scheme == "wss")
+        {
+            Logger.Log("Forcing ws:// for localhost to avoid local SSL handshake issues", level: LogLevel.Important);
+            finalUri = new Uri($"ws://{finalUri.Authority}/ws");
+        }
 
         var webSocket = new ClientWebSocket();
-        var uri = new Uri($@"wss://{url ?? "localhost"}/ws");
-        if (port != null && url == null)
-            uri = new Uri($@"ws://{url ?? "localhost"}:{port}/ws");
-        await webSocket.ConnectAsync(uri, cancellationToken);
+
+        await webSocket.ConnectAsync(finalUri, cancellationToken);
+
         channel = new WebSocketChannel(webSocket);
         channel.MessageReceived += msg => MessageReceived?.Invoke(msg);
         channel.ClosedPrematurely += () => Closed?.Invoke();

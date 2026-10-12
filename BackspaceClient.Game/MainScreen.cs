@@ -21,7 +21,7 @@ namespace BackspaceClient.Game
     {
         private readonly Vector2 text_box_size = new(.5f, .05f);
 
-        private BackspaceClientTextBox loginTextBox, passwordTextBox;
+        private BackspaceClientTextBox loginTextBox, passwordTextBox, defaultInstanceTextBox;
 
         private FillFlowContainer loginContainer;
         private ShakerContainer shakeContainer;
@@ -76,6 +76,16 @@ namespace BackspaceClient.Game
                             InputProperties = new TextInputProperties(TextInputType.Password),
                             TabbableContentContainer = this,
                         },
+                        defaultInstanceTextBox = new()
+                        {
+                            RelativeSizeAxes = Axes.Both,
+                            Size = text_box_size,
+                            PlaceholderText = "Default instance url(with protocol)",
+                            Anchor = Anchor.TopCentre,
+                            Origin = Anchor.TopCentre,
+                            TabbableContentContainer = this,
+                            Text = instanceConfig.Get<string>(InstanceSettings.Home)
+                        },
                         shakeContainer = new()
                         {
                             RelativeSizeAxes = Axes.Both,
@@ -111,6 +121,13 @@ namespace BackspaceClient.Game
             passwordTextBox.OnCommit += (s, n) =>
             {
                 if (n) authorize(loginTextBox.Text, s.Text);
+            };
+
+            defaultInstanceTextBox.OnCommit += (instance, n) => {
+                if (n) {
+                    instanceConfig.SetValue(InstanceSettings.Home, instance.Current.Value);
+                    instanceObserver.Current.Value = instance.Current.Value;
+                }
             };
         }
 
