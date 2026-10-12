@@ -27,8 +27,6 @@ public partial class BackspaceClientTextBox : BasicTextBox
 
     public BackspaceClientTextBox()
     {
-        RelativeSizeAxes = Axes.X;
-        Height = 44;
         FontSize = 35f;
 
         Masking = true;
