@@ -53,7 +53,7 @@ public partial class BackspaceClientTextBox : BasicTextBox
     protected override SpriteText CreatePlaceholder() => new FadingPlaceholderText
     {
         Colour = placeholder_text_colour,
-        Font = new FontUsage(family: BackspaceFonts.Inter),
+        Font = new FontUsage(family: BackspaceFonts.Inter, italics: true),
         Anchor = Anchor.CentreLeft,
         Origin = Anchor.CentreLeft,
         X = CaretWidth,

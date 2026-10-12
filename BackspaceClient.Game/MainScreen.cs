@@ -52,8 +52,8 @@ namespace BackspaceClient.Game
                     AutoSizeEasing = Easing.OutCubic,
                     Masking = true,
                     CornerRadius = 12f,
-                    BorderThickness = 2f,
-                    BorderColour = Colour4.FromHex("#2E2E3E"),
+                    BorderThickness = 2.5f,
+                    BorderColour = Colour4.FromHex("#3E3E4E"),
                     Children =
                     [
                         new Box
@@ -82,7 +82,7 @@ namespace BackspaceClient.Game
                                 {
                                     RelativeSizeAxes = Axes.X,
                                     Height = 42,
-                                    PlaceholderText = "Click to enter",
+                                    PlaceholderText = "Login",
                                     TabbableContentContainer = this,
                                 }),
                                 createLabeledInput("Password", passwordTextBox = new()
@@ -107,7 +107,7 @@ namespace BackspaceClient.Game
                                     Truncate = true,
                                     Anchor = Anchor.TopCentre,
                                     Origin = Anchor.TopCentre,
-                                    Font = new FontUsage(family: BackspaceFonts.Inter, size: 15),
+                                    Font = new FontUsage(family: BackspaceFonts.Inter, size: 25, italics: true),
                                     Colour = Colour4.FromHex("#FF5555"),
                                     Alpha = 0,
                                 },

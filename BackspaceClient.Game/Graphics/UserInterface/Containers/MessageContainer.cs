@@ -61,7 +61,7 @@ public partial class MessageView : Container
                             usernameText = new SpriteText
                             {
                                 Font = new FontUsage(size: 15, weight: "Bold"),
-                                Colour = Colour4.FromHex("e6e6eb"),
+                                Colour = Colour4.FromHex("ffffff"),
                             },
                             editedMarker = new SpriteText
                             {
