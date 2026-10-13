@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.Threading.Tasks;
 using BackspaceClient.Game.Online.API;
 using BackspaceClient.Game.Online.API.Request;
 using BackspaceClient.Game.Online.API.Response;
@@ -84,19 +85,29 @@ public partial class ChatContainer : Container
             }
         ];
 
-        dmChannelId.BindValueChanged(v => {
-                messageTextBox.Alpha = v.NewValue != null ? 1f : 0f;
+        dmChannelId.BindValueChanged(v =>
+        {
+            messageTextBox.Alpha = v.NewValue != null ? 1f : 0f;
         });
 
         messageTextBox.OnCommit += (textBox, newValue) =>
         {
-            var request = new SendMessageReqeust(DmChannelId)
+            Task.Run(() =>
             {
-                Content = textBox.Current.Value
-            };
-            request.AttachApi(Provider);
-            InstanceObserver.PerformAPIRequest(request);
-            textBox.Current.Value = "";
+                lock(InstanceObserver)
+                {
+                    var request = new SendMessageReqeust(DmChannelId)
+                    {
+                        Content = textBox.Current.Value
+                    };
+                    request.AttachApi(Provider);
+                    InstanceObserver.PerformAPIRequest(request);
+                    Schedule(() =>
+                    {
+                        textBox.Current.Value = "";
+                    });
+                }
+            });
         };
     }
 
@@ -169,7 +180,6 @@ public partial class ChatContainer : Container
 
     private void scrollToBottom()
     {
-        Logger.Log("invoked");
         scrollContainer.ScrollToEnd();
     }
 }

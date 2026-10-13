@@ -61,16 +61,23 @@ public partial class MessengerScreen(APIProvider api, InstanceObserver instanceO
             if (string.IsNullOrEmpty(c.NewValue)) return;
             chatContainer.DmChannelId = c.NewValue;
 
-            var messageRequest = new GetMessagesRequest(c.NewValue);
-            messageRequest.AttachApi(provider);
-            instanceObserver.PerformAPIRequest(messageRequest);
-
-            chatContainer.ClearMessages();
-
-            foreach (var message in messageRequest.Response)
+            Task.Run(() =>
             {
-                chatContainer.AddOrUpdateMessage(message, true);
-            }
+                lock (instanceObserver) {
+                    var messageRequest = new GetMessagesRequest(c.NewValue);
+                    messageRequest.AttachApi(provider);
+                    instanceObserver.PerformAPIRequest(messageRequest);
+
+                    Schedule(() => {
+                        chatContainer.ClearMessages();
+
+                        foreach (var message in messageRequest.Response)
+                        {
+                            chatContainer.AddOrUpdateMessage(message, true);
+                        }
+                    });
+                }
+            });
         });
     }
 

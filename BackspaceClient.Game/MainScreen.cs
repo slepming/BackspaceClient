@@ -1,5 +1,6 @@
 using System;
 using System.Net;
+using System.Threading.Tasks;
 using BackspaceClient.Game.Configuration;
 using BackspaceClient.Game.Graphics.UserInterface;
 using BackspaceClient.Game.Graphics.UserInterface.Buttons;
@@ -182,11 +183,20 @@ namespace BackspaceClient.Game
         {
             if (string.IsNullOrEmpty(password) || string.IsNullOrEmpty(username)) throw new ArgumentNullException("Password or username empty");
 
-            var provider = new APIProvider(username, password, instanceObserver.Current.Value);
-            if (!provider.HasKey)
-                throw new ArgumentNullException("Provider don't contain api key(Might be server is unavailable)");
+            Task.Run(() =>
+            {
+                lock(instanceObserver)
+                {
+                    var provider = new APIProvider(username, password, instanceObserver.Current.Value);
+                    if (!provider.HasKey)
+                        throw new ArgumentNullException("Provider don't contain api key(Might be server is unavailable)");
 
-            stack?.Push(new MessengerScreen(provider, instanceObserver));
+                    Schedule(() =>
+                    {
+                        stack?.Push(new MessengerScreen(provider, instanceObserver));
+                    });
+                }
+            });
         }
     }
 }

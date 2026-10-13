@@ -14,7 +14,7 @@ public class SendMessageReqeust(string dmChannelId) : InstanceAPIRequest<DmChatM
 
     public string Content { get; set; }
     public string Attachments { get; set; }
-    public string ReplyToId { get; set ; }
+    public string ReplyToId { get; set; }
 
     public override void Perform()
     {
@@ -27,7 +27,8 @@ public class SendMessageReqeust(string dmChannelId) : InstanceAPIRequest<DmChatM
         if (API != null && API.AccessKey != null)
             WebRequest.AddHeader("Authorization", $"Bearer {API.AccessKey}");
 
-        var payload = new {
+        var payload = new
+        {
             content = Content,
         };
 

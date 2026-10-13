@@ -56,6 +56,7 @@ public partial class UserCardContainer : Container, IFilterable
     private SpriteText usernameText;
     private SpriteText timestampText;
     private SpriteText previewText;
+    private Circle statusIndicator;
 
     private readonly string instanceUrl;
 
@@ -118,7 +119,7 @@ public partial class UserCardContainer : Container, IFilterable
                                             RelativeSizeAxes = Axes.Both
                                         },
                                     },
-                                    new Circle
+                                    statusIndicator = new Circle
                                     {
                                         Anchor = Anchor.BottomRight,
                                         Origin = Anchor.Centre,
@@ -183,6 +184,17 @@ public partial class UserCardContainer : Container, IFilterable
                 ],
             },
         ];
+
+        Status.BindValueChanged(v =>
+        {
+            Logger.Log($"{v.NewValue}");
+            switch (v.NewValue)
+            {
+                case "offline": statusIndicator.Colour = Colour4.DarkGray; break;
+                case "online": statusIndicator.Colour = Colour4.LimeGreen; break;
+                default: statusIndicator.Colour = Colour4.DarkGray; break;
+            }
+        });
     }
 
     protected override void LoadComplete()

@@ -1,4 +1,5 @@
 using BackspaceClient.Game.Configuration;
+using BackspaceClient.Game.Graphics.UserInterface.Containers.Cursor;
 using BackspaceClient.Resources;
 using osu.Framework.Allocation;
 using osu.Framework.Graphics;
@@ -37,6 +38,19 @@ namespace BackspaceClient.Game
             Resources.AddStore(new DllResourceStore(typeof(BackspaceClientResources).Assembly));
             InstanceConfiguration = new(Storage);
             dependencies.CacheAs(InstanceConfiguration);
+
+            base.Content.Add(new SafeAreaContainer()
+            {
+                RelativeSizeAxes = Axes.Both,
+                SafeAreaOverrideEdges = Edges.None,
+                Child = new DrawSizePreservingFillContainer()
+                {
+                    Children =
+                    [
+                        new MenuCursorContainer()
+                    ]
+                }
+            });
 
             InitializeFonts();
         }
