@@ -16,9 +16,9 @@
 ## Chat
  - [ ] Chat messages list
     - [X] Print messages
-    - [ ] Always when user get in chat, chat have to scroll messages to end
+    - [X] Always when user get in chat, chat have to scroll messages to end
     - [ ] List messages on scroll
- - [ ] Enter messages
+ - [X] Enter messages
 
 ## Instance movement
  - [ ] Instances list in MessengerScreen
