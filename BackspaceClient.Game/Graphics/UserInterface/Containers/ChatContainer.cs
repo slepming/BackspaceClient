@@ -1,12 +1,13 @@
 using System.Collections.Generic;
-using BackspaceClient.Game.Graphics.UserInterface.Containers;
+using BackspaceClient.Game.Online.API;
+using BackspaceClient.Game.Online.API.Request;
 using BackspaceClient.Game.Online.API.Response;
 using osu.Framework.Allocation;
+using osu.Framework.Bindables;
 using osu.Framework.Graphics;
 using osu.Framework.Graphics.Containers;
 using osu.Framework.Graphics.Shapes;
 using osu.Framework.Graphics.UserInterface;
-using osuTK;
 
 namespace BackspaceClient.Game.Graphics.UserInterface.Containers;
 
@@ -22,9 +23,22 @@ public partial class ChatContainer : Container
     private Drawable bottomSpacer;
     private TextBox messageTextBox;
 
-    public ChatContainer()
+    private Bindable<string> dmChannelId { get; } = new();
+
+    public string DmChannelId
+    {
+        get => dmChannelId.Value;
+        set => dmChannelId.Value = value;
+    }
+
+    public APIProvider Provider;
+
+    public readonly InstanceObserver InstanceObserver;
+
+    public ChatContainer(InstanceObserver observer)
     {
         RelativeSizeAxes = Axes.Both;
+        InstanceObserver = observer;
     }
 
     [BackgroundDependencyLoader]
@@ -64,12 +78,23 @@ public partial class ChatContainer : Container
                 ]
             }
         ];
+
+        messageTextBox.OnCommit += (textBox, newValue) =>
+        {
+            var request = new SendMessageReqeust(DmChannelId)
+            {
+                Content = textBox.Current.Value
+            };
+            request.AttachApi(Provider);
+            InstanceObserver.PerformAPIRequest(request);
+            textBox.Current.Value = "";
+        };
     }
 
     /// <summary>
     /// Adds message. If chat contains message then message will be edit
     /// </summary>
-    public void AddOrUpdateMessage(DmChatMessageResponse data)
+    public void AddOrUpdateMessage(DmChatMessageResponse data, bool slideToEnd = false)
     {
         if (messagesById.TryGetValue(data.Id, out var existing))
         {
@@ -82,6 +107,8 @@ public partial class ChatContainer : Container
         messagesFlow.Add(view);
 
         if (isNearBottom())
+            Schedule(scrollToBottom);
+        if (slideToEnd)
             Schedule(scrollToBottom);
     }
 

@@ -48,9 +48,10 @@ public partial class MessengerScreen(APIProvider api, InstanceObserver instanceO
                     RelativeSizeAxes = Axes.Both,
                     Size = new Vector2(.2f, 1f),
                 },
-                chatContainer = new()
+                chatContainer = new(instanceObserver)
                 {
                     RelativeSizeAxes = Axes.Both,
+                    Provider = provider,
                 }
             ]
         });
@@ -58,6 +59,7 @@ public partial class MessengerScreen(APIProvider api, InstanceObserver instanceO
         sideBar.Selected.BindValueChanged(c =>
         {
             if (string.IsNullOrEmpty(c.NewValue)) return;
+            chatContainer.DmChannelId = c.NewValue;
 
             var messageRequest = new GetMessagesRequest(c.NewValue);
             messageRequest.AttachApi(provider);
@@ -67,7 +69,7 @@ public partial class MessengerScreen(APIProvider api, InstanceObserver instanceO
 
             foreach (var message in messageRequest.Response)
             {
-                chatContainer.AddOrUpdateMessage(message);
+                chatContainer.AddOrUpdateMessage(message, true);
             }
         });
     }
@@ -111,6 +113,15 @@ public partial class MessengerScreen(APIProvider api, InstanceObserver instanceO
         webSocketDispatcher.Register<WsDmChannelClosed>("dm_channel_closed", dmChannelClosed);
         webSocketDispatcher.Register<WsChannelAck>("channel_ack", channelAck);
         webSocketDispatcher.Register<WsUserUpdated>("user_updated", updateUser);
+        webSocketDispatcher.Register<WsChatMessageCreated>("dm_message_created", messageCreated);
+    }
+
+    private void messageCreated(WsChatMessageCreated response)
+    {
+        Schedule(() =>
+        {
+            chatContainer.AddOrUpdateMessage(response.Message);
+        });
     }
 
     private void updateUser(WsUserUpdated user)

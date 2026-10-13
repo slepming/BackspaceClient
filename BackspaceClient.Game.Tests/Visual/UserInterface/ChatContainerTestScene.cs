@@ -1,5 +1,3 @@
-using System;
-using System.Linq;
 using BackspaceClient.Game.Graphics.UserInterface.Containers;
 using BackspaceClient.Game.Tests.Visual.Templates;
 using NUnit.Framework;
@@ -20,7 +18,7 @@ public partial class ChatContainerTestScene : DataTestScene
         Schedule(() =>
         {
             templateMessageId = RandomString(15);
-            Add(chat = new()
+            Add(chat = new(null)
             {
                 RelativeSizeAxes = Axes.Both
             });
