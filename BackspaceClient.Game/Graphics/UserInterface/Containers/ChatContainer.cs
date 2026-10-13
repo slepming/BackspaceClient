@@ -8,6 +8,7 @@ using osu.Framework.Graphics;
 using osu.Framework.Graphics.Containers;
 using osu.Framework.Graphics.Shapes;
 using osu.Framework.Graphics.UserInterface;
+using osu.Framework.Logging;
 
 namespace BackspaceClient.Game.Graphics.UserInterface.Containers;
 
@@ -22,6 +23,8 @@ public partial class ChatContainer : Container
     private FillFlowContainer messagesFlow;
     private Drawable bottomSpacer;
     private TextBox messageTextBox;
+
+    private bool scrollToEndPending = false;
 
     private Bindable<string> dmChannelId { get; } = new();
 
@@ -74,10 +77,16 @@ public partial class ChatContainer : Container
                     {
                         RelativeSizeAxes = Axes.Both,
                         Size = new(1.0f, .07f),
+                        Alpha = 0f,
+                        ReleaseFocusOnCommit = false
                     }
                 ]
             }
         ];
+
+        dmChannelId.BindValueChanged(v => {
+                messageTextBox.Alpha = v.NewValue != null ? 1f : 0f;
+        });
 
         messageTextBox.OnCommit += (textBox, newValue) =>
         {
@@ -89,6 +98,19 @@ public partial class ChatContainer : Container
             InstanceObserver.PerformAPIRequest(request);
             textBox.Current.Value = "";
         };
+    }
+
+    protected override void UpdateAfterChildren()
+    {
+        base.UpdateAfterChildren();
+
+        // If I will use scrollBottom from Schedule it will not scroll to end
+        // Or when is near bottom then Schedule will be executed before scroll container will be updated
+        if (scrollToEndPending)
+        {
+            scrollToEndPending = false;
+            scrollToBottom();
+        }
     }
 
     /// <summary>
@@ -107,9 +129,9 @@ public partial class ChatContainer : Container
         messagesFlow.Add(view);
 
         if (isNearBottom())
-            Schedule(scrollToBottom);
-        if (slideToEnd)
-            Schedule(scrollToBottom);
+            scrollToEndPending = true;
+        else if (slideToEnd)
+            scrollToEndPending = true;
     }
 
 
@@ -147,6 +169,7 @@ public partial class ChatContainer : Container
 
     private void scrollToBottom()
     {
+        Logger.Log("invoked");
         scrollContainer.ScrollToEnd();
     }
 }

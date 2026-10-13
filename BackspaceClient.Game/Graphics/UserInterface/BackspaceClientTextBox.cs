@@ -12,12 +12,12 @@ public partial class BackspaceClientTextBox : BasicTextBox
 {
     private static readonly Colour4 surface_idle = Colour4.FromHex("13131a");
     private static readonly Colour4 surface_focused = Colour4.FromHex("181822");
-    private static readonly Colour4 border_idle = Colour4.White.Opacity(0.08f);
+    private static readonly Colour4 border_idle = Colour4.White;
     private static readonly Colour4 border_focused = Colour4.FromHex("7c6cf6");
     private static readonly Colour4 text_colour = Colour4.FromHex("e6e6eb");
     private static readonly Colour4 placeholder_text_colour = Colour4.FromHex("a6a6ab");
 
-    protected override Color4 SelectionColour => border_focused.Darken(.5f);
+    protected override Color4 SelectionColour => border_idle.Darken(.3f);
 
     protected override float CaretWidth => 4f;
 
@@ -36,6 +36,7 @@ public partial class BackspaceClientTextBox : BasicTextBox
         BackgroundUnfocused = surface_idle;
         BackgroundFocused = surface_focused;
         BackgroundCommit = surface_focused;
+        BorderColour = border_idle;
     }
 
     [BackgroundDependencyLoader]
