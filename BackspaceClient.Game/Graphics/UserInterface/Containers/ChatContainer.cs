@@ -152,7 +152,7 @@ public partial class ChatContainer : Container
     {
         if (messagesById.TryGetValue(data.Id, out var existing))
         {
-            existing.Model.UpdateFrom(data);
+            existing.Model.UpdateFromResponse(data);
             return;
         }
 
@@ -178,9 +178,9 @@ public partial class ChatContainer : Container
     /// <summary>
     /// Delete or mark message as deleted
     /// </summary>
-    public void RemoveMessage(string messageId, bool mark = false)
+    public void RemoveMessage(string messageId, bool silent = false)
     {
-        if (mark)
+        if (!silent)
         {
             if (messagesById.TryGetValue(messageId, out var markMessage))
                 markMessage.Model.MarkDeleted();

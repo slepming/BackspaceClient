@@ -192,6 +192,7 @@ public partial class UserCardContainer : Container, IFilterable
             {
                 case "offline": statusIndicator.Colour = Colour4.DarkGray; break;
                 case "online": statusIndicator.Colour = Colour4.LimeGreen; break;
+                case "dnd": statusIndicator.Colour = Colour4.DarkRed; break;
                 default: statusIndicator.Colour = Colour4.DarkGray; break;
             }
         });

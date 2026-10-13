@@ -16,6 +16,7 @@ public class MessageModel
     public Bindable<string?> Content { get; } = new();
     public Bindable<long?> EditedAt { get; } = new();
     public Bindable<string?> ReplyToId { get; } = new();
+    public Bindable<DmChatMessageResponse?> ReplyTo { get; } = new();
     public BindableBool IsDeleted { get; } = new();
     public BindableList<Reaction> Reactions { get; private set; } = new();
     public BindableList<Embed> Embeds { get; private set; } = new();
@@ -38,6 +39,7 @@ public class MessageModel
         Content.Value = msg.Content;
         EditedAt.Value = msg.EditedAt;
         ReplyToId.Value = msg.ReplyToId;
+        ReplyTo.Value = msg.ReplyTo;
         Reactions.Clear();
         Reactions.AddRange(msg.Reactions ?? new List<Reaction>());
         Embeds.Clear();
@@ -68,18 +70,5 @@ public class MessageModel
     public void MarkDeleted()
     {
         IsDeleted.Value = true;
-    }
-
-    public void UpdateFrom(DmChatMessageResponse msg)
-    {
-        Content.Value = msg.Content;
-        EditedAt.Value = msg.EditedAt;
-        ReplyToId.Value = msg.ReplyToId;
-        Reactions.Clear();
-        Reactions.AddRange(msg.Reactions ?? new List<Reaction>());
-        Embeds.Clear();
-        Embeds.AddRange(msg.Embeds ?? new List<Embed>());
-        Attachments.Clear();
-        Attachments.AddRange(msg.Attachments ?? new List<Attachment>());
     }
 }
