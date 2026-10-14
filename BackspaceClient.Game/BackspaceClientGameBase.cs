@@ -1,7 +1,9 @@
+using System.Linq;
 using BackspaceClient.Game.Configuration;
 using BackspaceClient.Game.Graphics.UserInterface.Containers.Cursor;
 using BackspaceClient.Resources;
 using osu.Framework.Allocation;
+using osu.Framework.Configuration;
 using osu.Framework.Graphics;
 using osu.Framework.Graphics.Containers;
 using osu.Framework.IO.Stores;
@@ -33,7 +35,7 @@ namespace BackspaceClient.Game
         }
 
         [BackgroundDependencyLoader]
-        private void load()
+        private void load(FrameworkConfigManager configManager)
         {
             Resources.AddStore(new DllResourceStore(typeof(BackspaceClientResources).Assembly));
             InstanceConfiguration = new(Storage);
@@ -52,7 +54,8 @@ namespace BackspaceClient.Game
                 }
             });
 
-            InitializeFonts();
+            InitialiseFonts();
+            InitialiseFrameworkConfig(configManager);
         }
 
         public override void SetHost(GameHost host)
@@ -64,7 +67,13 @@ namespace BackspaceClient.Game
 
         protected override IReadOnlyDependencyContainer CreateChildDependencies(IReadOnlyDependencyContainer parent) => dependencies = new DependencyContainer(base.CreateChildDependencies(parent));
 
-        protected void InitializeFonts()
+        protected void InitialiseFrameworkConfig(FrameworkConfigManager configManager)
+        {
+            configManager.SetValue(FrameworkSetting.ExecutionMode, ExecutionMode.SingleThread);
+            configManager.SetValue(FrameworkSetting.FrameSync, FrameSync.VSync);
+        }
+
+        protected void InitialiseFonts()
         {
             AddFont(Resources, @"Fonts/adwaita/adwaita");
             AddFont(Resources, @"Fonts/agave/agave_bold");
