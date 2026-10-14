@@ -84,7 +84,7 @@ public partial class ChatContainerTestScene : DataTestScene
             templateMessage.Id = templateMessageId;
             chat.AddOrUpdateMessage(templateMessage);
         });
-        AddStep("Silent message", () => {
+        AddStep("Silent delete message", () => {
                 chat.RemoveMessage(templateMessageId, true);
         });
     }

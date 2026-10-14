@@ -11,7 +11,6 @@ using osu.Framework.Graphics;
 using osu.Framework.Graphics.Containers;
 using osu.Framework.Graphics.Shapes;
 using osu.Framework.Graphics.UserInterface;
-using osu.Framework.Logging;
 using osu.Framework.Testing;
 using osuTK;
 
@@ -90,6 +89,7 @@ public partial class ChatContainer : Container
                         textBoxContainer = new Container
                         {
                             RelativeSizeAxes = Axes.X,
+                            Width = 0.8f,
                             AutoSizeAxes = Axes.Y,
                             Padding = new MarginPadding { Horizontal = 20, Bottom = 20, Top = 5 },
                             Alpha = 0f,
