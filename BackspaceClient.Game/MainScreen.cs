@@ -101,6 +101,7 @@ namespace BackspaceClient.Game
                                     FontSize = 25,
                                     PlaceholderText = "Example https://backspaced.org",
                                     TabbableContentContainer = this,
+                                    CommitOnFocusLost = true,
                                     Text = instanceConfig.Get<string>(InstanceSettings.Home)
                                 }),
                                 errorText = new SpriteText

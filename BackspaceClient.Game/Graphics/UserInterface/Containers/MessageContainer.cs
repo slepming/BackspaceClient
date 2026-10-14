@@ -1,6 +1,7 @@
 using BackspaceClient.Game.Online.API.Models;
 using BackspaceClient.Game.Online.API.Response;
 using osu.Framework.Allocation;
+using osu.Framework.Bindables;
 using osu.Framework.Graphics;
 using osu.Framework.Graphics.Containers;
 using osu.Framework.Graphics.Shapes;
@@ -16,7 +17,9 @@ public partial class MessageView : Container
     private static readonly Colour4 text_deleted = Colour4.White.Opacity(0.4f);
 
     public MessageModel Model { get; }
-    public bool IsConsecutive { get; }
+    public BindableBool IsConsecutive { get; } = new();
+
+    public bool IsCanBeConsecutive => Model.Attachments.Count == 0 || Model.ReplyTo.Value == null;
 
     private SpriteText usernameText;
     private BackspaceMarkdownContainer contentText;
@@ -28,10 +31,9 @@ public partial class MessageView : Container
 
     private Box background;
 
-    public MessageView(DmChatMessageResponse data, bool isConsecutive = false)
+    public MessageView(DmChatMessageResponse data)
     {
         Model = new MessageModel(data);
-        IsConsecutive = isConsecutive;
 
         Masking = true;
         RelativeSizeAxes = Axes.X;
@@ -49,7 +51,7 @@ public partial class MessageView : Container
             RelativeSizeAxes = Axes.X,
             AutoSizeAxes = Axes.Y,
             Direction = FillDirection.Vertical,
-            Padding = new MarginPadding { Horizontal = 16, Top = IsConsecutive ? 8 : 12, Bottom = 10 },
+            Padding = new MarginPadding { Horizontal = 16, Top = 12, Bottom = 10 },
             Spacing = new Vector2(0, 4)
         };
 
@@ -84,32 +86,29 @@ public partial class MessageView : Container
             ]
         });
 
-        if (!IsConsecutive)
+        innerFlow.Add(new FillFlowContainer
         {
-            innerFlow.Add(new FillFlowContainer
-            {
-                AutoSizeAxes = Axes.Both,
-                Direction = FillDirection.Horizontal,
-                Spacing = new Vector2(8, 0),
-                Margin = new MarginPadding { Bottom = 2 },
-                Children =
-                [
-                    usernameText = new SpriteText
-                    {
-                        Font = new FontUsage(family: BackspaceFonts.Inter, size: 15, weight: "Bold"),
-                        Colour = Colour4.White,
-                    },
-                    editedMarker = new SpriteText
-                    {
-                        Font = new FontUsage(size: 12),
-                        Colour = Colour4.White.Opacity(0.3f),
-                        Text = "(edited)",
-                        Alpha = 0,
-                        Margin = new MarginPadding { Top = 2 }
-                    },
-                ]
-            });
-        }
+            AutoSizeAxes = Axes.Both,
+            Direction = FillDirection.Horizontal,
+            Spacing = new Vector2(8, 0),
+            Margin = new MarginPadding { Bottom = 2 },
+            Children =
+            [
+                usernameText = new SpriteText
+                {
+                    Font = new FontUsage(family: BackspaceFonts.Inter, size: 15, weight: "Bold"),
+                    Colour = Colour4.White,
+                },
+                editedMarker = new SpriteText
+                {
+                    Font = new FontUsage(size: 12),
+                    Colour = Colour4.White.Opacity(0.3f),
+                    Text = "(edited)",
+                    Alpha = 0,
+                    Margin = new MarginPadding { Top = 2 }
+                },
+            ]
+        });
 
         innerFlow.Add(contentText = new BackspaceMarkdownContainer()
         {
@@ -138,16 +137,13 @@ public partial class MessageView : Container
         Model.ReplyToId.BindValueChanged(rid => SetReply(rid.NewValue, ""), true);
         Model.ReplyTo.BindValueChanged(rid => SetReply(rid.NewValue), true);
 
-        if (!IsConsecutive)
+        Model.EditedAt.BindValueChanged(e =>
         {
-            Model.EditedAt.BindValueChanged(e =>
-            {
-                if (!Model.IsDeleted.Value)
-                    editedMarker.Alpha = e.NewValue.HasValue ? 1 : 0;
-            }, true);
+            if (!Model.IsDeleted.Value)
+                editedMarker.Alpha = e.NewValue.HasValue ? 1 : 0;
+        }, true);
 
-            usernameText.Text = Model.User.Username;
-        }
+        usernameText.Text = Model.User.Username;
     }
 
     public void SetReply(string username, string messageSnippet)
@@ -183,16 +179,14 @@ public partial class MessageView : Container
             contentText.Text = "**This message was deleted**";
             contentText.Colour = text_deleted;
 
-            if (!IsConsecutive)
-                editedMarker.Alpha = 0;
+            editedMarker.Alpha = 0;
         }
         else
         {
             contentText.Text = Model.Content.Value ?? string.Empty;
             contentText.Colour = text_normal;
 
-            if (!IsConsecutive)
-                editedMarker.Alpha = Model.EditedAt.Value.HasValue ? 1 : 0;
+            editedMarker.Alpha = Model.EditedAt.Value.HasValue ? 1 : 0;
         }
     }
 }

@@ -29,7 +29,6 @@ public partial class ChatContainer : Container
     private Container textBoxContainer;
 
     private bool scrollToEndPending = false;
-    private string lastWriter;
     public string DmChannelId
     {
         get => dmChannelId.Value;
@@ -108,7 +107,6 @@ public partial class ChatContainer : Container
         dmChannelId.BindValueChanged(v =>
         {
             textBoxContainer.FadeTo(v.NewValue != null ? 1f : 0f, 200, Easing.OutQuint);
-            lastWriter = null;
         });
 
         messageTextBox.OnCommit += (textBox, newValue) =>
@@ -156,19 +154,22 @@ public partial class ChatContainer : Container
             return;
         }
 
-        if (lastWriter != null
-            && string.Equals(data.User.CanonicalKey(), lastWriter)
-            && (data.Attachments is null || data.Attachments.Count == 0)
-            && data.ReplyTo is null)
+        if (messagesFlow.Count > 0)
         {
-            messagesFlow.ChildrenOfType<MessageView>().Last().Model.Content.Value += "\n" + data.Content;
-            goto scroll;
+            var message = messagesFlow.ChildrenOfType<MessageView>().Last();
+
+            if (message != null
+                && string.Equals(data.User.CanonicalKey(), message.Model.User.CanonicalKey())
+                && message.IsCanBeConsecutive)
+            {
+                message.Model.Content.Value += "\n" + data.Content;
+                goto scroll;
+            }
         }
 
         var view = new MessageView(data);
         messagesById[data.Id] = view;
         messagesFlow.Add(view);
-        lastWriter = data.User.CanonicalKey();
 
         scroll:
             if (isNearBottom())
