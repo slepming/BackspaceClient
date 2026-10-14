@@ -98,7 +98,8 @@ namespace BackspaceClient.Game
                                 {
                                     RelativeSizeAxes = Axes.X,
                                     Height = 42,
-                                    PlaceholderText = "Default instance url(with protocol)",
+                                    FontSize = 25,
+                                    PlaceholderText = "Example https://backspaced.org",
                                     TabbableContentContainer = this,
                                     Text = instanceConfig.Get<string>(InstanceSettings.Home)
                                 }),
@@ -132,11 +133,7 @@ namespace BackspaceClient.Game
                                         }
                                         catch (Exception e)
                                         {
-                                            shakeContainer.Shake();
-                                            errorText.Text = e.Message;
-                                            errorText.ClearTransforms();
-                                            errorText.FadeIn(200, Easing.OutQuint).Then().Delay(3500).FadeOut(400, Easing.InQuint);
-                                            Logger.Error(e, "Login runtime error");
+                                            showErrorMessage(e);
                                         }
                                     }
                                 },
@@ -187,15 +184,34 @@ namespace BackspaceClient.Game
             {
                 lock(instanceObserver)
                 {
-                    var provider = new APIProvider(username, password, instanceObserver.Current.Value);
-                    if (!provider.HasKey)
-                        throw new ArgumentNullException("Provider don't contain api key(Might be server is unavailable)");
-
-                    Schedule(() =>
+                    try
                     {
-                        stack?.Push(new MessengerScreen(provider, instanceObserver));
-                    });
+                        var provider = new APIProvider(username, password, instanceObserver.Current.Value);
+                        if (!provider.HasKey)
+                            throw new ArgumentNullException("Provider don't contain api key(Might be server is unavailable)");
+
+                        Schedule(() =>
+                        {
+                            stack?.Push(new MessengerScreen(provider, instanceObserver));
+                        });
+                    }
+                    catch(Exception e)
+                    {
+                        showErrorMessage(e);
+                    }
                 }
+            });
+        }
+
+        private void showErrorMessage(Exception e) {
+            Schedule(() =>
+            {
+                shakeContainer.Shake();
+                errorText.Text = e.Message;
+                errorText.ClearTransforms();
+                errorText.FadeIn(200, Easing.OutQuint).Then().Delay(3500).FadeOut(400, Easing.InQuint);
+                Logger.Error(e, "Login runtime error");
+
             });
         }
     }

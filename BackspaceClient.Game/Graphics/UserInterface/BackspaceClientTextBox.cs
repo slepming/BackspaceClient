@@ -48,7 +48,7 @@ public partial class BackspaceClientTextBox : BasicTextBox
     protected override Drawable GetDrawableCharacter(char c) => new FallingDownContainer
     {
         AutoSizeAxes = Axes.Both,
-        Child = new SpriteText { Text = c.ToString(), Font = new FontUsage(family: BackspaceFonts.Inter, size: 35f), Colour = text_colour, }
+        Child = new SpriteText { Text = c.ToString(), Font = new FontUsage(family: BackspaceFonts.Inter, size: FontSize), Colour = text_colour, }
     };
 
     protected override SpriteText CreatePlaceholder() => new FadingPlaceholderText
