@@ -156,7 +156,10 @@ public partial class ChatContainer : Container
             return;
         }
 
-        if (lastWriter != null && string.Equals(data.User.CanonicalKey(), lastWriter))
+        if (lastWriter != null
+            && string.Equals(data.User.CanonicalKey(), lastWriter)
+            && (data.Attachments is null || data.Attachments.Count == 0)
+            && data.ReplyTo is null)
         {
             messagesFlow.ChildrenOfType<MessageView>().Last().Model.Content.Value += "\n" + data.Content;
             goto scroll;
