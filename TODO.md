@@ -20,6 +20,10 @@
     - [ ] List messages on scroll
  - [X] Enter messages
 
+## Messages manipulations UI
+ - [ ] Delete message
+ - [ ] Reply message
+
 ## Instance movement
  - [ ] Instances list in MessengerScreen
  - [ ] Registration between instances

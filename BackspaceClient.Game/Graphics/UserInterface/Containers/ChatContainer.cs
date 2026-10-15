@@ -77,6 +77,7 @@ public partial class ChatContainer : Container
                             Child = messagesFlow = new FillFlowContainer
                             {
                                 RelativeSizeAxes = Axes.X,
+                                Width = 0.8f,
                                 AutoSizeAxes = Axes.Y,
                                 Direction = FillDirection.Vertical,
                                 Padding = new MarginPadding { Vertical = 15 },
