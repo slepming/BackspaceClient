@@ -43,6 +43,11 @@ public class DmChatMessageResponse
 
     [JsonProperty("replyTo")]
     public DmChatMessageResponse? ReplyTo { get; set; }
+
+    public override string ToString()
+    {
+        return JsonConvert.SerializeObject(this, Formatting.Indented);
+    }
 }
 
 public class Attachment

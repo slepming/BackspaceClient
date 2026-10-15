@@ -12,7 +12,7 @@ public class InstanceObserver
     /// <summary>
     /// Current instance URL
     /// </summary>
-    public Bindable<string> Current { get; } = new("http://localhost:3005");
+    public Bindable<string> Current { get; } = new("http://localhost:3005"); // TODO: May I set modificator's variable to static?
 
     public void UpdateInstance(string url) => Current.Value = url;
 

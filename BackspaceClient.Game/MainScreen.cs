@@ -183,7 +183,7 @@ namespace BackspaceClient.Game
 
             Task.Run(() =>
             {
-                lock(instanceObserver)
+                lock (instanceObserver)
                 {
                     try
                     {
@@ -196,7 +196,7 @@ namespace BackspaceClient.Game
                             stack?.Push(new MessengerScreen(provider, instanceObserver));
                         });
                     }
-                    catch(Exception e)
+                    catch (Exception e)
                     {
                         showErrorMessage(e);
                     }
@@ -204,7 +204,8 @@ namespace BackspaceClient.Game
             });
         }
 
-        private void showErrorMessage(Exception e) {
+        private void showErrorMessage(Exception e)
+        {
             Schedule(() =>
             {
                 shakeContainer.Shake();

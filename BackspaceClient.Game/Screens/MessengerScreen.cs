@@ -63,12 +63,14 @@ public partial class MessengerScreen(APIProvider api, InstanceObserver instanceO
 
             Task.Run(() =>
             {
-                lock (instanceObserver) {
+                lock (instanceObserver)
+                {
                     var messageRequest = new GetMessagesRequest(c.NewValue);
                     messageRequest.AttachApi(provider);
                     instanceObserver.PerformAPIRequest(messageRequest);
 
-                    Schedule(() => {
+                    Schedule(() =>
+                    {
                         chatContainer.ClearMessages();
 
                         foreach (var message in messageRequest.Response)

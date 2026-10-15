@@ -1,3 +1,6 @@
+using System.Collections;
+using System.Collections.Generic;
+using System.Linq;
 using BackspaceClient.Game.Online.API.Models;
 using BackspaceClient.Game.Online.API.Response;
 using osu.Framework.Allocation;
@@ -6,12 +9,15 @@ using osu.Framework.Graphics;
 using osu.Framework.Graphics.Containers;
 using osu.Framework.Graphics.Shapes;
 using osu.Framework.Graphics.Sprites;
+using osu.Framework.Logging;
 using osuTK;
 
 namespace BackspaceClient.Game.Graphics.UserInterface.Containers;
 
 public partial class MessageView : Container
 {
+    private static readonly string[] supported_image_mimetypes = ["image/png", "image/webp", "image/jpeg"];
+
     private static readonly Colour4 surface_message = Colour4.FromHex("23232a");
     private static readonly Colour4 text_normal = Colour4.FromHex("E0E0E8");
     private static readonly Colour4 text_deleted = Colour4.White.Opacity(0.4f);
@@ -22,18 +28,23 @@ public partial class MessageView : Container
     public bool IsCanBeConsecutive => Model.Attachments.Count == 0 || Model.ReplyTo.Value == null;
 
     private SpriteText usernameText;
-    private BackspaceMarkdownContainer contentText;
     private SpriteText editedMarker;
     private SpriteText replyUsernameText;
     private SpriteText replyContentText;
 
+    private BackspaceMarkdownContainer contentText;
+
     private FillFlowContainer replyContainer;
+    private FillFlowContainer attachmentsContainer;
 
     private Box background;
 
-    public MessageView(DmChatMessageResponse data)
+    private readonly string instanceUrl;
+
+    public MessageView(DmChatMessageResponse data, string instanceUrl)
     {
         Model = new MessageModel(data);
+        this.instanceUrl = instanceUrl;
 
         Masking = true;
         RelativeSizeAxes = Axes.X;
@@ -117,6 +128,15 @@ public partial class MessageView : Container
             Colour = text_normal,
         });
 
+        innerFlow.Add(attachmentsContainer = new()
+        {
+            RelativeSizeAxes = Axes.X,
+            AutoSizeAxes = Axes.Y,
+            Direction = FillDirection.Horizontal,
+            Spacing = new(5f),
+            Margin = new() { Bottom = 2 },
+        });
+
         InternalChildren =
         [
             background = new Box
@@ -136,7 +156,7 @@ public partial class MessageView : Container
         Model.IsDeleted.BindValueChanged(d => updateDeleted(d.NewValue), true);
         Model.ReplyToId.BindValueChanged(rid => SetReply(rid.NewValue, ""), true);
         Model.ReplyTo.BindValueChanged(rid => SetReply(rid.NewValue), true);
-
+        Model.Attachments.BindCollectionChanged((attachments, eventArgs) => setAttachments(eventArgs.NewItems), true);
         Model.EditedAt.BindValueChanged(e =>
         {
             if (!Model.IsDeleted.Value)
@@ -162,6 +182,29 @@ public partial class MessageView : Container
         replyUsernameText.Text = replyData.User?.Username ?? "Unknown";
         replyContentText.Text = replyData.Content ?? string.Empty;
         replyContainer.Show();
+    }
+
+    private void setAttachment(Attachment attachment)
+    {
+        switch (attachment.Mimetype)
+        {
+            // In the future I have to handle webp manually
+            case var _ when supported_image_mimetypes.Contains(attachment.Mimetype):
+            {
+                attachmentsContainer.Add(new DelayedLoadUnloadWrapper(() => new ImageMimetypeSprite($"{instanceUrl}/api/uploads/{attachment.Filename}")) {  });
+
+                break;
+            }
+        }
+    }
+
+    private void setAttachments(IList attachments)
+    {
+        if (attachments.Count <= 0)
+            return;
+
+        foreach (Attachment attachment in attachments)
+            setAttachment(attachment);
     }
 
     private void updateContent(string content)

@@ -1,5 +1,4 @@
 #nullable enable
-using System.Collections.Generic;
 using System.Linq;
 using BackspaceClient.Game.Online.API.Response;
 using osu.Framework.Bindables;
@@ -41,11 +40,11 @@ public class MessageModel
         ReplyToId.Value = msg.ReplyToId;
         ReplyTo.Value = msg.ReplyTo;
         Reactions.Clear();
-        Reactions.AddRange(msg.Reactions ?? new List<Reaction>());
+        Reactions.AddRange(msg.Reactions ?? []);
         Embeds.Clear();
-        Embeds.AddRange(msg.Embeds ?? new List<Embed>());
+        Embeds.AddRange(msg.Embeds ?? []);
         Attachments.Clear();
-        Attachments.AddRange(msg.Attachments ?? new List<Attachment>());
+        Attachments.AddRange(msg.Attachments ?? []);
     }
 
     public void AddReaction(Reaction reaction)
@@ -57,14 +56,14 @@ public class MessageModel
             return;
 
         updated.Add(reaction);
-        Reactions = new(updated);
+        Reactions = [.. updated];
     }
 
     public void RemoveReaction(string userId, string emoji)
     {
         var updated = Reactions.ToList();
         updated.RemoveAll(r => r.User.Id == userId && r.Emoji == emoji);
-        Reactions = new(updated);
+        Reactions = [.. updated];
     }
 
     public void MarkDeleted()

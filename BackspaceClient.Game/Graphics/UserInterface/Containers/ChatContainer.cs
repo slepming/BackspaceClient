@@ -114,7 +114,7 @@ public partial class ChatContainer : Container
         {
             Task.Run(() =>
             {
-                lock(InstanceObserver)
+                lock (InstanceObserver)
                 {
                     var request = new SendMessageReqeust(DmChannelId)
                     {
@@ -168,15 +168,15 @@ public partial class ChatContainer : Container
             }
         }
 
-        var view = new MessageView(data);
+        var view = new MessageView(data, InstanceObserver.Current.Value);
         messagesById[data.Id] = view;
         messagesFlow.Add(view);
 
-        scroll:
-            if (isNearBottom())
-                scrollToEndPending = true;
-            else if (slideToEnd)
-                scrollToEndPending = true;
+    scroll:
+        if (isNearBottom())
+            scrollToEndPending = true;
+        else if (slideToEnd)
+            scrollToEndPending = true;
     }
 
 
