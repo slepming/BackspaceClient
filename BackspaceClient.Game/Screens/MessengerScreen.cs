@@ -22,7 +22,6 @@ public partial class MessengerScreen(APIProvider api, InstanceObserver instanceO
 {
     // Network
     private APIProvider provider = api;
-    private WebSocketClient webSocketClient;
     private WsDispatcher webSocketDispatcher = new();
 
     // Design
@@ -35,7 +34,7 @@ public partial class MessengerScreen(APIProvider api, InstanceObserver instanceO
     [BackgroundDependencyLoader]
     private void load()
     {
-        webSocketClient = new(instanceObserver.Current.Value);
+        instanceObserver.StartWebSocket();
 
         AddInternal(new FillFlowContainer()
         {
@@ -86,11 +85,8 @@ public partial class MessengerScreen(APIProvider api, InstanceObserver instanceO
     protected override void LoadComplete()
     {
         base.LoadComplete();
-        webSocketClient.MessageReceived += m =>
-        {
-            webSocketDispatcher.Dispatch(m);
-        };
-        webSocketClient.Closed += () =>
+        instanceObserver.WebSocketClient.MessageReceived += webSocketDispatcher.Dispatch;
+        instanceObserver.WebSocketClient.Closed += () =>
         {
             Logger.Log("Closed");
             Schedule(() =>
@@ -105,8 +101,8 @@ public partial class MessengerScreen(APIProvider api, InstanceObserver instanceO
         {
             try
             {
-                await webSocketClient.Start();
-                await webSocketClient.SendAsync(JsonConvert.SerializeObject(new AuthMessage() { Token = provider.AccessKey }));
+                await instanceObserver.WebSocketClient.Start();
+                await instanceObserver.WebSocketClient.SendAsync(JsonConvert.SerializeObject(new AuthMessage() { Token = provider.AccessKey }));
             }
             catch (Exception e)
             {
@@ -123,6 +119,19 @@ public partial class MessengerScreen(APIProvider api, InstanceObserver instanceO
         webSocketDispatcher.Register<WsChannelAck>("channel_ack", channelAck);
         webSocketDispatcher.Register<WsUserUpdated>("user_updated", updateUser);
         webSocketDispatcher.Register<WsChatMessageCreated>("dm_message_created", messageCreated);
+        webSocketDispatcher.Register<WsChannelUnreadCount>("channel_unread_count", channelUnreadCountUpdate);
+    }
+
+    private void channelUnreadCountUpdate(WsChannelUnreadCount c)
+    {
+        Schedule(() =>
+        {
+            foreach(var kv in c.Counts)
+            {
+                if (sideBar.Channels.TryGetValue(kv.Key, out var userCard))
+                    userCard.UnreadMessagesCount.Value = kv.Value;
+            }
+        });
     }
 
     private void messageCreated(WsChatMessageCreated response)
@@ -177,13 +186,8 @@ public partial class MessengerScreen(APIProvider api, InstanceObserver instanceO
         {
             foreach (var channel in ready.DmChannels)
             {
-                sideBar.AddOrUpdateChannel(channel, instance: instanceObserver.Current.Value, ready.User);
+                sideBar.AddOrUpdateChannel(channel, instance: instanceObserver.Current.Value, ready.User, ready.UnreadCounts);
             }
         });
-    }
-
-    protected override void Dispose(bool k)
-    {
-        webSocketClient.Dispose();
     }
 }

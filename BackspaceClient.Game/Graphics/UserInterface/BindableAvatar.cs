@@ -36,7 +36,6 @@ public partial class BindableAvatar(Bindable<string> avatarUrl, Bindable<string>
 
             Logger.Log(v.NewValue);
             circleAvatar.Colour = ColourParsing.Parse(v.NewValue);
-            Logger.Log(circleAvatar.Colour.ToString());
         }, true);
     }
 }

@@ -146,7 +146,7 @@ public partial class MessengerSideBar : Container
     /// <summary>
     /// Add user into side bar messages(aka dm channels)
     /// </summary>
-    public void AddOrUpdateChannel(DmChannel data, string instance, User client = null)
+    public void AddOrUpdateChannel(DmChannel data, string instance, User client = null, IDictionary<string, int> unreadCount = null)
     {
         var key = data.Id;
         if (string.IsNullOrEmpty(data.Id)) throw new ArgumentNullException("Channel id equals null");
@@ -186,6 +186,10 @@ public partial class MessengerSideBar : Container
         card.AvatarUrl.Value = user.Avatar;
         card.Status.Value = user.Status;
         card.AvatarColor.Value = user.AvatarColor;
+        if (unreadCount != null)
+            if (unreadCount.TryGetValue(data.Id, out var count))
+                card.UnreadMessagesCount.Value = count;
+
         card.Show();
     }
 

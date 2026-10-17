@@ -7,4 +7,5 @@ public class ReadyPayload
 {
     [JsonProperty("user")] public User User { get; set; }
     [JsonProperty("dmChannels")] public List<DmChannel> DmChannels;
+    [JsonProperty("unreadCounts")] public Dictionary<string, int> UnreadCounts { get; set; } = [];
 }

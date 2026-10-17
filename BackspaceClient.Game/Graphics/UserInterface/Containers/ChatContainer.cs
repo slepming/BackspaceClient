@@ -5,6 +5,7 @@ using BackspaceClient.Game.Extensions;
 using BackspaceClient.Game.Online.API;
 using BackspaceClient.Game.Online.API.Request;
 using BackspaceClient.Game.Online.API.Response;
+using Newtonsoft.Json;
 using osu.Framework.Allocation;
 using osu.Framework.Bindables;
 using osu.Framework.Graphics;
@@ -120,8 +121,14 @@ public partial class ChatContainer : Container
                     {
                         Content = textBox.Current.Value
                     };
+
+                    var channelAck = new { type = "channel_ack", channelId = DmChannelId, messageId = messagesById.Last().Key };
+
                     request.AttachApi(Provider);
+
                     InstanceObserver.PerformAPIRequest(request);
+                    InstanceObserver.WebSocketClient.SendAsync(JsonConvert.SerializeObject(channelAck)).ConfigureAwait(false);
+
                     Schedule(() =>
                     {
                         textBox.Current.Value = "";

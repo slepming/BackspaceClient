@@ -47,6 +47,18 @@ public partial class MessengerSideBarTestScene : BackspaceClientTestScene
                 }, null);
             }
         });
+
+        AddStep("Increment unread message", () =>
+        {
+            foreach(var kv in sideBar.Channels)
+                ++kv.Value.UnreadMessagesCount.Value;
+        });
+
+        AddStep("Decrement unread message", () =>
+        {
+            foreach(var kv in sideBar.Channels)
+                --kv.Value.UnreadMessagesCount.Value;
+        });
     }
 
     public string RandomString(int length)

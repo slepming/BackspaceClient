@@ -9,11 +9,21 @@ using osu.Framework.Graphics.Shapes;
 using osu.Framework.Graphics.Sprites;
 using osu.Framework.Input.Events;
 using osu.Framework.Localisation;
-using osu.Framework.Logging;
 using osuTK;
 
 public partial class UserCardContainer : Container, IFilterable
 {
+    private static readonly Colour4 card_bg_colour = Colour4.White;
+    private static readonly Colour4 unread_card_bg_colour = Colour4.FromHex("#2AECF5");
+    private static readonly Colour4 text_colour = Colour4.White;
+    private static readonly Colour4 status_indicator_base_colour = Colour4.Black;
+    private static readonly Colour4 unread_indicator_bg_colour = new(0.9f, 0.2f, 0.2f, 1.0f);
+
+    private static readonly Colour4 status_offline_colour = Colour4.DarkGray;
+    private static readonly Colour4 status_online_colour = Colour4.LimeGreen;
+    private static readonly Colour4 status_dnd_colour = Colour4.DarkRed;
+    private static readonly Colour4 status_default_colour = Colour4.Purple;
+
     public string Id { get; set; } = string.Empty;
 
     public bool MatchingFilter
@@ -31,15 +41,16 @@ public partial class UserCardContainer : Container, IFilterable
 
     public IEnumerable<LocalisableString> FilterTerms => [Username.Value, DisplayName.Value, LastMessage.Value];
 
-    public Bindable<string> Username = new();
-    public Bindable<string> DisplayName = new();
-    public Bindable<string> AvatarUrl = new();
-    public Bindable<string> Status = new();
-    public Bindable<string> AvatarColor = new();
-    public Bindable<string> LastMessage = new();
-    public Bindable<string> LastMessageTime = new();
-    public BindableBool Selected = new();
-    public readonly BindableBool Enabled = new();
+    public Bindable<string> Username { get; } = new();
+    public Bindable<string> DisplayName { get; } = new();
+    public Bindable<string> AvatarUrl { get; } = new();
+    public Bindable<string> Status { get; } = new();
+    public Bindable<string> AvatarColor { get; } = new();
+    public Bindable<string> LastMessage { get; } = new();
+    public Bindable<string> LastMessageTime { get; } = new();
+    public BindableBool Selected { get; } = new();
+    public BindableBool Enabled { get; } = new();
+    public BindableInt UnreadMessagesCount { get; } = new(0);
 
     public Action<string, BindableBool> Action
     {
@@ -53,10 +64,16 @@ public partial class UserCardContainer : Container, IFilterable
 
     private Box backgroundBox;
     private Box accentBar;
+    private Box unreadIndicatorBackground;
+
+    private Circle statusIndicator;
+
     private SpriteText usernameText;
     private SpriteText timestampText;
     private SpriteText previewText;
-    private Circle statusIndicator;
+    private SpriteText unreadCountText;
+
+    private CircularContainer unreadIndicatorContainer;
 
     private readonly string instanceUrl;
 
@@ -87,7 +104,7 @@ public partial class UserCardContainer : Container, IFilterable
                     backgroundBox = new Box
                     {
                         RelativeSizeAxes = Axes.Both,
-                        Colour = Colour4.White,
+                        Colour = card_bg_colour,
                         Alpha = 0,
                     },
                     accentBar = new Box
@@ -95,7 +112,7 @@ public partial class UserCardContainer : Container, IFilterable
                         Anchor = Anchor.CentreLeft,
                         Origin = Anchor.CentreLeft,
                         Size = new Vector2(3, 24),
-                        Colour = Colour4.White,
+                        Colour = card_bg_colour,
                         Alpha = 0,
                     },
                     new Container
@@ -124,8 +141,8 @@ public partial class UserCardContainer : Container, IFilterable
                                         Anchor = Anchor.BottomRight,
                                         Origin = Anchor.Centre,
                                         Size = new Vector2(10),
-                                        Colour = Colour4.LimeGreen,
-                                        BorderColour = Colour4.Black,
+                                        Colour = status_indicator_base_colour,
+                                        BorderColour = status_indicator_base_colour,
                                         BorderThickness = 1.5f,
                                         Position = new Vector2(-3, -3),
                                     },
@@ -156,7 +173,7 @@ public partial class UserCardContainer : Container, IFilterable
                                                     RelativeSizeAxes = Axes.X,
                                                     Margin = new MarginPadding { Right = 60 },
                                                     Font = new FontUsage(size: 15, family: BackspaceFonts.Inter),
-                                                    Colour = Colour4.White,
+                                                    Colour = text_colour,
                                                     Truncate = true,
                                                 },
                                                 timestampText = new SpriteText
@@ -164,8 +181,32 @@ public partial class UserCardContainer : Container, IFilterable
                                                     Anchor = Anchor.CentreRight,
                                                     Origin = Anchor.CentreRight,
                                                     Font = new FontUsage(size: 11),
-                                                    Colour = Colour4.White.Opacity(0.45f),
+                                                    Colour = text_colour.Opacity(0.45f),
                                                 },
+                                                unreadIndicatorContainer = new CircularContainer
+                                                {
+                                                    Margin = new() { Right = 10, Left = 60 },
+                                                    Size = new(30f),
+                                                    Anchor = Anchor.CentreRight,
+                                                    Origin = Anchor.CentreRight,
+                                                    Masking = true,
+                                                    Alpha = 0f,
+                                                    Children =
+                                                    [
+                                                        unreadIndicatorBackground = new()
+                                                        {
+                                                            RelativeSizeAxes = Axes.Both,
+                                                            Colour = unread_indicator_bg_colour.Opacity(.5f),
+                                                        },
+                                                        unreadCountText = new()
+                                                        {
+                                                            Font = new(size: 15, family: BackspaceFonts.BigBluePlusNerdFont),
+                                                            Colour = unread_indicator_bg_colour,
+                                                            Anchor = Anchor.Centre,
+                                                            Origin = Anchor.Centre,
+                                                        },
+                                                    ]
+                                                }
                                             ],
                                         },
                                         previewText = new SpriteText
@@ -173,7 +214,7 @@ public partial class UserCardContainer : Container, IFilterable
                                             RelativeSizeAxes = Axes.X,
                                             Padding = new MarginPadding { Top = 2 },
                                             Font = new FontUsage(size: 12),
-                                            Colour = Colour4.White.Opacity(0.45f),
+                                            Colour = text_colour.Opacity(0.45f),
                                             Truncate = true,
                                         },
                                     ],
@@ -187,14 +228,13 @@ public partial class UserCardContainer : Container, IFilterable
 
         Status.BindValueChanged(v =>
         {
-            Logger.Log($"{v.NewValue}");
-            switch (v.NewValue)
+            statusIndicator.Colour = v.NewValue switch
             {
-                case "offline": statusIndicator.Colour = Colour4.DarkGray; break;
-                case "online": statusIndicator.Colour = Colour4.LimeGreen; break;
-                case "dnd": statusIndicator.Colour = Colour4.DarkRed; break;
-                default: statusIndicator.Colour = Colour4.DarkGray; break;
-            }
+                "offline" => status_offline_colour,
+                "online" => status_online_colour,
+                "dnd" => status_dnd_colour,
+                _ => status_default_colour
+            };
         });
     }
 
@@ -204,9 +244,16 @@ public partial class UserCardContainer : Container, IFilterable
 
         Username.BindValueChanged(u => usernameText.Text = u.NewValue, true);
         DisplayName.BindValueChanged(d => usernameText.Text = $"{Username.Value}({d.NewValue})", true);
-        LastMessage.BindValueChanged(m => previewText.Text = m.NewValue, true);
-        LastMessageTime.BindValueChanged(t => timestampText.Text = t.NewValue, true);
+        LastMessage.BindValueChanged(m => previewText.Text = m.NewValue, true); // Now is useless
+        LastMessageTime.BindValueChanged(t => timestampText.Text = t.NewValue, true); // Now is useless
         Selected.BindValueChanged(_ => updateVisualState(), true);
+        UnreadMessagesCount.BindValueChanged(c => {
+                var unreadCount = c.NewValue;
+                if (unreadCount == 0) unreadIndicatorContainer.FadeTo(.0f, 200, Easing.OutQuad);
+                else unreadIndicatorContainer.FadeTo(1f, 200, Easing.OutQuad);
+                unreadCountText.Text = c.NewValue.ToString();
+                updateVisualState();
+        }, true);
 
         updateVisualState();
     }
@@ -233,20 +280,34 @@ public partial class UserCardContainer : Container, IFilterable
 
     private void updateVisualState()
     {
+        bool hasUnread = UnreadMessagesCount.Value > 0;
+        Colour4 targetColour = hasUnread ? unread_card_bg_colour : card_bg_colour;
+
+        float targetBgAlpha = 0f;
+        float targetAccentAlpha = 0f;
+
         if (Selected.Value)
         {
-            backgroundBox.FadeTo(0.10f, 100);
-            accentBar.FadeTo(0.70f, 100);
+            targetBgAlpha = hasUnread ? 0.15f : 0.10f;
+            targetAccentAlpha = 0.70f;
         }
         else if (IsHovered)
         {
-            backgroundBox.FadeTo(0.05f, 100);
-            accentBar.FadeTo(0f, 100);
+            targetBgAlpha = hasUnread ? 0.08f : 0.05f;
+            targetAccentAlpha = 0f;
         }
         else
         {
-            backgroundBox.FadeTo(0f, 100);
-            accentBar.FadeTo(0f, 100);
+            targetBgAlpha = hasUnread ? 0.06f : 0f;
+            targetAccentAlpha = 0f;
         }
+
+        var easing = Easing.OutCubic;
+        var duration = 200f;
+
+        backgroundBox.FadeColour(targetColour, duration, easing);
+        accentBar.FadeColour(targetColour, duration, easing);
+        backgroundBox.FadeTo(targetBgAlpha, duration, easing);
+        accentBar.FadeTo(targetAccentAlpha, duration, easing);
     }
 }
