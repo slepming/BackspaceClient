@@ -49,8 +49,8 @@ public partial class MessageView : Container
         Masking = true;
         RelativeSizeAxes = Axes.X;
         AutoSizeAxes = Axes.Y;
-        AutoSizeDuration = 600f;
-        AutoSizeEasing = Easing.OutElasticHalf;
+        //AutoSizeDuration = 600f;
+        //AutoSizeEasing = Easing.OutElasticHalf;
         CornerRadius = 8f;
     }
 
@@ -191,7 +191,7 @@ public partial class MessageView : Container
             // In the future I have to handle webp manually
             case var _ when supported_image_mimetypes.Contains(attachment.Mimetype):
             {
-                attachmentsContainer.Add(new DelayedLoadUnloadWrapper(() => new ImageMimetypeSprite($"{instanceUrl}/api/uploads/{attachment.Filename}")) {  });
+                if (instanceUrl != null) attachmentsContainer.Add(new DelayedLoadUnloadWrapper(() => new ImageMimetypeSprite($"{instanceUrl}/api/uploads/{attachment.Filename}")) {  });
 
                 break;
             }

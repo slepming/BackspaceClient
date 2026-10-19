@@ -69,8 +69,6 @@ public partial class UserCardContainer : Container, IFilterable
     private Circle statusIndicator;
 
     private SpriteText usernameText;
-    private SpriteText timestampText;
-    private SpriteText previewText;
     private SpriteText unreadCountText;
 
     private CircularContainer unreadIndicatorContainer;
@@ -176,16 +174,9 @@ public partial class UserCardContainer : Container, IFilterable
                                                     Colour = text_colour,
                                                     Truncate = true,
                                                 },
-                                                timestampText = new SpriteText
-                                                {
-                                                    Anchor = Anchor.CentreRight,
-                                                    Origin = Anchor.CentreRight,
-                                                    Font = new FontUsage(size: 11),
-                                                    Colour = text_colour.Opacity(0.45f),
-                                                },
                                                 unreadIndicatorContainer = new CircularContainer
                                                 {
-                                                    Margin = new() { Right = 10, Left = 60 },
+                                                    Margin = new() { Right = 10, Left = 30 },
                                                     Size = new(30f),
                                                     Anchor = Anchor.CentreRight,
                                                     Origin = Anchor.CentreRight,
@@ -208,14 +199,6 @@ public partial class UserCardContainer : Container, IFilterable
                                                     ]
                                                 }
                                             ],
-                                        },
-                                        previewText = new SpriteText
-                                        {
-                                            RelativeSizeAxes = Axes.X,
-                                            Padding = new MarginPadding { Top = 2 },
-                                            Font = new FontUsage(size: 12),
-                                            Colour = text_colour.Opacity(0.45f),
-                                            Truncate = true,
                                         },
                                     ],
                                 },
@@ -244,8 +227,8 @@ public partial class UserCardContainer : Container, IFilterable
 
         Username.BindValueChanged(u => usernameText.Text = u.NewValue, true);
         DisplayName.BindValueChanged(d => usernameText.Text = $"{Username.Value}({d.NewValue})", true);
-        LastMessage.BindValueChanged(m => previewText.Text = m.NewValue, true); // Now is useless
-        LastMessageTime.BindValueChanged(t => timestampText.Text = t.NewValue, true); // Now is useless
+        //LastMessage.BindValueChanged(m => previewText.Text = m.NewValue, true); // Now is useless
+        //LastMessageTime.BindValueChanged(t => timestampText.Text = t.NewValue, true); // Now is useless
         Selected.BindValueChanged(_ => updateVisualState(), true);
         UnreadMessagesCount.BindValueChanged(c => {
                 var unreadCount = c.NewValue;

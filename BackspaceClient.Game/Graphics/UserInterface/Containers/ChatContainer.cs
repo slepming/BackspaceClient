@@ -23,12 +23,6 @@ public partial class ChatContainer : Container
 
     private readonly Dictionary<string, MessageView> messagesById = new();
 
-    private Box backgroundBox;
-    private BasicScrollContainer scrollContainer;
-    private FillFlowContainer messagesFlow;
-    private TextBox messageTextBox;
-    private Container textBoxContainer;
-
     private bool scrollToEndPending = false;
     public string DmChannelId
     {
@@ -41,6 +35,15 @@ public partial class ChatContainer : Container
     public APIProvider Provider;
 
     public readonly InstanceObserver InstanceObserver;
+
+    private Box backgroundBox;
+
+    private TextBox messageTextBox;
+    private BasicButton fileSelectorButton;
+
+    private BasicScrollContainer scrollContainer;
+    private FillFlowContainer messagesFlow;
+    private Container textBoxContainer;
 
     public ChatContainer(InstanceObserver observer)
     {
@@ -175,7 +178,7 @@ public partial class ChatContainer : Container
             }
         }
 
-        var view = new MessageView(data, InstanceObserver.Current.Value);
+        var view = new MessageView(data, InstanceObserver?.Current.Value);
         messagesById[data.Id] = view;
         messagesFlow.Add(view);
 

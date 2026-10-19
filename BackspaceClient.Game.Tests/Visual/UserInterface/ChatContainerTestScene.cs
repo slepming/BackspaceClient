@@ -29,10 +29,7 @@ public partial class ChatContainerTestScene : DataTestScene
     [Test]
     public void ChatManipulations()
     {
-        AddRepeatStep("Add message", () =>
-        {
-            chat.AddOrUpdateMessage(CreateMessage());
-        }, 5);
+        AddRepeatStep("Add message", () => chat.AddOrUpdateMessage(CreateMessage()), 5);
 
         AddStep("Add markdown message", () =>
         {
@@ -40,6 +37,15 @@ public partial class ChatContainerTestScene : DataTestScene
             mes.Content = "# Hello\n ## Привет \n Why i'm freak: \n - Cuz I Have github account\n - I haven't work";
             chat.AddOrUpdateMessage(mes);
         });
+
+        AddStep("Chat initialised scrolling", () =>
+        {
+            for (int i = 0; i < 300; ++i) {
+                chat.AddOrUpdateMessage(CreateMessage(), true);
+            }
+        });
+
+        AddRepeatStep("Botton near scrolling", () => chat.AddOrUpdateMessage(CreateMessage()), 40);
     }
 
     [Test]
