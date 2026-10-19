@@ -49,6 +49,7 @@ public partial class MessageView : Container
         Masking = true;
         RelativeSizeAxes = Axes.X;
         AutoSizeAxes = Axes.Y;
+        // TODO: Replace the auto-size animation with another animation. If an auto-size easing is enabled, scroll has issues with ScrollExtent
         //AutoSizeDuration = 600f;
         //AutoSizeEasing = Easing.OutElasticHalf;
         CornerRadius = 8f;
