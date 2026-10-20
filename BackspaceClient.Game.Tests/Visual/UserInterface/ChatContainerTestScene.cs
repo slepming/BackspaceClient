@@ -45,7 +45,9 @@ public partial class ChatContainerTestScene : DataTestScene
             }
         });
 
-        AddRepeatStep("Botton near scrolling", () => chat.AddOrUpdateMessage(CreateMessage()), 40);
+        AddWaitStep("Waiting animation", 5);
+
+        AddRepeatStep("Bottom near scrolling", () => chat.AddOrUpdateMessage(CreateMessage()), 10);
     }
 
     [Test]
