@@ -41,6 +41,7 @@ public partial class AnimatedTooltip : VisibilityContainer, ITooltip<Localisable
     {
         Alpha = 0;
         AutoSizeAxes = Axes.Both;
+        Padding = new(30f);
 
         Child = content = new Container
         {
@@ -58,8 +59,8 @@ public partial class AnimatedTooltip : VisibilityContainer, ITooltip<Localisable
                 Radius = 12,
                 Offset = new Vector2(0, 4),
             },
-            Children = new Drawable[]
-            {
+            Children =
+            [
                 new Box
                 {
                     RelativeSizeAxes = Axes.Both,
@@ -71,7 +72,7 @@ public partial class AnimatedTooltip : VisibilityContainer, ITooltip<Localisable
                     Colour = textColour,
                     Padding = new MarginPadding { Horizontal = 10, Vertical = 6 },
                 }
-            }
+            ]
         };
     }
 
