@@ -1,4 +1,3 @@
-using System.Linq;
 using BackspaceClient.Game.Configuration;
 using BackspaceClient.Game.Graphics.UserInterface.Containers.Cursor;
 using BackspaceClient.Resources;
@@ -38,6 +37,7 @@ namespace BackspaceClient.Game
         private void load(FrameworkConfigManager configManager)
         {
             Resources.AddStore(new DllResourceStore(typeof(BackspaceClientResources).Assembly));
+
             InstanceConfiguration = new(Storage);
             dependencies.CacheAs(InstanceConfiguration);
 
