@@ -1,5 +1,4 @@
 using System.Collections;
-using System.Collections.Generic;
 using System.Linq;
 using BackspaceClient.Game.Online.API.Models;
 using BackspaceClient.Game.Online.API.Response;
@@ -9,7 +8,6 @@ using osu.Framework.Graphics;
 using osu.Framework.Graphics.Containers;
 using osu.Framework.Graphics.Shapes;
 using osu.Framework.Graphics.Sprites;
-using osu.Framework.Logging;
 using osuTK;
 
 namespace BackspaceClient.Game.Graphics.UserInterface.Containers;
@@ -24,6 +22,8 @@ public partial class MessageView : Container
 
     public MessageModel Model { get; }
     public BindableBool IsConsecutive { get; } = new();
+
+    public string MessageId { get; set; }
 
     public bool IsCanBeConsecutive => Model.Attachments.Count == 0 || Model.ReplyTo.Value == null;
 
