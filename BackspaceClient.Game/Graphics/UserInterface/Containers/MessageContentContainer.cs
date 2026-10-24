@@ -19,11 +19,11 @@ public partial class MessageContentContainer : FillFlowContainer
         {
             if (field != null) return field;
             if (messages.Count > 0)
-                return messages.First().Model.User;
-            else
-                return null;
+                field = messages.First().Model.User;
+
+            return field;
         }
-        set;
+        init;
     } = null;
 
     public MessageContentContainer(MessageView ms) => Add(ms);
