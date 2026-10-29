@@ -64,13 +64,13 @@ public partial class ChatContainerTestScene : DataTestScene
     [Test]
     public void Consecutive()
     {
-        AddRepeatStep("Add Consecutive Message", messageWithSameUserId, 3);
+        AddRepeatStep("Add Consecutive Message", () => chat.AddOrUpdateMessage(messageWithSameUserId()), 3);
 
         AddRepeatStep("Add message", () =>
         {
             chat.AddOrUpdateMessage(CreateMessage());
         }, 2);
-        AddRepeatStep("Add Consecutive Message", messageWithSameUserId, 3);
+        AddRepeatStep("Add Consecutive Message", () => chat.AddOrUpdateMessage(messageWithSameUserId()), 3);
     }
 
     [Test]
@@ -78,10 +78,11 @@ public partial class ChatContainerTestScene : DataTestScene
     {
         AddStep("Add message", () =>
         {
-            var templateMessage = CreateMessage(true);
+            var templateMessage = messageWithSameUserId();
             templateMessage.Id = templateMessageId;
             chat.AddOrUpdateMessage(templateMessage);
         });
+        AddStep("Add consecutive message", () => chat.AddOrUpdateMessage(messageWithSameUserId()));
         AddStep("Delete message", () => {
                 chat.RemoveMessage(templateMessageId);
         });
@@ -115,12 +116,12 @@ public partial class ChatContainerTestScene : DataTestScene
         });
     }
 
-    private void messageWithSameUserId()
+    private DmChatMessageResponse messageWithSameUserId()
     {
         var templateMessage = CreateMessage();
         templateMessage.User.Id = templateMessageId;
 
         templateMessage.Content = RandomString(5);
-        chat.AddOrUpdateMessage(templateMessage);
+        return templateMessage;
     }
 }

@@ -1,5 +1,4 @@
 using System.Collections;
-using System.Collections.Generic;
 using System.Linq;
 using BackspaceClient.Game.Online.API.Models;
 using BackspaceClient.Game.Online.API.Response;
@@ -9,7 +8,7 @@ using osu.Framework.Graphics;
 using osu.Framework.Graphics.Containers;
 using osu.Framework.Graphics.Shapes;
 using osu.Framework.Graphics.Sprites;
-using osu.Framework.Logging;
+using osu.Framework.Input.Events;
 using osuTK;
 
 namespace BackspaceClient.Game.Graphics.UserInterface.Containers;
@@ -18,12 +17,14 @@ public partial class MessageView : Container
 {
     private static readonly string[] supported_image_mimetypes = ["image/png", "image/webp", "image/jpeg"];
 
-    private static readonly Colour4 surface_message = Colour4.FromHex("23232a");
     private static readonly Colour4 text_normal = Colour4.FromHex("E0E0E8");
     private static readonly Colour4 text_deleted = Colour4.White.Opacity(0.4f);
+    private static readonly Colour4 text_hover = Colour4.FromHex("A0A0A8");
 
     public MessageModel Model { get; }
     public BindableBool IsConsecutive { get; } = new();
+
+    public string MessageId { get; set; }
 
     public bool IsCanBeConsecutive => Model.Attachments.Count == 0 || Model.ReplyTo.Value == null;
 
@@ -37,8 +38,6 @@ public partial class MessageView : Container
     private FillFlowContainer replyContainer;
     private FillFlowContainer attachmentsContainer;
 
-    private Box background;
-
     private readonly string instanceUrl;
 
     public MessageView(DmChatMessageResponse data, string instanceUrl)
@@ -49,10 +48,6 @@ public partial class MessageView : Container
         Masking = true;
         RelativeSizeAxes = Axes.X;
         AutoSizeAxes = Axes.Y;
-        // TODO: Replace the auto-size animation with another animation. If an auto-size easing is enabled, scroll has issues with ScrollExtent
-        //AutoSizeDuration = 600f;
-        //AutoSizeEasing = Easing.OutElasticHalf;
-        CornerRadius = 8f;
     }
 
     [BackgroundDependencyLoader]
@@ -140,11 +135,6 @@ public partial class MessageView : Container
 
         InternalChildren =
         [
-            background = new Box
-            {
-                RelativeSizeAxes = Axes.Both,
-                Colour = surface_message
-            },
             innerFlow
         ];
     }
@@ -232,5 +222,17 @@ public partial class MessageView : Container
 
             editedMarker.Alpha = Model.EditedAt.Value.HasValue ? 1 : 0;
         }
+    }
+
+    protected override bool OnHover(HoverEvent e)
+    {
+        contentText.FadeColour(text_hover, 300, Easing.OutCubic);
+        return base.OnHover(e);
+    }
+
+    protected override void OnHoverLost(HoverLostEvent e)
+    {
+        contentText.FadeColour(text_normal, 300, Easing.OutCubic);
+        base.OnHoverLost(e);
     }
 }

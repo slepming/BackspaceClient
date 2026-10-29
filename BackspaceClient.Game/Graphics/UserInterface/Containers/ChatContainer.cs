@@ -167,20 +167,21 @@ public partial class ChatContainer : Container
 
         if (messagesFlow.Count > 0)
         {
-            var message = messagesFlow.ChildrenOfType<MessageView>().Last();
+            var message = messagesFlow.ChildrenOfType<MessageContentContainer>().Last();
 
             if (message != null
-                && string.Equals(data.User.CanonicalKey(), message.Model.User.CanonicalKey())
+                && string.Equals(data.User.CanonicalKey(), message.WhoseMessage?.CanonicalKey())
                 && message.IsCanBeConsecutive)
             {
-                message.Model.Content.Value += "\n" + data.Content;
+                message.Add(new MessageView(data, InstanceObserver?.Current.Value));
                 goto scroll;
             }
         }
 
         var view = new MessageView(data, InstanceObserver?.Current.Value);
+        var container = new MessageContentContainer(view);
         messagesById[data.Id] = view;
-        messagesFlow.Add(view);
+        messagesFlow.Add(container);
 
     scroll:
         if (isNearBottom())
@@ -205,7 +206,8 @@ public partial class ChatContainer : Container
         if (!messagesById.Remove(messageId, out var deletedMessage))
             return;
 
-        messagesFlow.Remove(deletedMessage, true);
+        if (deletedMessage.Parent is FillFlowContainer parentContainer)
+            parentContainer.Remove(deletedMessage, false);
     }
 
     public void ClearMessages()
