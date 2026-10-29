@@ -17,9 +17,9 @@ public partial class MessengerSideBarTestScene : BackspaceClientTestScene
     [SetUp]
     public void Setup()
     {
-        Clear();
         Scheduler.Add(() =>
         {
+            Clear();
             sideBar = new()
             {
                 RelativeSizeAxes = Axes.Both,

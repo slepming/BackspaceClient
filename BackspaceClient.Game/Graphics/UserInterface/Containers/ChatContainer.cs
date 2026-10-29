@@ -181,7 +181,7 @@ public partial class ChatContainer : Container
         var view = new MessageView(data, InstanceObserver?.Current.Value);
         var container = new MessageContentContainer(view);
         messagesById[data.Id] = view;
-        messagesFlow.Add(container);
+        Schedule(() => messagesFlow.Add(container));
 
     scroll:
         if (isNearBottom())

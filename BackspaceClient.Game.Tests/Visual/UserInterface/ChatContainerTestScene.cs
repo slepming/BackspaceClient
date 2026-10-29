@@ -15,9 +15,9 @@ public partial class ChatContainerTestScene : DataTestScene
     [SetUp]
     public void Setup()
     {
-        Clear();
         Schedule(() =>
         {
+            Clear();
             templateMessageId = RandomString(15);
             Add(chat = new(null)
             {
