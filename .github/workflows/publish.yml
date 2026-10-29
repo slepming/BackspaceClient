@@ -1,0 +1,23 @@
+name: Build and publish release
+
+on:
+  push:
+    tags:
+      - "v*"
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Build binary
+        run: dotnet build BackspaceClient.Desktop
+
+      - name: Compress binaries
+        run: tar -czvf release-linux-amd64.tar.gz BackspaceClient.Desktop/bin/Release/net10.0
+
+      - name: Create release and upload binary
+        uses: softprops/action-gh-release@v3
+        with:
+          files: release-linux-amd64.tar.gz
