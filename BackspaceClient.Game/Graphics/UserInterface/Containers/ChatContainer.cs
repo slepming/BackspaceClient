@@ -206,7 +206,8 @@ public partial class ChatContainer : Container
         if (!messagesById.Remove(messageId, out var deletedMessage))
             return;
 
-        messagesFlow.Remove(deletedMessage, true);
+        if (deletedMessage.Parent is FillFlowContainer parentContainer)
+            parentContainer.Remove(deletedMessage, false);
     }
 
     public void ClearMessages()

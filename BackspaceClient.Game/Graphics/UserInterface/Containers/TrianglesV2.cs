@@ -1,3 +1,4 @@
+#nullable enable
 // https://github.com/ppy/osu/blob/master/osu.Game/Graphics/Backgrounds/TrianglesV2.cs
 
 using System;
