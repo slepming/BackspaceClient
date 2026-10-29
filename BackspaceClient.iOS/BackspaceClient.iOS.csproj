@@ -13,8 +13,6 @@
   <ItemGroup>
     <ProjectReference Include="..\BackspaceClient.Game\BackspaceClient.Game.csproj" />
     <ProjectReference Include="..\BackspaceClient.Resources\BackspaceClient.Resources.csproj" />
-  </ItemGroup>
-  <ItemGroup>
-    <PackageReference Include="ppy.osu.Framework.iOS" Version="2026.930.0" />
+    <ProjectReference Include="..\osu-framework\osu.Framework.iOS\osu.Framework.iOS.csproj" />
   </ItemGroup>
 </Project>
