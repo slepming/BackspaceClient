@@ -14,13 +14,28 @@ jobs:
         with:
           submodules: recursive
 
-      - name: Build binary
-        run: dotnet build BackspaceClient.Desktop
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: 10.0.x
+
+      - name: Restore dependencies
+        run: dotnet restore
+
+      - name: Build (Release)
+        run: dotnet build --configuration Release --no-restore
+
+      - name: Test
+        run: dotnet test --configuration Release --no-build --verbosity normal
+
+      - name: Publish binary
+        run: dotnet publish BackspaceClient.Desktop --configuration Release --no-build -o publish
 
       - name: Compress binaries
-        run: tar -czvf release-linux-amd64.tar.gz BackspaceClient.Desktop/bin/Release/net10.0
+        run: tar -czf release-linux-amd64.tar.gz -C publish .
 
       - name: Create release and upload binary
         uses: softprops/action-gh-release@v3
         with:
           files: release-linux-amd64.tar.gz
+          generate_release_notes: true
