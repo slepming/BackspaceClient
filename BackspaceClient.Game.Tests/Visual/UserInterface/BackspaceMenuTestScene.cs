@@ -1,7 +1,7 @@
-using BackspaceClient.Game.Graphics.UserInterface.Containers;
 using NUnit.Framework;
 using osu.Framework.Graphics.UserInterface;
 using osu.Framework.Graphics;
+using static BackspaceClient.Game.Graphics.UserInterface.Containers.StyledContextMenuContainer;
 
 namespace BackspaceClient.Game.Tests.Visual.UserInterface;
 
@@ -15,7 +15,7 @@ public partial class BackspaceMenuTestScene : BackspaceClientTestScene
         Schedule(() =>
         {
             Clear();
-            menu = new BackspaceMenu(Direction.Vertical, true)
+            menu = new StyledContextMenu()
             {
                 Anchor = Anchor.Centre,
                 Origin = Anchor.Centre,

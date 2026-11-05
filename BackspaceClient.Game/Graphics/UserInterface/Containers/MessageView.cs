@@ -6,14 +6,16 @@ using osu.Framework.Allocation;
 using osu.Framework.Bindables;
 using osu.Framework.Graphics;
 using osu.Framework.Graphics.Containers;
-using osu.Framework.Graphics.Shapes;
+using osu.Framework.Graphics.Cursor;
 using osu.Framework.Graphics.Sprites;
+using osu.Framework.Graphics.UserInterface;
 using osu.Framework.Input.Events;
+using osu.Framework.Platform;
 using osuTK;
 
 namespace BackspaceClient.Game.Graphics.UserInterface.Containers;
 
-public partial class MessageView : Container
+public partial class MessageView : Container, IHasContextMenu
 {
     private static readonly string[] supported_image_mimetypes = ["image/png", "image/webp", "image/jpeg"];
 
@@ -27,6 +29,14 @@ public partial class MessageView : Container
     public string MessageId { get; set; }
 
     public bool IsCanBeConsecutive => Model.Attachments.Count == 0 || Model.ReplyTo.Value == null;
+
+    [Resolved]
+    private Clipboard clipboard { get; set; }
+
+    public MenuItem[] ContextMenuItems =>
+    [
+        new MenuItem("Copy", copyContentToClipboard),
+    ];
 
     private SpriteText usernameText;
     private SpriteText editedMarker;
@@ -234,5 +244,10 @@ public partial class MessageView : Container
     {
         contentText.FadeColour(text_normal, 300, Easing.OutCubic);
         base.OnHoverLost(e);
+    }
+
+    private void copyContentToClipboard()
+    {
+        clipboard.SetText(Model.Content?.Value);
     }
 }

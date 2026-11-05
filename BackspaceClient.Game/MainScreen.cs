@@ -3,22 +3,15 @@ using BackspaceClient.Game.Graphics.UserInterface.Containers;
 using BackspaceClient.Game.Online.API;
 using osu.Framework.Allocation;
 using osu.Framework.Graphics;
-using osu.Framework.Graphics.Containers;
 using osu.Framework.Graphics.Shapes;
 using osu.Framework.Screens;
-using osuTK;
 
 namespace BackspaceClient.Game
 {
     public partial class MainScreen : Screen
     {
-        private readonly Vector2 text_box_size = new(.5f, .05f);
-
         private AuthorizationContainer loginContainer, signUpContainer;
         private ShakerContainer shakeContainer;
-
-        [Resolved(canBeNull: true)]
-        private ScreenStack stack { get; set; }
 
         private InstanceObserver instanceObserver;
 

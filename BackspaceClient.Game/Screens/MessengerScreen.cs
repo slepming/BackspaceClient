@@ -1,8 +1,6 @@
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Threading.Tasks;
-using BackspaceClient.Game.Configuration;
 using BackspaceClient.Game.Graphics.UserInterface;
 using BackspaceClient.Game.Graphics.UserInterface.Containers;
 using BackspaceClient.Game.Online.API;
@@ -36,21 +34,28 @@ public partial class MessengerScreen(APIProvider api, InstanceObserver instanceO
     {
         instanceObserver.StartWebSocket();
 
-        AddInternal(new FillFlowContainer()
+        AddInternal(new StyledContextMenuContainer
         {
-            Direction = FillDirection.Horizontal,
             RelativeSizeAxes = Axes.Both,
             Children =
             [
-                sideBar = new()
+                new FillFlowContainer()
                 {
+                    Direction = FillDirection.Horizontal,
                     RelativeSizeAxes = Axes.Both,
-                    Size = new Vector2(.2f, 1f),
-                },
-                chatContainer = new(instanceObserver)
-                {
-                    RelativeSizeAxes = Axes.Both,
-                    Provider = provider,
+                    Children =
+                    [
+                        sideBar = new()
+                        {
+                            RelativeSizeAxes = Axes.Both,
+                            Size = new Vector2(.2f, 1f),
+                        },
+                        chatContainer = new(instanceObserver)
+                        {
+                            RelativeSizeAxes = Axes.Both,
+                            Provider = provider,
+                        }
+                    ]
                 }
             ]
         });
