@@ -35,10 +35,10 @@ jobs:
       - name: Publish binary
         run: dotnet publish BackspaceClient.Desktop/BackspaceClient.Desktop.csproj --configuration Release --no-build -o publish
       - name: Compress binaries
-        run: tar -czf release-linux-amd64.tar.gz -C publish .
+        run: tar -czf release-linux-amd64-${{ github.ref_name }}.tar.gz -C publish .
 
       - name: Create release and upload binary
         uses: softprops/action-gh-release@v3
         with:
-          files: release-linux-amd64.tar.gz
+          files: release-linux-amd64-${{ github.ref_name }}.tar.gz
           generate_release_notes: true
