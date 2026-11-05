@@ -14,7 +14,7 @@ namespace BackspaceClient.Game
     {
         private readonly Vector2 text_box_size = new(.5f, .05f);
 
-        private FillFlowContainer loginContainer, signUpContainer;
+        private AuthorizationContainer loginContainer, signUpContainer;
         private ShakerContainer shakeContainer;
 
         [Resolved(canBeNull: true)]
@@ -30,7 +30,7 @@ namespace BackspaceClient.Game
             instanceObserver.Current.Value = instance;
 
 
-            loginContainer = new SignUpContainer(instanceObserver);
+            loginContainer = new LoginContainer(instanceObserver);
 
             InternalChildren =
             [
@@ -62,6 +62,8 @@ namespace BackspaceClient.Game
                     ]
                 }
             ];
+
+            loginContainer.ErrorOccurred += _ => { shakeContainer.Shake(); };
         }
     }
 }
