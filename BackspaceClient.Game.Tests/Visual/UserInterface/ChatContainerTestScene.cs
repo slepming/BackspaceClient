@@ -41,7 +41,7 @@ public partial class ChatContainerTestScene : DataTestScene
         AddStep("Chat initialised scrolling", () =>
         {
             for (int i = 0; i < 300; ++i) {
-                chat.AddOrUpdateMessage(CreateMessage(), true);
+                chat.AddOrUpdateMessage(CreateMessage(large: false), true);
             }
         });
 
@@ -121,7 +121,7 @@ public partial class ChatContainerTestScene : DataTestScene
         var templateMessage = CreateMessage();
         templateMessage.User.Id = templateMessageId;
 
-        templateMessage.Content = RandomString(5);
+        templateMessage.Content = RandomString(10);
         return templateMessage;
     }
 }

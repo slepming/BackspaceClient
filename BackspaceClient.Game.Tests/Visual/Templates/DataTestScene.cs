@@ -53,15 +53,16 @@ public abstract partial class DataTestScene : BackspaceClientTestScene
         };
     }
 
-    protected DmChatMessageResponse CreateMessage(bool edited = false)
+    protected DmChatMessageResponse CreateMessage(bool edited = false, bool large = true)
     {
         var user = CreateUser();
+        var proc = Random.NextSingle() * 100;
         return new()
         {
             Id = RandomString(15),
             ChannelId = RandomString(15),
             UserId = user.Id,
-            Content = RandomString(25),
+            Content = large ? RandomString(25 * (int)proc) : RandomString(25),
             User = user,
             EditedAt = edited ? Random.NextInt64() : null
         };
