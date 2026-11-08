@@ -19,8 +19,8 @@ namespace BackspaceClient.Game.Screens;
 public partial class MessengerScreen(APIProvider api, InstanceObserver instanceObserver) : Screen
 {
     // Network
-    private APIProvider provider = api;
-    private WsDispatcher webSocketDispatcher = new();
+    private readonly APIProvider provider = api;
+    private readonly WsDispatcher webSocketDispatcher = new();
 
     // Design
     private MessengerSideBar sideBar;
@@ -63,6 +63,7 @@ public partial class MessengerScreen(APIProvider api, InstanceObserver instanceO
         sideBar.Selected.BindValueChanged(c =>
         {
             if (string.IsNullOrEmpty(c.NewValue)) return;
+
             chatContainer.DmChannelId = c.NewValue;
 
             Task.Run(() =>
@@ -77,9 +78,12 @@ public partial class MessengerScreen(APIProvider api, InstanceObserver instanceO
                     {
                         chatContainer.ClearMessages();
 
-                        foreach (var message in messageRequest.Response)
+                        if (messageRequest.Response != null)
                         {
-                            chatContainer.AddOrUpdateMessage(message, true);
+                            foreach (var message in messageRequest.Response)
+                            {
+                                chatContainer.AddOrUpdateMessage(message, true);
+                            }
                         }
                     });
                 }

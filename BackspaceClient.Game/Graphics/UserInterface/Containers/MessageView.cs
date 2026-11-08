@@ -2,6 +2,7 @@ using System.Collections;
 using System.Linq;
 using BackspaceClient.Game.Online.API.Models;
 using BackspaceClient.Game.Online.API.Response;
+using BackspaceClient.Game.Utils;
 using osu.Framework.Allocation;
 using osu.Framework.Bindables;
 using osu.Framework.Graphics;
@@ -43,7 +44,7 @@ public partial class MessageView : Container, IHasContextMenu
 
     public MenuItem[] ContextMenuItems =>
     [
-        new MenuItem("Copy", copyContentToClipboard),
+        new("Copy", copyContentToClipboard),
     ];
 
     private SpriteText usernameText;
@@ -188,11 +189,16 @@ public partial class MessageView : Container, IHasContextMenu
     {
         base.LoadComplete();
 
-        Model.Content.BindValueChanged(c => updateContent(c.NewValue), true);
-        Model.IsDeleted.BindValueChanged(d => updateDeleted(d.NewValue), true);
-        Model.ReplyToId.BindValueChanged(rid => SetReply(rid.NewValue, ""), true);
-        Model.ReplyTo.BindValueChanged(rid => SetReply(rid.NewValue), true);
-        Model.Attachments.BindCollectionChanged((attachments, eventArgs) => setAttachments(eventArgs.NewItems), true);
+        Model.Content.BindValueChanged(c =>
+            updateContent(c.NewValue), true);
+        Model.IsDeleted.BindValueChanged(d =>
+            updateDeleted(d.NewValue), true);
+        Model.ReplyToId.BindValueChanged(rid =>
+            SetReply(rid.NewValue, ""), true);
+        Model.ReplyTo.BindValueChanged(rid =>
+            SetReply(rid.NewValue), true);
+        Model.Attachments.BindCollectionChanged((attachments, eventArgs) =>
+            setAttachments(eventArgs.NewItems), true);
         Model.EditedAt.BindValueChanged(e =>
         {
             if (!Model.IsDeleted.Value)
@@ -205,6 +211,7 @@ public partial class MessageView : Container, IHasContextMenu
     public void SetReply(string username, string messageSnippet)
     {
         if (username == null || messageSnippet == null) return;
+
         replyUsernameText.Text = username;
         replyContentText.Text = messageSnippet;
         replyContainer.Show();

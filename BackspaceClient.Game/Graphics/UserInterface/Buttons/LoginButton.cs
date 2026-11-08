@@ -1,7 +1,7 @@
 using BackspaceClient.Game.Graphics.UserInterface.Containers;
+using BackspaceClient.Game.Utils;
 using osu.Framework.Allocation;
 using osu.Framework.Graphics;
-using osu.Framework.Graphics.Colour;
 using osu.Framework.Graphics.Sprites;
 using osu.Framework.Graphics.UserInterface;
 using osu.Framework.Input.Events;
@@ -19,7 +19,7 @@ public partial class LoginButton : BasicButton
     private static readonly Colour4 text_colour = Colour4.FromHex("#F4F4F5");
     private static readonly Colour4 text_disabled_colour = Colour4.FromHex("#52525B");
 
-    private TrianglesV2 triangles = new()
+    private readonly TrianglesV2 triangles = new()
     {
         RelativeSizeAxes = Axes.Both,
         Colour = background_colour.Darken(0.3f),

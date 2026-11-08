@@ -1,4 +1,4 @@
-using System;
+namespace BackspaceClient.Game.Utils;
 
 /// <summary>
 /// Contains custom font names for FontUsage

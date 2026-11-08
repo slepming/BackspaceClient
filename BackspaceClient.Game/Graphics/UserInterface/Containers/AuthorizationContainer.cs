@@ -4,6 +4,7 @@ using BackspaceClient.Game.Configuration;
 using BackspaceClient.Game.Graphics.UserInterface.Buttons;
 using BackspaceClient.Game.Online.API;
 using BackspaceClient.Game.Screens;
+using BackspaceClient.Game.Utils;
 using osu.Framework.Allocation;
 using osu.Framework.Graphics;
 using osu.Framework.Graphics.Containers;
@@ -80,9 +81,9 @@ public abstract partial class AuthorizationContainer : FillFlowContainer
             Margin = new MarginPadding { Top = 4 },
         };
 
-        var instance_field = CreateInstanceField();
-        var login_field = CreateLoginField();
-        var password_field = CreatePasswordField();
+        var instanceField = CreateInstanceField();
+        var loginField = CreateLoginField();
+        var passwordField = CreatePasswordField();
 
         errorBannerContainer = new Container
         {
@@ -147,8 +148,8 @@ public abstract partial class AuthorizationContainer : FillFlowContainer
                     }
                 ]
             },
-            login_field,
-            password_field,
+            loginField,
+            passwordField,
             new Box // DIVIDER
             {
                 RelativeSizeAxes = Axes.X,
@@ -156,7 +157,7 @@ public abstract partial class AuthorizationContainer : FillFlowContainer
                 Colour = divider_colour,
                 Margin = new MarginPadding { Vertical = 2 },
             },
-            instance_field,
+            instanceField,
             errorBannerContainer,
             FinalButton,
         ];
@@ -222,7 +223,6 @@ public abstract partial class AuthorizationContainer : FillFlowContainer
 
                         Stack.Push(new MessengerScreen(provider, InstanceObserver));
                     });
-
                 }
                 catch (Exception e)
                 {

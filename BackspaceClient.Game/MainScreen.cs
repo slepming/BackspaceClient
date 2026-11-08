@@ -9,90 +9,89 @@ using osu.Framework.Graphics.Shapes;
 using osu.Framework.Screens;
 using osuTK;
 
-namespace BackspaceClient.Game
+namespace BackspaceClient.Game;
+
+public partial class MainScreen : Screen
 {
-    public partial class MainScreen : Screen
+    private static readonly Colour4 screen_background_colour = Colour4.FromHex("#09090B");
+    private static readonly Colour4 card_background_colour = Colour4.FromHex("#121215").Opacity(0.92f);
+    private static readonly Colour4 card_border_colour = Colour4.FromHex("#27272A");
+    private static readonly Colour4 card_shadow_colour = Colour4.Black.Opacity(0.6f);
+    private static readonly Colour4 triangles_colour = Colour4.FromHex("#27272A");
+
+    private AuthorizationContainer loginContainer, signUpContainer;
+    private ShakerContainer shakeContainer;
+
+    private InstanceObserver instanceObserver;
+
+    [BackgroundDependencyLoader]
+    private void load(InstanceConfiguration instanceConfig)
     {
-        private static readonly Colour4 screen_background_colour = Colour4.FromHex("#09090B");
-        private static readonly Colour4 card_background_colour = Colour4.FromHex("#121215").Opacity(0.92f);
-        private static readonly Colour4 card_border_colour = Colour4.FromHex("#27272A");
-        private static readonly Colour4 card_shadow_colour = Colour4.Black.Opacity(0.6f);
-        private static readonly Colour4 triangles_colour = Colour4.FromHex("#27272A");
+        var instance = instanceConfig.Get<string>(InstanceSettings.Home);
+        instanceObserver = new();
+        instanceObserver.Current.Value = instance;
 
-        private AuthorizationContainer loginContainer, signUpContainer;
-        private ShakerContainer shakeContainer;
+        loginContainer = new LoginContainer(instanceObserver);
 
-        private InstanceObserver instanceObserver;
-
-        [BackgroundDependencyLoader]
-        private void load(InstanceConfiguration instanceConfig)
-        {
-            var instance = instanceConfig.Get<string>(InstanceSettings.Home);
-            instanceObserver = new();
-            instanceObserver.Current.Value = instance;
-
-            loginContainer = new LoginContainer(instanceObserver);
-
-            InternalChildren =
-            [
-                new Box
+        InternalChildren =
+        [
+            new Box
+            {
+                RelativeSizeAxes = Axes.Both,
+                Colour = screen_background_colour,
+            },
+            new TrianglesV2(928375)
+            {
+                RelativeSizeAxes = Axes.Both,
+                Colour = ColourInfo.GradientVertical(
+                    triangles_colour.Opacity(0.15f),
+                    triangles_colour.Opacity(0.55f)
+                ),
+                Velocity = 0.25f,
+                SpawnRatio = 2.25f,
+            },
+            shakeContainer = new()
+            {
+                Anchor = Anchor.Centre,
+                Origin = Anchor.Centre,
+                Width = 420,
+                AutoSizeAxes = Axes.Y,
+                AutoSizeDuration = 250f,
+                AutoSizeEasing = Easing.OutQuint,
+                Masking = true,
+                CornerRadius = 16f,
+                BorderThickness = 1.2f,
+                BorderColour = card_border_colour,
+                Alpha = 0,
+                Scale = new Vector2(0.95f),
+                EdgeEffect = new EdgeEffectParameters
                 {
-                    RelativeSizeAxes = Axes.Both,
-                    Colour = screen_background_colour,
+                    Type = EdgeEffectType.Shadow,
+                    Colour = card_shadow_colour,
+                    Radius = 32,
+                    Offset = new Vector2(0, 12),
                 },
-                new TrianglesV2(928375)
-                {
-                    RelativeSizeAxes = Axes.Both,
-                    Colour = ColourInfo.GradientVertical(
-                        triangles_colour.Opacity(0.15f),
-                        triangles_colour.Opacity(0.55f)
-                    ),
-                    Velocity = 0.25f,
-                    SpawnRatio = 2.25f,
-                },
-                shakeContainer = new()
-                {
-                    Anchor = Anchor.Centre,
-                    Origin = Anchor.Centre,
-                    Width = 420,
-                    AutoSizeAxes = Axes.Y,
-                    AutoSizeDuration = 250f,
-                    AutoSizeEasing = Easing.OutQuint,
-                    Masking = true,
-                    CornerRadius = 16f,
-                    BorderThickness = 1.2f,
-                    BorderColour = card_border_colour,
-                    Alpha = 0,
-                    Scale = new Vector2(0.95f),
-                    EdgeEffect = new EdgeEffectParameters
+                Children =
+                [
+                    new Box
                     {
-                        Type = EdgeEffectType.Shadow,
-                        Colour = card_shadow_colour,
-                        Radius = 32,
-                        Offset = new Vector2(0, 12),
+                        RelativeSizeAxes = Axes.Both,
+                        Colour = card_background_colour,
                     },
-                    Children =
-                    [
-                        new Box
-                        {
-                            RelativeSizeAxes = Axes.Both,
-                            Colour = card_background_colour,
-                        },
-                        loginContainer,
-                    ]
-                }
-            ];
+                    loginContainer,
+                ]
+            }
+        ];
 
-            loginContainer.ErrorOccurred += _ => shakeContainer.Shake();
-        }
+        loginContainer.ErrorOccurred += _ => shakeContainer.Shake();
+    }
 
-        public override void OnEntering(ScreenTransitionEvent e)
-        {
-            base.OnEntering(e);
+    public override void OnEntering(ScreenTransitionEvent e)
+    {
+        base.OnEntering(e);
 
-            shakeContainer
-                .FadeIn(350, Easing.OutQuint)
-                .ScaleTo(1f, 400, Easing.OutBack);
-        }
+        shakeContainer
+            .FadeIn(350, Easing.OutQuint)
+            .ScaleTo(1f, 400, Easing.OutBack);
     }
 }

@@ -1,6 +1,6 @@
 using System;
 using System.Collections.Generic;
-using BackspaceClient.Game.Graphics.UserInterface;
+using BackspaceClient.Game.Utils;
 using osu.Framework.Allocation;
 using osu.Framework.Bindables;
 using osu.Framework.Graphics;
@@ -10,6 +10,8 @@ using osu.Framework.Graphics.Sprites;
 using osu.Framework.Input.Events;
 using osu.Framework.Localisation;
 using osuTK;
+
+namespace BackspaceClient.Game.Graphics.UserInterface;
 
 public partial class UserCardContainer : Container, IFilterable
 {
@@ -268,6 +270,7 @@ public partial class UserCardContainer : Container, IFilterable
         Colour4 targetColour = hasUnread ? unread_card_bg_colour : card_bg_colour;
         float targetBgAlpha;
         float targetAccentAlpha;
+
         if (Selected.Value)
         {
             targetBgAlpha = hasUnread ? 0.15f : 0.10f;
@@ -284,8 +287,8 @@ public partial class UserCardContainer : Container, IFilterable
             targetAccentAlpha = 0f;
         }
 
-        var easing = Easing.OutCubic;
-        var duration = 200f;
+        const Easing easing = Easing.OutCubic;
+        const float duration = 200f;
 
         backgroundBox.FadeColour(targetColour, duration, easing);
         accentBar.FadeColour(targetColour, duration, easing);
