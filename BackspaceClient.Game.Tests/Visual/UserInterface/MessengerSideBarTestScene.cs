@@ -50,13 +50,13 @@ public partial class MessengerSideBarTestScene : BackspaceClientTestScene
 
         AddStep("Increment unread message", () =>
         {
-            foreach(var kv in sideBar.Channels)
+            foreach (var kv in sideBar.Channels)
                 ++kv.Value.UnreadMessagesCount.Value;
         });
 
         AddStep("Decrement unread message", () =>
         {
-            foreach(var kv in sideBar.Channels)
+            foreach (var kv in sideBar.Channels)
                 --kv.Value.UnreadMessagesCount.Value;
         });
     }

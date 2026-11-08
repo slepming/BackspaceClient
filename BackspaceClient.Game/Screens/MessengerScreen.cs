@@ -131,7 +131,7 @@ public partial class MessengerScreen(APIProvider api, InstanceObserver instanceO
     {
         Schedule(() =>
         {
-            foreach(var kv in c.Counts)
+            foreach (var kv in c.Counts)
             {
                 if (sideBar.Channels.TryGetValue(kv.Key, out var userCard))
                     userCard.UnreadMessagesCount.Value = kv.Value;

@@ -6,5 +6,5 @@ public partial class SignUpContainer : AuthorizationContainer
 {
     protected override string TitleText => "SignUp";
 
-    public SignUpContainer(InstanceObserver observer) : base(observer) {}
+    public SignUpContainer(InstanceObserver observer) : base(observer) { }
 }

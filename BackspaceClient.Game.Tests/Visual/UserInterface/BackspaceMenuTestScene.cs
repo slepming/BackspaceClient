@@ -1,6 +1,6 @@
 using NUnit.Framework;
-using osu.Framework.Graphics.UserInterface;
 using osu.Framework.Graphics;
+using osu.Framework.Graphics.UserInterface;
 using static BackspaceClient.Game.Graphics.UserInterface.Containers.StyledContextMenuContainer;
 
 namespace BackspaceClient.Game.Tests.Visual.UserInterface;

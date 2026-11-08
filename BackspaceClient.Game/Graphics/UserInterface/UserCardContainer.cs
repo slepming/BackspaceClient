@@ -230,12 +230,13 @@ public partial class UserCardContainer : Container, IFilterable
         //LastMessage.BindValueChanged(m => previewText.Text = m.NewValue, true); // Now is useless
         //LastMessageTime.BindValueChanged(t => timestampText.Text = t.NewValue, true); // Now is useless
         Selected.BindValueChanged(_ => updateVisualState(), true);
-        UnreadMessagesCount.BindValueChanged(c => {
-                var unreadCount = c.NewValue;
-                if (unreadCount == 0) unreadIndicatorContainer.FadeTo(.0f, 200, Easing.OutQuad);
-                else unreadIndicatorContainer.FadeTo(1f, 200, Easing.OutQuad);
-                unreadCountText.Text = c.NewValue.ToString();
-                updateVisualState();
+        UnreadMessagesCount.BindValueChanged(c =>
+        {
+            var unreadCount = c.NewValue;
+            if (unreadCount == 0) unreadIndicatorContainer.FadeTo(.0f, 200, Easing.OutQuad);
+            else unreadIndicatorContainer.FadeTo(1f, 200, Easing.OutQuad);
+            unreadCountText.Text = c.NewValue.ToString();
+            updateVisualState();
         }, true);
 
         updateVisualState();
@@ -265,10 +266,8 @@ public partial class UserCardContainer : Container, IFilterable
     {
         bool hasUnread = UnreadMessagesCount.Value > 0;
         Colour4 targetColour = hasUnread ? unread_card_bg_colour : card_bg_colour;
-
-        float targetBgAlpha = 0f;
-        float targetAccentAlpha = 0f;
-
+        float targetBgAlpha;
+        float targetAccentAlpha;
         if (Selected.Value)
         {
             targetBgAlpha = hasUnread ? 0.15f : 0.10f;

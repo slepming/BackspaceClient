@@ -9,6 +9,7 @@ using osu.Framework.Graphics;
 using osu.Framework.Graphics.Containers;
 using osu.Framework.Graphics.Shapes;
 using osu.Framework.Graphics.Sprites;
+using osu.Framework.Graphics.UserInterface;
 using osu.Framework.Input;
 using osu.Framework.Logging;
 using osu.Framework.Screens;
@@ -33,6 +34,8 @@ public abstract partial class AuthorizationContainer : FillFlowContainer
     protected BackspaceClientTextBox LoginTextBox { get; private set; }
     protected BackspaceClientTextBox PasswordTextBox { get; private set; }
     protected BackspaceClientTextBox InstanceTextBox { get; private set; }
+
+    protected Button FinalButton { get; private set; }
 
     protected SpriteText ErrorText { get; private set; }
 
@@ -59,13 +62,61 @@ public abstract partial class AuthorizationContainer : FillFlowContainer
     public AuthorizationContainer() { }
 
     [BackgroundDependencyLoader]
-    private void load(InstanceConfiguration instanceConfig)
+    private void load()
     {
         RelativeSizeAxes = Axes.X;
         AutoSizeAxes = Axes.Y;
         Direction = FillDirection.Vertical;
         Padding = new MarginPadding { Horizontal = 36, Vertical = 36 };
         Spacing = new Vector2(0, 16);
+
+        FinalButton = new LoginButton
+        {
+            RelativeSizeAxes = Axes.X,
+            Height = 42,
+            Text = "Sign In",
+            Anchor = Anchor.TopCentre,
+            Origin = Anchor.TopCentre,
+            Margin = new MarginPadding { Top = 4 },
+        };
+
+        var instance_field = CreateInstanceField();
+        var login_field = CreateLoginField();
+        var password_field = CreatePasswordField();
+
+        errorBannerContainer = new Container
+        {
+            RelativeSizeAxes = Axes.X,
+            AutoSizeAxes = Axes.Y,
+            Masking = true,
+            CornerRadius = 8f,
+            BorderThickness = 1f,
+            BorderColour = error_banner_border_colour,
+            Alpha = 0,
+            Children =
+            [
+                new Box
+                {
+                    RelativeSizeAxes = Axes.Both,
+                    Colour = error_banner_background_colour,
+                },
+                new Container
+                {
+                    RelativeSizeAxes = Axes.X,
+                    AutoSizeAxes = Axes.Y,
+                    Padding = new MarginPadding { Horizontal = 12, Vertical = 9 },
+                    Child = ErrorText = new TextWithTooltip
+                    {
+                        RelativeSizeAxes = Axes.X,
+                        Truncate = true,
+                        Anchor = Anchor.CentreLeft,
+                        Origin = Anchor.CentreLeft,
+                        Font = new FontUsage(family: BackspaceFonts.Inter, size: 14),
+                        Colour = error_text_colour,
+                    }
+                }
+            ]
+        };
 
         Children =
         [
@@ -96,23 +147,8 @@ public abstract partial class AuthorizationContainer : FillFlowContainer
                     }
                 ]
             },
-            CreateLabeledInput("USERNAME", LoginTextBox = new()
-            {
-                RelativeSizeAxes = Axes.X,
-                Height = 40,
-                FontSize = 24,
-                PlaceholderText = "Enter your username",
-                TabbableContentContainer = this,
-            }),
-            CreateLabeledInput("PASSWORD", PasswordTextBox = new()
-            {
-                RelativeSizeAxes = Axes.X,
-                Height = 40,
-                FontSize = 24,
-                PlaceholderText = "********",
-                InputProperties = new TextInputProperties(TextInputType.Password),
-                TabbableContentContainer = this,
-            }),
+            login_field,
+            password_field,
             new Box // DIVIDER
             {
                 RelativeSizeAxes = Axes.X,
@@ -120,91 +156,44 @@ public abstract partial class AuthorizationContainer : FillFlowContainer
                 Colour = divider_colour,
                 Margin = new MarginPadding { Vertical = 2 },
             },
-            CreateLabeledInput("INSTANCE SERVER", InstanceTextBox = new()
-            {
-                RelativeSizeAxes = Axes.X,
-                Height = 38,
-                FontSize = 24,
-                PlaceholderText = "https://backspaced.org",
-                TabbableContentContainer = this,
-                CommitOnFocusLost = true,
-                Text = instanceConfig.Get<string>(InstanceSettings.Home),
-            }),
-            errorBannerContainer = new Container
-            {
-                RelativeSizeAxes = Axes.X,
-                AutoSizeAxes = Axes.Y,
-                Masking = true,
-                CornerRadius = 8f,
-                BorderThickness = 1f,
-                BorderColour = error_banner_border_colour,
-                Alpha = 0,
-                Children =
-                [
-                    new Box
-                    {
-                        RelativeSizeAxes = Axes.Both,
-                        Colour = error_banner_background_colour,
-                    },
-                    new Container
-                    {
-                        RelativeSizeAxes = Axes.X,
-                        AutoSizeAxes = Axes.Y,
-                        Padding = new MarginPadding { Horizontal = 12, Vertical = 9 },
-                        Child = ErrorText = new TextWithTooltip
-                        {
-                            RelativeSizeAxes = Axes.X,
-                            Truncate = true,
-                            Anchor = Anchor.CentreLeft,
-                            Origin = Anchor.CentreLeft,
-                            Font = new FontUsage(family: BackspaceFonts.Inter, size: 14),
-                            Colour = error_text_colour,
-                        }
-                    }
-                ]
-            },
-            new LoginButton
-            {
-                RelativeSizeAxes = Axes.X,
-                Height = 42,
-                Text = "Sign In",
-                Anchor = Anchor.TopCentre,
-                Origin = Anchor.TopCentre,
-                Margin = new MarginPadding { Top = 4 },
-                Action = submit,
-            },
+            instance_field,
+            errorBannerContainer,
+            FinalButton,
         ];
-
-        PasswordTextBox.OnCommit += (_, newText) =>
-        {
-            if (newText) submit();
-        };
-
-        InstanceTextBox.OnCommit += (instance, newText) =>
-        {
-            if (InstanceObserver == null) ShowError(new Exception("Instance Observer is null"));
-            if (newText)
-            {
-                InstanceConfig.SetValue(InstanceSettings.Home, instance.Current.Value);
-                InstanceObserver.Current.Value = instance.Current.Value;
-            }
-        };
     }
 
-    private void submit()
+    protected void HideErrorContainer() => errorBannerContainer.FadeOut(150, Easing.OutQuint);
+    protected void ShowErrorContainer() => errorBannerContainer.FadeIn(150, Easing.OutQuint);
+
+    protected virtual CompositeDrawable CreateLoginField() => CreateLabeledInput("USERNAME", LoginTextBox = new()
     {
-        if (InstanceObserver == null) ShowError(new Exception("Instance Observer is null"));
+        RelativeSizeAxes = Axes.X,
+        Height = 40,
+        FontSize = 24,
+        PlaceholderText = "Enter your username",
+        TabbableContentContainer = this,
+    });
 
-        try
-        {
-            errorBannerContainer.FadeOut(150, Easing.OutQuint);
-            Authorize(LoginTextBox.Text, PasswordTextBox.Text);
-        }
-        catch (Exception e)
-        {
-            ShowError(e);
-        }
-    }
+    protected virtual CompositeDrawable CreatePasswordField() => CreateLabeledInput("PASSWORD", PasswordTextBox = new()
+    {
+        RelativeSizeAxes = Axes.X,
+        Height = 40,
+        FontSize = 24,
+        PlaceholderText = "********",
+        InputProperties = new TextInputProperties(TextInputType.Password),
+        TabbableContentContainer = this,
+    });
+
+    protected virtual CompositeDrawable CreateInstanceField() => CreateLabeledInput("INSTANCE SERVER", InstanceTextBox = new()
+    {
+        RelativeSizeAxes = Axes.X,
+        Height = 38,
+        FontSize = 24,
+        PlaceholderText = "https://backspaced.org",
+        TabbableContentContainer = this,
+        CommitOnFocusLost = true,
+        Text = InstanceConfig.Get<string>(InstanceSettings.Home),
+    });
 
     protected virtual void Authorize(string username, string password)
     {

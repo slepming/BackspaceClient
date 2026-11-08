@@ -192,7 +192,7 @@ public partial class MessageView : Container, IHasContextMenu
             // In the future I have to handle webp manually
             case var _ when supported_image_mimetypes.Contains(attachment.Mimetype):
             {
-                if (instanceUrl != null) attachmentsContainer.Add(new DelayedLoadUnloadWrapper(() => new ImageMimetypeSprite($"{instanceUrl}/api/uploads/{attachment.Filename}")) {  });
+                if (instanceUrl != null) attachmentsContainer.Add(new DelayedLoadUnloadWrapper(() => new ImageMimetypeSprite($"{instanceUrl}/api/uploads/{attachment.Filename}")) { });
 
                 break;
             }

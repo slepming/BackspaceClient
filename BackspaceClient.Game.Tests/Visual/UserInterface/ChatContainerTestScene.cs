@@ -40,7 +40,8 @@ public partial class ChatContainerTestScene : DataTestScene
 
         AddStep("Chat initialised scrolling", () =>
         {
-            for (int i = 0; i < 300; ++i) {
+            for (int i = 0; i < 300; ++i)
+            {
                 chat.AddOrUpdateMessage(CreateMessage(large: false), true);
             }
         });
@@ -83,8 +84,9 @@ public partial class ChatContainerTestScene : DataTestScene
             chat.AddOrUpdateMessage(templateMessage);
         });
         AddStep("Add consecutive message", () => chat.AddOrUpdateMessage(messageWithSameUserId()));
-        AddStep("Delete message", () => {
-                chat.RemoveMessage(templateMessageId);
+        AddStep("Delete message", () =>
+        {
+            chat.RemoveMessage(templateMessageId);
         });
         AddStep("Add message", () =>
         {
@@ -93,8 +95,9 @@ public partial class ChatContainerTestScene : DataTestScene
             templateMessage.Id = templateMessageId;
             chat.AddOrUpdateMessage(templateMessage);
         });
-        AddStep("Silent delete message", () => {
-                chat.RemoveMessage(templateMessageId, true);
+        AddStep("Silent delete message", () =>
+        {
+            chat.RemoveMessage(templateMessageId, true);
         });
     }
 
