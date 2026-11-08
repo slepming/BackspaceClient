@@ -40,7 +40,7 @@ namespace BackspaceClient.Game
                     RelativeSizeAxes = Axes.Both,
                     Colour = screen_background_colour,
                 },
-                new TrianglesV2
+                new TrianglesV2(928375)
                 {
                     RelativeSizeAxes = Axes.Both,
                     Colour = ColourInfo.GradientVertical(
@@ -48,6 +48,7 @@ namespace BackspaceClient.Game
                         triangles_colour.Opacity(0.55f)
                     ),
                     Velocity = 0.25f,
+                    SpawnRatio = 2.25f,
                 },
                 shakeContainer = new()
                 {
