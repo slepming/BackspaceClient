@@ -91,7 +91,7 @@ public abstract partial class AuthorizationContainer : FillFlowContainer
                         Text = SubtitleText,
                         Anchor = Anchor.TopLeft,
                         Origin = Anchor.TopLeft,
-                        Font = new FontUsage(family: BackspaceFonts.Inter, size: 14),
+                        Font = new FontUsage(family: BackspaceFonts.Inter, size: 16),
                         Colour = subtitle_colour,
                     }
                 ]
@@ -100,7 +100,7 @@ public abstract partial class AuthorizationContainer : FillFlowContainer
             {
                 RelativeSizeAxes = Axes.X,
                 Height = 40,
-                FontSize = 16,
+                FontSize = 24,
                 PlaceholderText = "Enter your username",
                 TabbableContentContainer = this,
             }),
@@ -108,12 +108,12 @@ public abstract partial class AuthorizationContainer : FillFlowContainer
             {
                 RelativeSizeAxes = Axes.X,
                 Height = 40,
-                FontSize = 16,
+                FontSize = 24,
                 PlaceholderText = "********",
                 InputProperties = new TextInputProperties(TextInputType.Password),
                 TabbableContentContainer = this,
             }),
-            new Box
+            new Box // DIVIDER
             {
                 RelativeSizeAxes = Axes.X,
                 Height = 1,
@@ -124,7 +124,7 @@ public abstract partial class AuthorizationContainer : FillFlowContainer
             {
                 RelativeSizeAxes = Axes.X,
                 Height = 38,
-                FontSize = 15,
+                FontSize = 24,
                 PlaceholderText = "https://backspaced.org",
                 TabbableContentContainer = this,
                 CommitOnFocusLost = true,
