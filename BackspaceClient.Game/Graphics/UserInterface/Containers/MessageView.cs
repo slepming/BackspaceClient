@@ -7,6 +7,7 @@ using osu.Framework.Bindables;
 using osu.Framework.Graphics;
 using osu.Framework.Graphics.Containers;
 using osu.Framework.Graphics.Cursor;
+using osu.Framework.Graphics.Shapes;
 using osu.Framework.Graphics.Sprites;
 using osu.Framework.Graphics.UserInterface;
 using osu.Framework.Input.Events;
@@ -19,9 +20,16 @@ public partial class MessageView : Container, IHasContextMenu
 {
     private static readonly string[] supported_image_mimetypes = ["image/png", "image/webp", "image/jpeg"];
 
-    private static readonly Colour4 text_normal = Colour4.FromHex("E0E0E8");
-    private static readonly Colour4 text_deleted = Colour4.White.Opacity(0.4f);
-    private static readonly Colour4 text_hover = Colour4.FromHex("A0A0A8");
+    private static readonly Colour4 username_colour = Colour4.FromHex("#F4F4F5");
+    private static readonly Colour4 text_normal = Colour4.FromHex("#D4D4D8");
+    private static readonly Colour4 text_hover = Colour4.FromHex("#FFFFFF");
+    private static readonly Colour4 text_deleted = Colour4.FromHex("#52525B");
+    private static readonly Colour4 edited_marker_colour = Colour4.FromHex("#71717A");
+
+    private static readonly Colour4 reply_bar_colour = Colour4.FromHex("#3F3F46");
+    private static readonly Colour4 reply_icon_colour = Colour4.FromHex("#71717A");
+    private static readonly Colour4 reply_username_colour = Colour4.FromHex("#A1A1AA");
+    private static readonly Colour4 reply_content_colour = Colour4.FromHex("#71717A");
 
     public MessageModel Model { get; }
     public BindableBool IsConsecutive { get; } = new();
@@ -56,6 +64,10 @@ public partial class MessageView : Container, IHasContextMenu
         this.instanceUrl = instanceUrl;
 
         Masking = true;
+        CornerRadius = 10f;
+        BorderThickness = 1f;
+
+        Masking = true;
         RelativeSizeAxes = Axes.X;
         AutoSizeAxes = Axes.Y;
     }
@@ -68,7 +80,7 @@ public partial class MessageView : Container, IHasContextMenu
             RelativeSizeAxes = Axes.X,
             AutoSizeAxes = Axes.Y,
             Direction = FillDirection.Vertical,
-            Padding = new MarginPadding { Horizontal = 16, Top = 12, Bottom = 10 },
+            Padding = new MarginPadding { Horizontal = 16, Top = 8, Bottom = 8 },
             Spacing = new Vector2(0, 4)
         };
 
@@ -81,24 +93,43 @@ public partial class MessageView : Container, IHasContextMenu
             Alpha = 0,
             Children =
             [
+                new Container
+                {
+                    Width = 2f,
+                    Height = 14f,
+                    Masking = true,
+                    CornerRadius = 1f,
+                    Anchor = Anchor.CentreLeft,
+                    Origin = Anchor.CentreLeft,
+                    Child = new Box
+                    {
+                        RelativeSizeAxes = Axes.Both,
+                        Colour = reply_bar_colour,
+                    }
+                },
                 new SpriteIcon
                 {
-                    Icon = FontAwesome.Solid.ArrowCircleRight,
-                    Size = new Vector2(12),
-                    Colour = Colour4.White.Opacity(0.5f),
-                    Margin = new MarginPadding { Top = 2 }
+                    Icon = FontAwesome.Solid.Reply,
+                    Size = new Vector2(10),
+                    Colour = reply_icon_colour,
+                    Anchor = Anchor.CentreLeft,
+                    Origin = Anchor.CentreLeft,
                 },
                 replyUsernameText = new SpriteText
                 {
                     Font = new FontUsage(family: BackspaceFonts.Inter, size: 13, weight: "Bold"),
-                    Colour = Colour4.White.Opacity(0.7f),
+                    Colour = reply_username_colour,
+                    Anchor = Anchor.CentreLeft,
+                    Origin = Anchor.CentreLeft,
                 },
                 replyContentText = new SpriteText
                 {
                     Font = new FontUsage(family: BackspaceFonts.Inter, size: 13),
-                    Colour = Colour4.White.Opacity(0.5f),
+                    Colour = reply_content_colour,
                     Truncate = true,
-                    MaxWidth = 250
+                    MaxWidth = 320,
+                    Anchor = Anchor.CentreLeft,
+                    Origin = Anchor.CentreLeft,
                 }
             ]
         });
@@ -107,22 +138,26 @@ public partial class MessageView : Container, IHasContextMenu
         {
             AutoSizeAxes = Axes.Both,
             Direction = FillDirection.Horizontal,
-            Spacing = new Vector2(8, 0),
-            Margin = new MarginPadding { Bottom = 2 },
+            Spacing = new Vector2(6, 0),
+            Margin = new MarginPadding { Bottom = 1 },
             Children =
             [
                 usernameText = new SpriteText
                 {
                     Font = new FontUsage(family: BackspaceFonts.Inter, size: 15, weight: "Bold"),
-                    Colour = Colour4.White,
+                    Colour = username_colour,
+                    Anchor = Anchor.BottomLeft,
+                    Origin = Anchor.BottomLeft,
                 },
                 editedMarker = new SpriteText
                 {
-                    Font = new FontUsage(size: 12),
-                    Colour = Colour4.White.Opacity(0.3f),
+                    Font = new FontUsage(family: BackspaceFonts.Inter, size: 12),
+                    Colour = edited_marker_colour,
                     Text = "(edited)",
                     Alpha = 0,
-                    Margin = new MarginPadding { Top = 2 }
+                    Anchor = Anchor.BottomLeft,
+                    Origin = Anchor.BottomLeft,
+                    Margin = new MarginPadding { Bottom = 1 }
                 },
             ]
         });
@@ -139,8 +174,8 @@ public partial class MessageView : Container, IHasContextMenu
             RelativeSizeAxes = Axes.X,
             AutoSizeAxes = Axes.Y,
             Direction = FillDirection.Horizontal,
-            Spacing = new(5f),
-            Margin = new() { Bottom = 2 },
+            Spacing = new(6f),
+            Margin = new() { Top = 4, Bottom = 2 },
         });
 
         InternalChildren =
@@ -189,7 +224,6 @@ public partial class MessageView : Container, IHasContextMenu
     {
         switch (attachment.Mimetype)
         {
-            // In the future I have to handle webp manually
             case var _ when supported_image_mimetypes.Contains(attachment.Mimetype):
             {
                 if (instanceUrl != null) attachmentsContainer.Add(new DelayedLoadUnloadWrapper(() => new ImageMimetypeSprite($"{instanceUrl}/api/uploads/{attachment.Filename}")) { });
@@ -236,13 +270,17 @@ public partial class MessageView : Container, IHasContextMenu
 
     protected override bool OnHover(HoverEvent e)
     {
-        contentText.FadeColour(text_hover, 300, Easing.OutCubic);
+        if (!Model.IsDeleted.Value)
+            contentText.FadeColour(text_hover, 150, Easing.OutQuint);
+
         return base.OnHover(e);
     }
 
     protected override void OnHoverLost(HoverLostEvent e)
     {
-        contentText.FadeColour(text_normal, 300, Easing.OutCubic);
+        if (!Model.IsDeleted.Value)
+            contentText.FadeColour(text_normal, 200, Easing.OutQuint);
+
         base.OnHoverLost(e);
     }
 

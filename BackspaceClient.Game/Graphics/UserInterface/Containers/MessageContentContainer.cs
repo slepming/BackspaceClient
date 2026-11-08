@@ -4,13 +4,17 @@ using BackspaceClient.Game.Online.API.Response;
 using osu.Framework.Allocation;
 using osu.Framework.Graphics;
 using osu.Framework.Graphics.Containers;
+using osu.Framework.Graphics.Effects;
 using osu.Framework.Graphics.Shapes;
+using osuTK;
 
 namespace BackspaceClient.Game.Graphics.UserInterface.Containers;
 
 public partial class MessageContentContainer : Container
 {
-    private static readonly Colour4 surface_message = Colour4.FromHex("23232a");
+    private static readonly Colour4 surface_message = Colour4.FromHex("#121215");
+    private static readonly Colour4 border_message = Colour4.FromHex("#1F1F23");
+    private static readonly Colour4 shadow_message = Colour4.Black.Opacity(0.3f);
 
     private readonly List<MessageView> messages = [];
 
@@ -36,6 +40,7 @@ public partial class MessageContentContainer : Container
         Direction = FillDirection.Vertical,
         RelativeSizeAxes = Axes.X,
         AutoSizeAxes = Axes.Y,
+        Padding = new MarginPadding { Vertical = 4 },
     };
 
     public MessageContentContainer(MessageView ms) => Add(ms);
@@ -43,10 +48,20 @@ public partial class MessageContentContainer : Container
     [BackgroundDependencyLoader]
     private void load()
     {
-        Masking = true;
         RelativeSizeAxes = Axes.X;
         AutoSizeAxes = Axes.Y;
-        CornerRadius = 8f;
+        Masking = true;
+        CornerRadius = 10f;
+        BorderThickness = 1f;
+        BorderColour = border_message;
+
+        EdgeEffect = new EdgeEffectParameters
+        {
+            Type = EdgeEffectType.Shadow,
+            Colour = shadow_message,
+            Radius = 12,
+            Offset = new Vector2(0, 3),
+        };
 
         InternalChildren =
         [

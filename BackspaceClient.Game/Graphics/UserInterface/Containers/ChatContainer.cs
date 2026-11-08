@@ -19,7 +19,8 @@ namespace BackspaceClient.Game.Graphics.UserInterface.Containers;
 
 public partial class ChatContainer : Container
 {
-    private static readonly Colour4 surface_chat = Colour4.FromHex("13131a");
+    private static readonly Colour4 surface_chat = Colour4.FromHex("#09090B");
+    private static readonly Colour4 input_divider_colour = Colour4.FromHex("#18181B");
 
     private readonly Dictionary<string, MessageView> messagesById = new();
 
@@ -77,14 +78,14 @@ public partial class ChatContainer : Container
                         {
                             RelativeSizeAxes = Axes.Both,
                             ScrollbarOverlapsContent = false,
-                            Padding = new MarginPadding { Horizontal = 20 },
+                            Padding = new MarginPadding { Horizontal = 24 },
                             Child = messagesFlow = new FillFlowContainer
                             {
                                 RelativeSizeAxes = Axes.X,
                                 Width = 0.8f,
                                 AutoSizeAxes = Axes.Y,
                                 Direction = FillDirection.Vertical,
-                                Padding = new MarginPadding { Vertical = 15 },
+                                Padding = new MarginPadding { Vertical = 20 },
                                 Spacing = new Vector2(0, 10),
                             },
                         }
@@ -97,12 +98,26 @@ public partial class ChatContainer : Container
                             AutoSizeAxes = Axes.Y,
                             Padding = new MarginPadding { Horizontal = 20, Bottom = 20, Top = 5 },
                             Alpha = 0f,
-                            Child = messageTextBox = new BackspaceClientTextBox
-                            {
-                                RelativeSizeAxes = Axes.X,
-                                Height = 45,
-                                ReleaseFocusOnCommit = false
-                            }
+                            Children =
+                            [
+                                new Box
+                                {
+                                    Anchor = Anchor.TopCentre,
+                                    Origin = Anchor.TopCentre,
+                                    RelativeSizeAxes = Axes.X,
+                                    Height = 1f,
+                                    Colour = input_divider_colour,
+                                    Margin = new MarginPadding { Bottom = 10 },
+                                },
+                                messageTextBox = new BackspaceClientTextBox
+                                {
+                                    RelativeSizeAxes = Axes.X,
+                                    Height = 44,
+                                    PlaceholderText = "Write a message...",
+                                    ReleaseFocusOnCommit = false,
+                                    FontSize = 32
+                                }
+                            ]
                         }
                     ]
                 }
@@ -189,7 +204,6 @@ public partial class ChatContainer : Container
         else if (slideToEnd)
             scrollToEndPending = true;
     }
-
 
     /// <summary>
     /// Delete or mark message as deleted
