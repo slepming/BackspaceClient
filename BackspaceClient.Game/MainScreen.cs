@@ -3,13 +3,22 @@ using BackspaceClient.Game.Graphics.UserInterface.Containers;
 using BackspaceClient.Game.Online.API;
 using osu.Framework.Allocation;
 using osu.Framework.Graphics;
+using osu.Framework.Graphics.Colour;
+using osu.Framework.Graphics.Effects;
 using osu.Framework.Graphics.Shapes;
 using osu.Framework.Screens;
+using osuTK;
 
 namespace BackspaceClient.Game
 {
     public partial class MainScreen : Screen
     {
+        private static readonly Colour4 screen_background_colour = Colour4.FromHex("#09090B");
+        private static readonly Colour4 card_background_colour = Colour4.FromHex("#121215").Opacity(0.92f);
+        private static readonly Colour4 card_border_colour = Colour4.FromHex("#27272A");
+        private static readonly Colour4 card_shadow_colour = Colour4.Black.Opacity(0.6f);
+        private static readonly Colour4 triangles_colour = Colour4.FromHex("#27272A");
+
         private AuthorizationContainer loginContainer, signUpContainer;
         private ShakerContainer shakeContainer;
 
@@ -22,41 +31,67 @@ namespace BackspaceClient.Game
             instanceObserver = new();
             instanceObserver.Current.Value = instance;
 
-
             loginContainer = new LoginContainer(instanceObserver);
 
             InternalChildren =
             [
+                new Box
+                {
+                    RelativeSizeAxes = Axes.Both,
+                    Colour = screen_background_colour,
+                },
                 new TrianglesV2
                 {
                     RelativeSizeAxes = Axes.Both,
-                    Alpha = 0.3f,
+                    Colour = ColourInfo.GradientVertical(
+                        triangles_colour.Opacity(0.15f),
+                        triangles_colour.Opacity(0.55f)
+                    ),
+                    Velocity = 0.25f,
                 },
                 shakeContainer = new()
                 {
                     Anchor = Anchor.Centre,
                     Origin = Anchor.Centre,
-                    Width = 600,
+                    Width = 420,
                     AutoSizeAxes = Axes.Y,
-                    AutoSizeDuration = 300f,
-                    AutoSizeEasing = Easing.OutCubic,
+                    AutoSizeDuration = 250f,
+                    AutoSizeEasing = Easing.OutQuint,
                     Masking = true,
-                    CornerRadius = 12f,
-                    BorderThickness = 2.5f,
-                    BorderColour = Colour4.FromHex("#3E3E4E"),
+                    CornerRadius = 16f,
+                    BorderThickness = 1.2f,
+                    BorderColour = card_border_colour,
+                    Alpha = 0,
+                    Scale = new Vector2(0.95f),
+                    EdgeEffect = new EdgeEffectParameters
+                    {
+                        Type = EdgeEffectType.Shadow,
+                        Colour = card_shadow_colour,
+                        Radius = 32,
+                        Offset = new Vector2(0, 12),
+                    },
                     Children =
                     [
                         new Box
                         {
                             RelativeSizeAxes = Axes.Both,
-                            Colour = Colour4.FromHex("#181820"),
+                            Colour = card_background_colour,
                         },
                         loginContainer,
                     ]
                 }
             ];
 
-            loginContainer.ErrorOccurred += _ => { shakeContainer.Shake(); };
+            loginContainer.ErrorOccurred += _ => shakeContainer.Shake();
+        }
+
+        public override void OnEntering(ScreenTransitionEvent e)
+        {
+            base.OnEntering(e);
+
+            shakeContainer
+                .FadeIn(350, Easing.OutQuint)
+                .ScaleTo(1f, 400, Easing.OutBack);
         }
     }
 }

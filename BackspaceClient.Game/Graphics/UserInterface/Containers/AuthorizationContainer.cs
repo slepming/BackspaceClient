@@ -7,6 +7,7 @@ using BackspaceClient.Game.Screens;
 using osu.Framework.Allocation;
 using osu.Framework.Graphics;
 using osu.Framework.Graphics.Containers;
+using osu.Framework.Graphics.Shapes;
 using osu.Framework.Graphics.Sprites;
 using osu.Framework.Input;
 using osu.Framework.Logging;
@@ -20,10 +21,22 @@ namespace BackspaceClient.Game.Graphics.UserInterface.Containers;
 /// </summary>
 public abstract partial class AuthorizationContainer : FillFlowContainer
 {
+    private static readonly Colour4 title_colour = Colour4.FromHex("#F4F4F5");
+    private static readonly Colour4 subtitle_colour = Colour4.FromHex("#71717A");
+    private static readonly Colour4 label_colour = Colour4.FromHex("#A1A1AA");
+    private static readonly Colour4 divider_colour = Colour4.FromHex("#27272A");
+
+    private static readonly Colour4 error_banner_background_colour = Colour4.FromHex("#EF4444").Opacity(0.12f);
+    private static readonly Colour4 error_banner_border_colour = Colour4.FromHex("#EF4444").Opacity(0.35f);
+    private static readonly Colour4 error_text_colour = Colour4.FromHex("#F87171");
+
     protected BackspaceClientTextBox LoginTextBox { get; private set; }
     protected BackspaceClientTextBox PasswordTextBox { get; private set; }
     protected BackspaceClientTextBox InstanceTextBox { get; private set; }
+
     protected SpriteText ErrorText { get; private set; }
+
+    private Container errorBannerContainer;
 
     [Resolved]
     protected InstanceConfiguration InstanceConfig { get; private set; }
@@ -40,8 +53,10 @@ public abstract partial class AuthorizationContainer : FillFlowContainer
 
     protected abstract string TitleText { get; }
 
+    protected virtual string SubtitleText => "Enter your credentials to connect to the server";
+
     public AuthorizationContainer(InstanceObserver observer) => InstanceObserver = observer;
-    public AuthorizationContainer() {}
+    public AuthorizationContainer() { }
 
     [BackgroundDependencyLoader]
     private void load(InstanceConfiguration instanceConfig)
@@ -49,62 +64,113 @@ public abstract partial class AuthorizationContainer : FillFlowContainer
         RelativeSizeAxes = Axes.X;
         AutoSizeAxes = Axes.Y;
         Direction = FillDirection.Vertical;
-        Padding = new MarginPadding(32);
-        Spacing = new Vector2(0, 18);
+        Padding = new MarginPadding { Horizontal = 36, Vertical = 36 };
+        Spacing = new Vector2(0, 16);
 
         Children =
         [
-            new SpriteText
-            {
-                Text = TitleText,
-                Anchor = Anchor.TopCentre,
-                Origin = Anchor.TopCentre,
-                Font = new FontUsage(family: BackspaceFonts.Inter, size: 30, weight: "Bold"),
-                Margin = new MarginPadding { Bottom = 6 },
-            },
-            CreateLabeledInput("Login", LoginTextBox = new()
+            new FillFlowContainer
             {
                 RelativeSizeAxes = Axes.X,
-                Height = 42,
-                PlaceholderText = "Login",
+                AutoSizeAxes = Axes.Y,
+                Direction = FillDirection.Vertical,
+                Spacing = new Vector2(0, 6),
+                Margin = new MarginPadding { Bottom = 6 },
+                Children =
+                [
+                    new SpriteText
+                    {
+                        Text = TitleText,
+                        Anchor = Anchor.TopLeft,
+                        Origin = Anchor.TopLeft,
+                        Font = new FontUsage(family: BackspaceFonts.Inter, size: 26, weight: "Bold"),
+                        Colour = title_colour,
+                    },
+                    new SpriteText
+                    {
+                        Text = SubtitleText,
+                        Anchor = Anchor.TopLeft,
+                        Origin = Anchor.TopLeft,
+                        Font = new FontUsage(family: BackspaceFonts.Inter, size: 14),
+                        Colour = subtitle_colour,
+                    }
+                ]
+            },
+            CreateLabeledInput("USERNAME", LoginTextBox = new()
+            {
+                RelativeSizeAxes = Axes.X,
+                Height = 40,
+                FontSize = 16,
+                PlaceholderText = "Enter your username",
                 TabbableContentContainer = this,
             }),
-            CreateLabeledInput("Password", PasswordTextBox = new()
+            CreateLabeledInput("PASSWORD", PasswordTextBox = new()
             {
                 RelativeSizeAxes = Axes.X,
-                Height = 42,
-                PlaceholderText = "Password",
+                Height = 40,
+                FontSize = 16,
+                PlaceholderText = "********",
                 InputProperties = new TextInputProperties(TextInputType.Password),
                 TabbableContentContainer = this,
             }),
-            CreateLabeledInput("Instance URL", InstanceTextBox = new()
+            new Box
             {
                 RelativeSizeAxes = Axes.X,
-                Height = 42,
-                FontSize = 25,
-                PlaceholderText = "Example https://backspaced.org",
+                Height = 1,
+                Colour = divider_colour,
+                Margin = new MarginPadding { Vertical = 2 },
+            },
+            CreateLabeledInput("INSTANCE SERVER", InstanceTextBox = new()
+            {
+                RelativeSizeAxes = Axes.X,
+                Height = 38,
+                FontSize = 15,
+                PlaceholderText = "https://backspaced.org",
                 TabbableContentContainer = this,
                 CommitOnFocusLost = true,
                 Text = instanceConfig.Get<string>(InstanceSettings.Home),
             }),
-            ErrorText = new TextWithTooltip
+            errorBannerContainer = new Container
             {
                 RelativeSizeAxes = Axes.X,
-                Truncate = true,
-                Anchor = Anchor.TopCentre,
-                Origin = Anchor.TopCentre,
-                Font = new FontUsage(family: BackspaceFonts.Inter, size: 25, italics: true),
-                Colour = Colour4.FromHex("#FF5555"),
+                AutoSizeAxes = Axes.Y,
+                Masking = true,
+                CornerRadius = 8f,
+                BorderThickness = 1f,
+                BorderColour = error_banner_border_colour,
                 Alpha = 0,
+                Children =
+                [
+                    new Box
+                    {
+                        RelativeSizeAxes = Axes.Both,
+                        Colour = error_banner_background_colour,
+                    },
+                    new Container
+                    {
+                        RelativeSizeAxes = Axes.X,
+                        AutoSizeAxes = Axes.Y,
+                        Padding = new MarginPadding { Horizontal = 12, Vertical = 9 },
+                        Child = ErrorText = new TextWithTooltip
+                        {
+                            RelativeSizeAxes = Axes.X,
+                            Truncate = true,
+                            Anchor = Anchor.CentreLeft,
+                            Origin = Anchor.CentreLeft,
+                            Font = new FontUsage(family: BackspaceFonts.Inter, size: 14),
+                            Colour = error_text_colour,
+                        }
+                    }
+                ]
             },
             new LoginButton
             {
                 RelativeSizeAxes = Axes.X,
-                Height = 45,
-                Text = "Apply",
+                Height = 42,
+                Text = "Sign In",
                 Anchor = Anchor.TopCentre,
                 Origin = Anchor.TopCentre,
-                Margin = new MarginPadding { Top = 6 },
+                Margin = new MarginPadding { Top = 4 },
                 Action = submit,
             },
         ];
@@ -131,7 +197,7 @@ public abstract partial class AuthorizationContainer : FillFlowContainer
 
         try
         {
-            ErrorText.FadeOut(150);
+            errorBannerContainer.FadeOut(150, Easing.OutQuint);
             Authorize(LoginTextBox.Text, PasswordTextBox.Text);
         }
         catch (Exception e)
@@ -143,10 +209,9 @@ public abstract partial class AuthorizationContainer : FillFlowContainer
     protected virtual void Authorize(string username, string password)
     {
         if (string.IsNullOrEmpty(password) || string.IsNullOrEmpty(username))
-            throw new ArgumentNullException("Password or username empty");
+            throw new ArgumentNullException("Username or password cannot be empty");
 
         if (InstanceObserver == null) Logger.Log("Instance observer is empty", level: LogLevel.Important);
-
 
         Task.Run(() =>
         {
@@ -156,9 +221,19 @@ public abstract partial class AuthorizationContainer : FillFlowContainer
                 {
                     var provider = new APIProvider(username, password, InstanceObserver.Current.Value);
                     if (!provider.HasKey)
-                        throw new ArgumentNullException("Provider don't contain api key(Might be server is unavailable)");
+                        throw new ArgumentNullException("Server didn't return an API key (check instance URL or credentials)");
 
-                    Schedule(() => Stack?.Push(new MessengerScreen(provider, InstanceObserver)));
+                    Schedule(() =>
+                    {
+                        if (Stack is null)
+                        {
+                            Logger.Log("Screen stack is null", level: LogLevel.Important);
+                            return;
+                        }
+
+                        Stack.Push(new MessengerScreen(provider, InstanceObserver));
+                    });
+
                 }
                 catch (Exception e)
                 {
@@ -174,8 +249,13 @@ public abstract partial class AuthorizationContainer : FillFlowContainer
         {
             ErrorOccurred?.Invoke(e);
             ErrorText.Text = e.Message;
-            ErrorText.ClearTransforms();
-            ErrorText.FadeIn(200, Easing.OutQuint).Then().Delay(3500).FadeOut(400, Easing.InQuint);
+            errorBannerContainer.ClearTransforms();
+            errorBannerContainer
+                .FadeIn(200, Easing.OutQuint)
+                .Then()
+                .Delay(4000)
+                .FadeOut(300, Easing.InQuint);
+
             Logger.Error(e, "Authorization runtime error");
         });
     }
@@ -191,8 +271,9 @@ public abstract partial class AuthorizationContainer : FillFlowContainer
             new SpriteText
             {
                 Text = label,
-                Font = new FontUsage(family: BackspaceFonts.Inter, size: 15, weight: "Bold"),
-                Colour = Colour4.FromHex("#A0A0B0"),
+                Font = new FontUsage(family: BackspaceFonts.Inter, size: 12, weight: "Bold"),
+                Colour = label_colour,
+                Spacing = new Vector2(0.8f, 0),
             },
             input,
         ]
