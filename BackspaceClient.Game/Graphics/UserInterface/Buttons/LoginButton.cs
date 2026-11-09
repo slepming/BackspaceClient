@@ -96,15 +96,7 @@ public partial class LoginButton : BasicButton
 
         SpriteText.FadeColour(text_colour, 150, Easing.OutQuint);
 
-        if (IsHovered)
-        {
-            Background.FadeColour(background_hover, 200, Easing.OutQuad);
-            triangles.FadeColour(background_hover.Lighten(0.5f), 300, Easing.OutQuad);
-        }
-        else
-        {
-            Background.FadeColour(background_colour, 120, Easing.OutQuad);
-            triangles.FadeColour(background_colour.Darken(0.3f), 180, Easing.OutQuad);
-        }
+        Background.FadeColour(IsHovered ? background_hover : background_colour, 200, Easing.OutQuad);
+        triangles.FadeColour(IsHovered ? background_hover.Lighten(0.5f) : background_colour.Darken(0.3f), 300, Easing.OutQuad);
     }
 }

@@ -95,6 +95,7 @@ public partial class MainScreen : Screen
                     triangles_error.Opacity(0.15f),
                     triangles_error.Opacity(0.55f)
                 ), 200, Easing.OutQuint)
+                .Then()
                 .Delay(4000)
                 .FadeColour(ColourInfo.GradientVertical(
                     triangles_colour.Opacity(0.15f),

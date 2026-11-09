@@ -29,6 +29,8 @@ public partial class LoginContainer : AuthorizationContainer
                 InstanceConfig.SetValue(InstanceSettings.Home, instance.Current.Value);
                 InstanceObserver.Current.Value = instance.Current.Value;
             }
+
+            if (!string.IsNullOrEmpty(PasswordTextBox.Text) && !string.IsNullOrEmpty(LoginTextBox.Text)) submit();
         };
     }
 
