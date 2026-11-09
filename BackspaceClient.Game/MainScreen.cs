@@ -17,10 +17,14 @@ public partial class MainScreen : Screen
     private static readonly Colour4 card_background_colour = Colour4.FromHex("#121215").Opacity(0.92f);
     private static readonly Colour4 card_border_colour = Colour4.FromHex("#27272A");
     private static readonly Colour4 card_shadow_colour = Colour4.Black.Opacity(0.6f);
+
     private static readonly Colour4 triangles_colour = Colour4.FromHex("#27272A");
+    private static readonly Colour4 triangles_error = Colour4.FromHex("#77272A");
 
     private AuthorizationContainer loginContainer, signUpContainer;
     private ShakerContainer shakeContainer;
+
+    private TrianglesV2 backgroundTriangles;
 
     private InstanceObserver instanceObserver;
 
@@ -40,7 +44,7 @@ public partial class MainScreen : Screen
                 RelativeSizeAxes = Axes.Both,
                 Colour = screen_background_colour,
             },
-            new TrianglesV2(928375)
+            backgroundTriangles = new TrianglesV2(928375)
             {
                 RelativeSizeAxes = Axes.Both,
                 Colour = ColourInfo.GradientVertical(
@@ -83,7 +87,20 @@ public partial class MainScreen : Screen
             }
         ];
 
-        loginContainer.ErrorOccurred += _ => shakeContainer.Shake();
+        loginContainer.ErrorOccurred += _ =>
+        {
+            shakeContainer.Shake();
+            backgroundTriangles
+                .FadeColour(ColourInfo.GradientVertical(
+                    triangles_error.Opacity(0.15f),
+                    triangles_error.Opacity(0.55f)
+                ), 200, Easing.OutQuint)
+                .Delay(4000)
+                .FadeColour(ColourInfo.GradientVertical(
+                    triangles_colour.Opacity(0.15f),
+                    triangles_colour.Opacity(0.55f)
+                ), 300, Easing.OutQuint);
+        };
     }
 
     public override void OnEntering(ScreenTransitionEvent e)
