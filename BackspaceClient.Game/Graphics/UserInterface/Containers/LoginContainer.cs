@@ -2,6 +2,7 @@ using System;
 using BackspaceClient.Game.Configuration;
 using BackspaceClient.Game.Online.API;
 using osu.Framework.Allocation;
+using osu.Framework.Input.Events;
 
 namespace BackspaceClient.Game.Graphics.UserInterface.Containers;
 
@@ -47,5 +48,14 @@ public partial class LoginContainer : AuthorizationContainer
         {
             ShowError(e);
         }
+    }
+
+    protected override bool OnKeyDown(KeyDownEvent e)
+    {
+        if (e.Repeat) return false;
+
+        if (e.Key == osuTK.Input.Key.Enter) submit();
+
+        return base.OnKeyDown(e);
     }
 }
