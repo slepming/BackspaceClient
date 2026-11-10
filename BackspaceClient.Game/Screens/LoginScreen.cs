@@ -9,9 +9,9 @@ using osu.Framework.Graphics.Shapes;
 using osu.Framework.Screens;
 using osuTK;
 
-namespace BackspaceClient.Game;
+namespace BackspaceClient.Game.Screens;
 
-public partial class MainScreen : Screen
+public partial class LoginScreen : Screen
 {
     private static readonly Colour4 screen_background_colour = Colour4.FromHex("#09090B");
     private static readonly Colour4 card_background_colour = Colour4.FromHex("#121215").Opacity(0.92f);

@@ -6,14 +6,14 @@ using osu.Framework.Logging;
 namespace BackspaceClient.Game.Online.API;
 
 /// <summary>
-/// Instance observer for instant switching between instances
+/// Instance observer to instant switching between instances
 /// </summary>
 public class InstanceObserver : IDisposable
 {
     /// <summary>
     /// Current instance URL
     /// </summary>
-    public Bindable<string> Current { get; } = new("http://localhost:3005"); // TODO: May I set modificator's variable to static?
+    public Bindable<string> Current { get; } = new("http://localhost:3005"); // TODO: May I replace variable modificator with static?
 
     public WebSocketClient WebSocketClient { get; private set; }
 

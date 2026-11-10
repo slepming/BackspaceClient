@@ -10,6 +10,7 @@ using Newtonsoft.Json;
 using osu.Framework.Allocation;
 using osu.Framework.Graphics;
 using osu.Framework.Graphics.Containers;
+using osu.Framework.Input.Events;
 using osu.Framework.Logging;
 using osu.Framework.Screens;
 using osuTK;
@@ -100,7 +101,7 @@ public partial class MessengerScreen(APIProvider api, InstanceObserver instanceO
             Logger.Log("Closed");
             Schedule(() =>
             {
-                screenStack.Push(new MainScreen());
+                screenStack.Push(new LoginScreen());
             });
         };
 
@@ -198,5 +199,34 @@ public partial class MessengerScreen(APIProvider api, InstanceObserver instanceO
                 sideBar.AddOrUpdateChannel(channel, instance: instanceObserver.Current.Value, ready.User, ready.UnreadCounts);
             }
         });
+    }
+
+    protected override bool OnKeyDown(KeyDownEvent e)
+    {
+        if (e.Repeat) return false;
+
+        switch (e.Key)
+        {
+            case osuTK.Input.Key.Q:
+            {
+                if (e.ControlPressed)
+                {
+                    Logger.Log("Websocket close reqeusted");
+
+                    Task.Run(async () =>
+                    {
+                        await instanceObserver.WebSocketClient.StopAsync();
+
+                        Schedule(() => screenStack.Push(new LoginScreen()));
+                    });
+
+                    return true;
+                }
+
+                break;
+            }
+        }
+
+        return base.OnKeyDown(e);
     }
 }

@@ -1,4 +1,5 @@
-﻿using osu.Framework.Allocation;
+﻿using BackspaceClient.Game.Screens;
+using osu.Framework.Allocation;
 using osu.Framework.Graphics;
 using osu.Framework.Screens;
 
@@ -21,7 +22,7 @@ namespace BackspaceClient.Game
         {
             base.LoadComplete();
 
-            ScreenStack.Push(new MainScreen());
+            ScreenStack.Push(new LoginScreen());
         }
     }
 }
