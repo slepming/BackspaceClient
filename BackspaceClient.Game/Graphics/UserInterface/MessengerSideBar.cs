@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using BackspaceClient.Game.Extensions;
 using BackspaceClient.Game.Online.API.Response;
+using BackspaceClient.Game.Utils;
 using osu.Framework.Allocation;
 using osu.Framework.Bindables;
 using osu.Framework.Extensions.IEnumerableExtensions;
@@ -15,20 +16,23 @@ using osuTK;
 
 namespace BackspaceClient.Game.Graphics.UserInterface;
 
-public partial class MessengerSideBar : Container
+public partial class MessengerSideBar : OverlayContainer
 {
     private static readonly Vector2 sidebar_size = new(0.2f, 1f);
 
     // TODO: In the future I have to create theme management
-    private static readonly Colour4 surface_channel = Colour4.FromHex("1a1a23");
-    private static readonly Colour4 surface_input = Colour4.White.Opacity(0.03f);
-    private static readonly Colour4 border_hard = Colour4.White.Opacity(0.1f);
-    private static readonly Colour4 text_tertiary = Colour4.White.Opacity(0.45f);
+    private static readonly Colour4 surface_channel = Colour4.FromHex("#121215");
+    private static readonly Colour4 surface_input = Colour4.FromHex("#09090B");
+    private static readonly Colour4 border_divider = Colour4.FromHex("#1F1F23");
+    private static readonly Colour4 border_input = Colour4.FromHex("#27272A");
+    private static readonly Colour4 border_input_focused = Colour4.FromHex("#52525B");
+    private static readonly Colour4 text_tertiary = Colour4.FromHex("#71717A");
+    private static readonly Colour4 icon_search = Colour4.FromHex("#52525B");
 
-    private const float search_bar_height = 48;
-    private const float section_header_height = 32;
+    private const float search_bar_height = 52;
+    private const float section_header_height = 34;
     private const float cards_bottom_padding = 78;
-    private const float horizontal_gutter = 8;
+    private const float horizontal_gutter = 10;
 
     public string DmSectionTitle { get; } = "Direct Messages";
 
@@ -66,20 +70,28 @@ public partial class MessengerSideBar : Container
                 RelativeSizeAxes = Axes.Both,
                 Colour = surface_channel,
             },
+            new Box
+            {
+                Anchor = Anchor.TopRight,
+                Origin = Anchor.TopRight,
+                RelativeSizeAxes = Axes.Y,
+                Width = 1f,
+                Colour = border_divider,
+            },
             searchBarContainer = new Container
             {
                 Anchor = Anchor.TopLeft,
                 Origin = Anchor.TopLeft,
                 RelativeSizeAxes = Axes.X,
                 Height = search_bar_height,
-                Padding = new MarginPadding { Horizontal = 10, Vertical = 8 },
+                Padding = new MarginPadding { Horizontal = 12, Vertical = 10 },
                 Child = searchInputContainer = new Container
                 {
                     RelativeSizeAxes = Axes.Both,
                     Masking = true,
-                    CornerRadius = 4,
-                    BorderThickness = 1,
-                    BorderColour = border_hard,
+                    CornerRadius = 6f,
+                    BorderThickness = 1.2f,
+                    BorderColour = border_input,
                     Children =
                     [
                         new Box
@@ -87,10 +99,24 @@ public partial class MessengerSideBar : Container
                             RelativeSizeAxes = Axes.Both,
                             Colour = surface_input,
                         },
-                        searchTextBox = new SearchTextBox
+                        new SpriteIcon
+                        {
+                            Anchor = Anchor.CentreLeft,
+                            Origin = Anchor.CentreLeft,
+                            Icon = FontAwesome.Solid.Search,
+                            Size = new Vector2(12),
+                            Colour = icon_search,
+                            Margin = new MarginPadding { Left = 10 },
+                        },
+                        new Container
                         {
                             RelativeSizeAxes = Axes.Both,
-                            PlaceholderText = "Find or start conversation",
+                            Padding = new MarginPadding { Left = 22 },
+                            Child = searchTextBox = new SearchTextBox
+                            {
+                                RelativeSizeAxes = Axes.Both,
+                                PlaceholderText = "Find or start conversation",
+                            },
                         },
                     ],
                 },
@@ -102,7 +128,7 @@ public partial class MessengerSideBar : Container
                 RelativeSizeAxes = Axes.X,
                 Height = 1,
                 Position = new Vector2(0, search_bar_height),
-                Colour = border_hard,
+                Colour = border_divider,
             },
             sectionHeaderContainer = new Container
             {
@@ -110,14 +136,14 @@ public partial class MessengerSideBar : Container
                 Origin = Anchor.TopLeft,
                 RelativeSizeAxes = Axes.X,
                 Height = section_header_height,
-                Position = new Vector2(0, search_bar_height),
-                Padding = new MarginPadding { Horizontal = 16 },
+                Position = new Vector2(0, search_bar_height + 2),
+                Padding = new MarginPadding { Horizontal = 14 },
                 Child = sectionTitleText = new SpriteText
                 {
-                    Text = DmSectionTitle,
+                    Text = DmSectionTitle.ToUpperInvariant(),
                     Anchor = Anchor.CentreLeft,
                     Origin = Anchor.CentreLeft,
-                    Font = new FontUsage(size: 14, weight: "Bold"),
+                    Font = new FontUsage(family: BackspaceFonts.Inter, size: 11, weight: "Bold"),
                     Colour = text_tertiary,
                     Spacing = new Vector2(0.8f, 0),
                 },
@@ -127,13 +153,14 @@ public partial class MessengerSideBar : Container
                 RelativeSizeAxes = Axes.Both,
                 Padding = new MarginPadding
                 {
-                    Top = search_bar_height + section_header_height,
+                    Top = search_bar_height + section_header_height + 2,
                     Bottom = cards_bottom_padding,
                 },
                 Child = cardsContainer = new SearchContainer
                 {
                     RelativeSizeAxes = Axes.Both,
                     Direction = FillDirection.Vertical,
+                    Spacing = new Vector2(0, 4),
                     Padding = new MarginPadding { Horizontal = horizontal_gutter },
                 },
             },
@@ -220,5 +247,17 @@ public partial class MessengerSideBar : Container
     {
         cardsContainer.Clear();
         Channels.Clear();
+    }
+
+    protected override void PopIn()
+    {
+        this.FadeIn(250, Easing.OutQuint);
+        this.MoveToX(0, 300, Easing.OutQuint);
+    }
+
+    protected override void PopOut()
+    {
+        this.FadeOut(200, Easing.InQuint);
+        this.MoveToX(-40, 250, Easing.InQuint);
     }
 }

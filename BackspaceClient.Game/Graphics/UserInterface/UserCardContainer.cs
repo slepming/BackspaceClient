@@ -15,16 +15,21 @@ namespace BackspaceClient.Game.Graphics.UserInterface;
 
 public partial class UserCardContainer : Container, IFilterable
 {
-    private static readonly Colour4 card_bg_colour = Colour4.White;
-    private static readonly Colour4 unread_card_bg_colour = Colour4.FromHex("#2AECF5");
-    private static readonly Colour4 text_colour = Colour4.White;
-    private static readonly Colour4 status_indicator_base_colour = Colour4.Black;
-    private static readonly Colour4 unread_indicator_bg_colour = new(0.9f, 0.2f, 0.2f, 1.0f);
+    private static readonly Colour4 card_bg_colour = Colour4.FromHex("#27272A");
+    private static readonly Colour4 unread_card_bg_colour = Colour4.FromHex("#3F3F46");
 
-    private static readonly Colour4 status_offline_colour = Colour4.DarkGray;
-    private static readonly Colour4 status_online_colour = Colour4.LimeGreen;
-    private static readonly Colour4 status_dnd_colour = Colour4.DarkRed;
-    private static readonly Colour4 status_default_colour = Colour4.Purple;
+    private static readonly Colour4 text_colour = Colour4.FromHex("#A1A1AA");
+    private static readonly Colour4 text_unread_colour = Colour4.FromHex("#F4F4F5");
+
+    private static readonly Colour4 accent_bar_colour = Colour4.FromHex("#F4F4F5");
+    private static readonly Colour4 unread_badge_bg_colour = Colour4.FromHex("#EF4444");
+    private static readonly Colour4 unread_badge_text_colour = Colour4.FromHex("#FFFFFF");
+
+    private static readonly Colour4 status_indicator_base_colour = Colour4.FromHex("#121215");
+    private static readonly Colour4 status_offline_colour = Colour4.FromHex("#52525B");
+    private static readonly Colour4 status_online_colour = Colour4.FromHex("#22C55E");
+    private static readonly Colour4 status_dnd_colour = Colour4.FromHex("#EF4444");
+    private static readonly Colour4 status_default_colour = Colour4.FromHex("#A855F7");
 
     public string Id { get; set; } = string.Empty;
 
@@ -65,6 +70,7 @@ public partial class UserCardContainer : Container, IFilterable
     }
 
     private Box backgroundBox;
+    private Container accentBarContainer;
     private Box accentBar;
     private Box unreadIndicatorBackground;
 
@@ -83,7 +89,6 @@ public partial class UserCardContainer : Container, IFilterable
         AutoSizeAxes = Axes.Y;
         AutoSizeDuration = 300f;
         AutoSizeEasing = Easing.OutCubic;
-        //Size = new Vector2(1f, .08f);
         Padding = new MarginPadding { Vertical = 1, Horizontal = 2 };
         instanceUrl = currentInstance;
     }
@@ -96,8 +101,8 @@ public partial class UserCardContainer : Container, IFilterable
             new Container
             {
                 RelativeSizeAxes = Axes.X,
-                Height = 50,
-                CornerRadius = 6,
+                Height = 48,
+                CornerRadius = 8,
                 Masking = true,
                 Children =
                 [
@@ -107,18 +112,24 @@ public partial class UserCardContainer : Container, IFilterable
                         Colour = card_bg_colour,
                         Alpha = 0,
                     },
-                    accentBar = new Box
+                    accentBarContainer = new Container
                     {
                         Anchor = Anchor.CentreLeft,
                         Origin = Anchor.CentreLeft,
-                        Size = new Vector2(3, 24),
-                        Colour = card_bg_colour,
+                        Size = new Vector2(3, 22),
+                        Masking = true,
+                        CornerRadius = 1.5f,
                         Alpha = 0,
+                        Child = accentBar = new Box
+                        {
+                            RelativeSizeAxes = Axes.Both,
+                            Colour = accent_bar_colour,
+                        },
                     },
                     new Container
                     {
                         RelativeSizeAxes = Axes.Both,
-                        Padding = new MarginPadding { Horizontal = 8 },
+                        Padding = new MarginPadding { Left = 10, Right = 10 },
                         Children =
                         [
                             new Container
@@ -132,7 +143,8 @@ public partial class UserCardContainer : Container, IFilterable
                                     {
                                         RelativeSizeAxes = Axes.Both,
                                         Masking = true,
-                                        Child = new BindableAvatar(AvatarUrl, AvatarColor, instanceUrl) {
+                                        Child = new BindableAvatar(AvatarUrl, AvatarColor, instanceUrl)
+                                        {
                                             RelativeSizeAxes = Axes.Both
                                         },
                                     },
@@ -143,7 +155,7 @@ public partial class UserCardContainer : Container, IFilterable
                                         Size = new Vector2(10),
                                         Colour = status_indicator_base_colour,
                                         BorderColour = status_indicator_base_colour,
-                                        BorderThickness = 1.5f,
+                                        BorderThickness = 2f,
                                         Position = new Vector2(-3, -3),
                                     },
                                 ],
@@ -151,59 +163,59 @@ public partial class UserCardContainer : Container, IFilterable
                             new Container
                             {
                                 RelativeSizeAxes = Axes.Both,
-                                Padding = new MarginPadding { Left = 44 },
-                                Child = new Container
-                                {
-                                    RelativeSizeAxes = Axes.X,
-                                    AutoSizeAxes = Axes.Y,
-                                    Anchor = Anchor.CentreLeft,
-                                    Origin = Anchor.CentreLeft,
-                                    Children =
-                                    [
-                                        new Container
-                                        {
-                                            RelativeSizeAxes = Axes.X,
-                                            Height = 18,
-                                            Children =
-                                            [
-                                                usernameText = new SpriteText
+                                Padding = new MarginPadding { Left = 42 },
+                                Children =
+                                [
+                                    usernameText = new SpriteText
+                                    {
+                                        Anchor = Anchor.CentreLeft,
+                                        Origin = Anchor.CentreLeft,
+                                        RelativeSizeAxes = Axes.X,
+                                        Padding = new MarginPadding { Right = 38 },
+                                        Font = new FontUsage(size: 14, family: BackspaceFonts.Inter),
+                                        Colour = text_colour,
+                                        Truncate = true,
+                                    },
+                                    unreadIndicatorContainer = new CircularContainer
+                                    {
+                                        AutoSizeAxes = Axes.X,
+                                        Height = 20f,
+                                        Anchor = Anchor.CentreRight,
+                                        Origin = Anchor.CentreRight,
+                                        Masking = true,
+                                        Alpha = 0f,
+                                        Scale = new Vector2(0.8f),
+                                        Children =
+                                        [
+                                            // Минимальная ширина 20px, чтобы для "1" был ровный круг, а для "12" или "99+" — капсула
+                                            new Container
+                                            {
+                                                Width = 20f,
+                                                Height = 20f,
+                                            },
+                                            unreadIndicatorBackground = new Box
+                                            {
+                                                RelativeSizeAxes = Axes.Both,
+                                                Colour = unread_badge_bg_colour,
+                                            },
+                                            new Container
+                                            {
+                                                AutoSizeAxes = Axes.X,
+                                                RelativeSizeAxes = Axes.Y,
+                                                Anchor = Anchor.Centre,
+                                                Origin = Anchor.Centre,
+                                                Padding = new MarginPadding { Horizontal = 6 },
+                                                Child = unreadCountText = new SpriteText
                                                 {
-                                                    Anchor = Anchor.CentreLeft,
-                                                    Origin = Anchor.CentreLeft,
-                                                    RelativeSizeAxes = Axes.X,
-                                                    Margin = new MarginPadding { Right = 60 },
-                                                    Font = new FontUsage(size: 15, family: BackspaceFonts.Inter),
-                                                    Colour = text_colour,
-                                                    Truncate = true,
+                                                    Font = new FontUsage(size: 11, family: BackspaceFonts.Inter, weight: "Bold"),
+                                                    Colour = unread_badge_text_colour,
+                                                    Anchor = Anchor.Centre,
+                                                    Origin = Anchor.Centre,
                                                 },
-                                                unreadIndicatorContainer = new CircularContainer
-                                                {
-                                                    Margin = new() { Right = 10, Left = 30 },
-                                                    Size = new(30f),
-                                                    Anchor = Anchor.CentreRight,
-                                                    Origin = Anchor.CentreRight,
-                                                    Masking = true,
-                                                    Alpha = 0f,
-                                                    Children =
-                                                    [
-                                                        unreadIndicatorBackground = new()
-                                                        {
-                                                            RelativeSizeAxes = Axes.Both,
-                                                            Colour = unread_indicator_bg_colour.Opacity(.5f),
-                                                        },
-                                                        unreadCountText = new()
-                                                        {
-                                                            Font = new(size: 15, family: BackspaceFonts.BigBluePlusNerdFont),
-                                                            Colour = unread_indicator_bg_colour,
-                                                            Anchor = Anchor.Centre,
-                                                            Origin = Anchor.Centre,
-                                                        },
-                                                    ]
-                                                }
-                                            ],
-                                        },
-                                    ],
-                                },
+                                            },
+                                        ]
+                                    }
+                                ],
                             },
                         ],
                     },
@@ -229,15 +241,22 @@ public partial class UserCardContainer : Container, IFilterable
 
         Username.BindValueChanged(u => usernameText.Text = u.NewValue, true);
         DisplayName.BindValueChanged(d => usernameText.Text = $"{Username.Value}({d.NewValue})", true);
-        //LastMessage.BindValueChanged(m => previewText.Text = m.NewValue, true); // Now is useless
-        //LastMessageTime.BindValueChanged(t => timestampText.Text = t.NewValue, true); // Now is useless
         Selected.BindValueChanged(_ => updateVisualState(), true);
         UnreadMessagesCount.BindValueChanged(c =>
         {
             var unreadCount = c.NewValue;
-            if (unreadCount == 0) unreadIndicatorContainer.FadeTo(.0f, 200, Easing.OutQuad);
-            else unreadIndicatorContainer.FadeTo(1f, 200, Easing.OutQuad);
-            unreadCountText.Text = c.NewValue.ToString();
+            if (unreadCount <= 0)
+            {
+                unreadIndicatorContainer.FadeTo(0f, 180, Easing.OutQuint);
+                unreadIndicatorContainer.ScaleTo(0.75f, 180, Easing.OutQuint);
+            }
+            else
+            {
+                unreadCountText.Text = unreadCount > 99 ? "99+" : unreadCount.ToString();
+                unreadIndicatorContainer.FadeTo(1f, 200, Easing.OutQuint);
+                unreadIndicatorContainer.ScaleTo(1f, 250, Easing.OutBack);
+            }
+
             updateVisualState();
         }, true);
 
@@ -267,32 +286,48 @@ public partial class UserCardContainer : Container, IFilterable
     private void updateVisualState()
     {
         bool hasUnread = UnreadMessagesCount.Value > 0;
-        Colour4 targetColour = hasUnread ? unread_card_bg_colour : card_bg_colour;
+        bool isSelected = Selected.Value;
+
+        Colour4 targetBgColour = hasUnread ? unread_card_bg_colour : card_bg_colour;
+        Colour4 targetTextColour = (hasUnread || isSelected || IsHovered) ? text_unread_colour : text_colour;
+
         float targetBgAlpha;
         float targetAccentAlpha;
+        float targetAccentHeight;
 
-        if (Selected.Value)
+        if (isSelected)
         {
-            targetBgAlpha = hasUnread ? 0.15f : 0.10f;
-            targetAccentAlpha = 0.70f;
+            targetBgAlpha = 0.85f;
+            targetAccentAlpha = 1f;
+            targetAccentHeight = 22f;
         }
         else if (IsHovered)
         {
-            targetBgAlpha = hasUnread ? 0.08f : 0.05f;
-            targetAccentAlpha = 0f;
+            targetBgAlpha = 0.45f;
+            targetAccentAlpha = hasUnread ? 0.85f : 0f;
+            targetAccentHeight = hasUnread ? 14f : 8f;
         }
         else
         {
-            targetBgAlpha = hasUnread ? 0.06f : 0f;
-            targetAccentAlpha = 0f;
+            targetBgAlpha = hasUnread ? 0.25f : 0f;
+            targetAccentAlpha = hasUnread ? 0.9f : 0f;
+            targetAccentHeight = 8f;
         }
 
-        const Easing easing = Easing.OutCubic;
+        const Easing easing = Easing.OutQuint;
         const float duration = 200f;
 
-        backgroundBox.FadeColour(targetColour, duration, easing);
-        accentBar.FadeColour(targetColour, duration, easing);
+        usernameText.Font = new FontUsage(
+            size: 14,
+            family: BackspaceFonts.Inter,
+            weight: (hasUnread || isSelected) ? "Bold" : "Regular"
+        );
+        usernameText.FadeColour(targetTextColour, duration, easing);
+
+        backgroundBox.FadeColour(targetBgColour, duration, easing);
         backgroundBox.FadeTo(targetBgAlpha, duration, easing);
-        accentBar.FadeTo(targetAccentAlpha, duration, easing);
+
+        accentBarContainer.FadeTo(targetAccentAlpha, duration, easing);
+        accentBarContainer.ResizeHeightTo(targetAccentHeight, duration, easing);
     }
 }

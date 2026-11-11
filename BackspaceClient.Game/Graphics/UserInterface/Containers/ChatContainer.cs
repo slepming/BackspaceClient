@@ -17,7 +17,7 @@ using osuTK;
 
 namespace BackspaceClient.Game.Graphics.UserInterface.Containers;
 
-public partial class ChatContainer : Container
+public partial class ChatContainer : OverlayContainer
 {
     private static readonly Colour4 surface_chat = Colour4.FromHex("#09090B");
     private static readonly Colour4 input_divider_colour = Colour4.FromHex("#18181B");
@@ -82,7 +82,7 @@ public partial class ChatContainer : Container
                             Child = messagesFlow = new FillFlowContainer
                             {
                                 RelativeSizeAxes = Axes.X,
-                                Width = 0.8f,
+                                Width = .8f,
                                 AutoSizeAxes = Axes.Y,
                                 Direction = FillDirection.Vertical,
                                 Padding = new MarginPadding { Vertical = 20 },
@@ -94,8 +94,8 @@ public partial class ChatContainer : Container
                         textBoxContainer = new Container
                         {
                             RelativeSizeAxes = Axes.X,
-                            Width = 0.8f,
                             AutoSizeAxes = Axes.Y,
+                            Width = 0.8f,
                             Padding = new MarginPadding { Horizontal = 20, Bottom = 20, Top = 5 },
                             Alpha = 0f,
                             Children =
@@ -241,5 +241,17 @@ public partial class ChatContainer : Container
     private void scrollToBottom()
     {
         scrollContainer.ScrollToEnd();
+    }
+
+    protected override void PopIn()
+    {
+        this.FadeIn(250, Easing.OutQuint);
+        this.MoveToX(0, 300, Easing.OutQuint);
+    }
+
+    protected override void PopOut()
+    {
+        this.FadeOut(200, Easing.InQuint);
+        this.MoveToX(30, 250, Easing.InQuint);
     }
 }

@@ -6,10 +6,12 @@ using BackspaceClient.Game.Graphics.UserInterface.Containers;
 using BackspaceClient.Game.Online.API;
 using BackspaceClient.Game.Online.API.Request;
 using BackspaceClient.Game.Online.API.Response;
+using BackspaceClient.Game.Utils;
 using Newtonsoft.Json;
 using osu.Framework.Allocation;
 using osu.Framework.Graphics;
 using osu.Framework.Graphics.Containers;
+using osu.Framework.Graphics.Sprites;
 using osu.Framework.Input.Events;
 using osu.Framework.Logging;
 using osu.Framework.Screens;
@@ -51,10 +53,24 @@ public partial class MessengerScreen(APIProvider api, InstanceObserver instanceO
                             RelativeSizeAxes = Axes.Both,
                             Size = new Vector2(.2f, 1f),
                         },
-                        chatContainer = new(instanceObserver)
+                        new Container
                         {
                             RelativeSizeAxes = Axes.Both,
-                            Provider = provider,
+                            Children =
+                            [
+                                new SpriteText
+                                {
+                                    Text = "To toggle side bar use Ctrl + E",
+                                    Font = new(family: BackspaceFonts.Inter, size: 35),
+                                    Anchor = Anchor.Centre,
+                                    Origin = Anchor.Centre,
+                                },
+                                chatContainer = new(instanceObserver)
+                                {
+                                    RelativeSizeAxes = Axes.Both,
+                                    Provider = provider,
+                                }
+                            ]
                         }
                     ]
                 }
@@ -86,6 +102,8 @@ public partial class MessengerScreen(APIProvider api, InstanceObserver instanceO
                                 chatContainer.AddOrUpdateMessage(message, true);
                             }
                         }
+
+                        if (chatContainer.State.Value != Visibility.Visible) chatContainer.ToggleVisibility();
                     });
                 }
             });
@@ -224,6 +242,16 @@ public partial class MessengerScreen(APIProvider api, InstanceObserver instanceO
                 }
 
                 break;
+            }
+            case osuTK.Input.Key.E:
+            {
+                if (e.ControlPressed)
+                {
+                    sideBar.ToggleVisibility();
+                    return true;
+                }
+
+                return false;
             }
         }
 

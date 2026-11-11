@@ -10,9 +10,11 @@ public partial class SearchTextBox : BasicTextBox
     public SearchTextBox()
     {
         BackgroundUnfocused = Colour4.Transparent;
-        BackgroundFocused = Colour4.White.Opacity(.05f);
-        BackgroundCommit = Colour4.White.Opacity(.2f);
+        BackgroundFocused = Colour4.Transparent;
+        BackgroundCommit = Colour4.White.Opacity(.1f);
         FontSize = 20f;
+        Masking = true;
+        CornerRadius = 6f;
     }
 
     protected override SpriteText CreatePlaceholder()

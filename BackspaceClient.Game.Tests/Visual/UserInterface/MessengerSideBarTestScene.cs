@@ -26,27 +26,27 @@ public partial class MessengerSideBarTestScene : BackspaceClientTestScene
                 Size = new Vector2(.2f, 1f)
             };
             Add(sideBar);
+            sideBar.Show();
         });
     }
 
     [Test]
     public void CardManipulations()
     {
-        AddStep("Increment cards count", () =>
+        AddRepeatStep("Increment cards count", () =>
         {
-            for (int i = 0; i <= 5; ++i)
+            sideBar.AddOrUpdateChannel(new()
             {
-                sideBar.AddOrUpdateChannel(new()
-                {
-                    Id = RandomString(15),
-                    Members = [
-                        new User {
-                            Username = RandomString(10)
-                        }
-                    ]
-                }, null);
-            }
-        });
+                Id = RandomString(15),
+                Members = [
+                    new User {
+                        Username = RandomString(10)
+                    }
+                ]
+            }, null);
+        }, 5);
+
+        AddWaitStep("Delay", 5);
 
         AddStep("Increment unread message", () =>
         {
@@ -54,11 +54,17 @@ public partial class MessengerSideBarTestScene : BackspaceClientTestScene
                 ++kv.Value.UnreadMessagesCount.Value;
         });
 
+        AddWaitStep("Delay", 5);
+
         AddStep("Decrement unread message", () =>
         {
             foreach (var kv in sideBar.Channels)
                 --kv.Value.UnreadMessagesCount.Value;
         });
+
+        AddWaitStep("Delay", 5);
+
+        AddStep("Hide sidebar", () => sideBar.Hide());
     }
 
     public string RandomString(int length)

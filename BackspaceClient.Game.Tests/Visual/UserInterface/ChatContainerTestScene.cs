@@ -23,6 +23,8 @@ public partial class ChatContainerTestScene : DataTestScene
             {
                 RelativeSizeAxes = Axes.Both
             });
+
+            chat.ToggleVisibility();
         });
     }
 
