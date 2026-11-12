@@ -1,4 +1,5 @@
 using System;
+using System.Net.Http;
 using System.Threading.Tasks;
 using BackspaceClient.Game.Configuration;
 using BackspaceClient.Game.Graphics.UserInterface.Buttons;
@@ -211,7 +212,7 @@ public abstract partial class AuthorizationContainer : FillFlowContainer
                 {
                     var provider = new APIProvider(username, password, InstanceObserver.Current.Value);
                     if (!provider.HasKey)
-                        throw new ArgumentNullException("Server didn't return an API key (check instance URL or credentials)");
+                        throw new HttpRequestException("Server didn't return an API key (check instance URL or credentials)");
 
                     Schedule(() =>
                     {
