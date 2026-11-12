@@ -1,6 +1,7 @@
 ﻿using BackspaceClient.Game.Screens;
 using osu.Framework.Allocation;
 using osu.Framework.Graphics;
+using osu.Framework.Graphics.Cursor;
 using osu.Framework.Screens;
 
 namespace BackspaceClient.Game
@@ -15,7 +16,11 @@ namespace BackspaceClient.Game
         {
             // Add your top-level game components here.
             // A screen stack and sample screen has been provided for convenience, but you can replace it if you don't want to use screens.
-            Child = ScreenStack;
+            Child = new TooltipContainer
+            {
+                RelativeSizeAxes = Axes.Both,
+                Child = ScreenStack
+            };
         }
 
         protected override void LoadComplete()
