@@ -74,7 +74,7 @@ public partial class ChatContainer : OverlayContainer
                 {
                     new Drawable[]
                     {
-                        scrollContainer = new BasicScrollContainer
+                        scrollContainer = new BackspaceScrollContainer
                         {
                             RelativeSizeAxes = Axes.Both,
                             ScrollbarOverlapsContent = false,

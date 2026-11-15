@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using BackspaceClient.Game.Extensions;
+using BackspaceClient.Game.Graphics.UserInterface.Containers;
 using BackspaceClient.Game.Online.API.Response;
 using BackspaceClient.Game.Utils;
 using osu.Framework.Allocation;
@@ -154,14 +155,18 @@ public partial class MessengerSideBar : OverlayContainer
                 Padding = new MarginPadding
                 {
                     Top = search_bar_height + section_header_height + 2,
-                    Bottom = cards_bottom_padding,
                 },
-                Child = cardsContainer = new SearchContainer
+                Child = new BackspaceScrollContainer
                 {
                     RelativeSizeAxes = Axes.Both,
-                    Direction = FillDirection.Vertical,
-                    Spacing = new Vector2(0, 4),
-                    Padding = new MarginPadding { Horizontal = horizontal_gutter },
+                    Child = cardsContainer = new SearchContainer
+                    {
+                        RelativeSizeAxes = Axes.X,
+                        AutoSizeAxes = Axes.Y,
+                        Direction = FillDirection.Vertical,
+                        Spacing = new Vector2(0, 4),
+                        Padding = new MarginPadding { Horizontal = horizontal_gutter },
+                    },
                 },
             },
         ];
