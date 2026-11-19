@@ -11,7 +11,7 @@ namespace BackspaceClient.Game.Input.Bindings;
 
 public partial class GlobalActionContainer : KeyBindingContainer<GlobalActions>, IHandleGlobalKeyboardInput, IKeyBindingHandler<GlobalActions>
 {
-    public override IEnumerable<IKeyBinding> DefaultKeyBindings => messengerBindings;
+    public override IEnumerable<IKeyBinding> DefaultKeyBindings => messengerBindings.Concat(chatBindings);
 
     private readonly IKeyBindingHandler<GlobalActions>? handler;
 
@@ -26,6 +26,8 @@ public partial class GlobalActionContainer : KeyBindingContainer<GlobalActions>,
         {
             case GlobalActionCategories.Messenger:
                 return messengerBindings;
+            case GlobalActionCategories.Chat:
+                return chatBindings;
             default:
                 throw new ArgumentOutOfRangeException(nameof(cat), cat, $"Unexpected {nameof(GlobalActionCategories)}");
         };
@@ -42,15 +44,22 @@ public partial class GlobalActionContainer : KeyBindingContainer<GlobalActions>,
     [
         new KeyBinding(new[] {InputKey.Control, InputKey.E}, GlobalActions.OpenSideBar),
     ];
+
+    private static IEnumerable<KeyBinding> chatBindings =>
+    [
+        new KeyBinding(new[] {InputKey.Control, InputKey.C}, GlobalActions.ClearAttachments),
+    ];
 }
 
 public enum GlobalActions
 {
     OpenRecentMessengerCards,
     OpenSideBar,
+    ClearAttachments
 }
 
 public enum GlobalActionCategories
 {
     Messenger,
+    Chat
 }

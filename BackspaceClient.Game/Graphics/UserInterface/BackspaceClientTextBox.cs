@@ -1,3 +1,4 @@
+using System;
 using BackspaceClient.Game.Utils;
 using osu.Framework.Allocation;
 using osu.Framework.Graphics;
@@ -6,8 +7,11 @@ using osu.Framework.Graphics.Effects;
 using osu.Framework.Graphics.Sprites;
 using osu.Framework.Graphics.UserInterface;
 using osu.Framework.Input.Events;
+using osu.Framework.Platform;
 using osuTK;
 using osuTK.Graphics;
+using SixLabors.ImageSharp;
+using SixLabors.ImageSharp.PixelFormats;
 
 namespace BackspaceClient.Game.Graphics.UserInterface;
 
@@ -33,6 +37,11 @@ public partial class BackspaceClientTextBox : BasicTextBox
     private const float corner_radius = 8f;
     private const float border_thickness = 1.2f;
     private const float horizontal_padding = 14f;
+
+    public event PasteImage OnPasteImage;
+
+    [Resolved]
+    private Clipboard clipboard { get; set; }
 
     public BackspaceClientTextBox()
     {
@@ -110,4 +119,30 @@ public partial class BackspaceClientTextBox : BasicTextBox
         var targetBorder = IsHovered ? border_hover : border_idle;
         this.TransformTo(nameof(BorderColour), (ColourInfo)targetBorder, 150, Easing.OutQuint);
     }
+
+    protected override bool OnKeyDown(KeyDownEvent e)
+    {
+        if (e.Repeat)
+            return base.OnKeyDown(e);
+
+        if (!e.ControlPressed)
+            return base.OnKeyDown(e);
+
+        switch (e.Key)
+        {
+            case osuTK.Input.Key.V:
+                var image = clipboard.GetImage<Rgba32>();
+
+                if (image == null)
+                    break;
+
+                OnPasteImage?.Invoke(image);
+
+                return true;
+        }
+
+        return base.OnKeyDown(e);
+    }
+
+    public delegate void PasteImage(in Image<Rgba32> data);
 }

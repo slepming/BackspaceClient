@@ -2,6 +2,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using BackspaceClient.Game.Extensions;
+using BackspaceClient.Game.Input.Bindings;
 using BackspaceClient.Game.Online.API;
 using BackspaceClient.Game.Online.API.Request;
 using BackspaceClient.Game.Online.API.Response;
@@ -10,14 +11,20 @@ using osu.Framework.Allocation;
 using osu.Framework.Bindables;
 using osu.Framework.Graphics;
 using osu.Framework.Graphics.Containers;
+using osu.Framework.Graphics.Rendering;
 using osu.Framework.Graphics.Shapes;
+using osu.Framework.Graphics.Sprites;
+using osu.Framework.Graphics.Textures;
 using osu.Framework.Graphics.UserInterface;
+using osu.Framework.Input;
+using osu.Framework.Input.Bindings;
+using osu.Framework.Input.Events;
 using osu.Framework.Testing;
 using osuTK;
 
 namespace BackspaceClient.Game.Graphics.UserInterface.Containers;
 
-public partial class ChatContainer : OverlayContainer
+public partial class ChatContainer : OverlayContainer, IKeyBindingHandler<GlobalActions>
 {
     private static readonly Colour4 surface_chat = Colour4.FromHex("#09090B");
     private static readonly Colour4 input_divider_colour = Colour4.FromHex("#18181B");
@@ -39,12 +46,15 @@ public partial class ChatContainer : OverlayContainer
 
     private Box backgroundBox;
 
-    private TextBox messageTextBox;
+    private BackspaceClientTextBox messageTextBox;
     private BasicButton fileSelectorButton;
 
     private BasicScrollContainer scrollContainer;
-    private FillFlowContainer messagesFlow;
+    private FillFlowContainer messagesFlow, userMessageAttachments;
     private Container textBoxContainer;
+
+    [Resolved]
+    private IRenderer renderer { get; set; }
 
     public ChatContainer(InstanceObserver observer)
     {
@@ -109,13 +119,29 @@ public partial class ChatContainer : OverlayContainer
                                     Colour = input_divider_colour,
                                     Margin = new MarginPadding { Bottom = 10 },
                                 },
-                                messageTextBox = new BackspaceClientTextBox
+                                new FillFlowContainer
                                 {
+                                    AutoSizeAxes = Axes.Y,
                                     RelativeSizeAxes = Axes.X,
-                                    Height = 44,
-                                    PlaceholderText = "Write a message...",
-                                    ReleaseFocusOnCommit = false,
-                                    FontSize = 32
+                                    Direction = FillDirection.Vertical,
+                                    Children =
+                                    [
+                                        userMessageAttachments = new FillFlowContainer
+                                        {
+                                            AutoSizeAxes = Axes.Y,
+                                            RelativeSizeAxes = Axes.X,
+                                            Direction = FillDirection.Full,
+                                            Margin = new() { Bottom = 10, Top = 5 }
+                                        },
+                                        messageTextBox = new BackspaceClientTextBox
+                                        {
+                                            RelativeSizeAxes = Axes.X,
+                                            Height = 44,
+                                            PlaceholderText = "Write a message...",
+                                            ReleaseFocusOnCommit = false,
+                                            FontSize = 32
+                                        },
+                                    ]
                                 }
                             ]
                         }
@@ -128,6 +154,14 @@ public partial class ChatContainer : OverlayContainer
         {
             textBoxContainer.FadeTo(v.NewValue != null ? 1f : 0f, 200, Easing.OutQuint);
         }, true);
+
+        messageTextBox.OnPasteImage += (in image) =>
+        {
+            userMessageAttachments.Add(new AttachmentPreviewCard(image)
+            {
+                Margin = new(5)
+            });
+        };
 
         messageTextBox.OnCommit += (textBox, newValue) =>
         {
@@ -221,7 +255,7 @@ public partial class ChatContainer : OverlayContainer
             return;
 
         if (deletedMessage.Parent is FillFlowContainer parentContainer)
-            if (parentContainer.Parent is MessageContentContainer messageContainer)
+            if (parentContainer.Parent is Container messageContainer)
                 messageContainer.Remove(parentContainer, false);
     }
 
@@ -246,13 +280,26 @@ public partial class ChatContainer : OverlayContainer
 
     protected override void PopIn()
     {
-        this.FadeIn(250, Easing.OutQuint);
-        this.MoveToX(0, 300, Easing.OutQuint);
+        this.FadeIn(250, Easing.OutQuint).MoveToX(0, 300, Easing.OutQuint);
     }
 
     protected override void PopOut()
     {
-        this.FadeOut(200, Easing.InQuint);
-        this.MoveToX(30, 250, Easing.InQuint);
+        this.FadeOut(200, Easing.InQuint).MoveToX(30, 250, Easing.InQuint);
+    }
+
+    public bool OnPressed(KeyBindingPressEvent<GlobalActions> e)
+    {
+        if (e.Repeat)
+            return false;
+
+        if (e.Action == GlobalActions.ClearAttachments)
+            userMessageAttachments.Clear();
+
+        return false;
+    }
+
+    public void OnReleased(KeyBindingReleaseEvent<GlobalActions> e)
+    {
     }
 }
