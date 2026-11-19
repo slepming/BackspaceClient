@@ -21,7 +21,8 @@ public partial class ChatContainerTestScene : DataTestScene
             templateMessageId = RandomString(15);
             Add(chat = new(null)
             {
-                RelativeSizeAxes = Axes.Both
+                RelativeSizeAxes = Axes.Both,
+                DmChannelId = "osu best game in the all world",
             });
 
             chat.ToggleVisibility();

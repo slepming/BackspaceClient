@@ -256,13 +256,11 @@ public partial class MessengerSideBar : OverlayContainer
 
     protected override void PopIn()
     {
-        this.FadeIn(250, Easing.OutQuint);
-        this.MoveToX(0, 300, Easing.OutQuint);
+        this.FadeIn(250, Easing.OutQuint).MoveToX(0, 300, Easing.OutQuint);
     }
 
     protected override void PopOut()
     {
-        this.FadeOut(200, Easing.InQuint);
-        this.MoveToX(-40, 250, Easing.InQuint);
+        this.FadeOut(200, Easing.InQuint).MoveToX(-40, 250, Easing.InQuint);
     }
 }
