@@ -1,6 +1,5 @@
 using System;
 using osu.Framework.Allocation;
-using osu.Framework.Extensions.Color4Extensions;
 using osu.Framework.Graphics;
 using osu.Framework.Graphics.Colour;
 using osu.Framework.Graphics.Containers;
@@ -9,7 +8,6 @@ using osu.Framework.Graphics.Rendering;
 using osu.Framework.Graphics.Shapes;
 using osu.Framework.Graphics.Sprites;
 using osu.Framework.Graphics.Textures;
-using osu.Framework.Graphics.UserInterface;
 using osu.Framework.Input.Events;
 using osuTK;
 using SixLabors.ImageSharp;
@@ -25,7 +23,7 @@ public partial class AttachmentPreviewCard : CompositeDrawable
     private static readonly Colour4 card_shadow_colour = Colour4.Black.Opacity(0.35f);
 
     private static readonly Colour4 close_bg_idle_colour = Colour4.FromHex("#09090B").Opacity(0.82f);
-    private static readonly Colour4 close_bg_hover_colour = Colour4.FromHex("#EF4444");
+    private static readonly Colour4 close_icon_hover_colour = Colour4.FromHex("#EF4444");
     private static readonly Colour4 close_bg_press_colour = Colour4.FromHex("#DC2626");
     private static readonly Colour4 close_border_colour = Colour4.FromHex("#3F3F46");
     private static readonly Colour4 close_icon_colour = Colour4.FromHex("#F4F4F5");
@@ -139,11 +137,6 @@ public partial class AttachmentPreviewCard : CompositeDrawable
 
             Children =
             [
-                backgroundBox = new Box
-                {
-                    RelativeSizeAxes = Axes.Both,
-                    Colour = close_bg_idle_colour,
-                },
                 closeIcon = new SpriteIcon
                 {
                     Anchor = Anchor.Centre,
@@ -157,23 +150,20 @@ public partial class AttachmentPreviewCard : CompositeDrawable
 
         protected override bool OnHover(HoverEvent e)
         {
-            backgroundBox.FadeColour(close_bg_hover_colour, 120, Easing.OutQuint);
-            this.TransformTo(nameof(BorderColour), (ColourInfo)close_bg_hover_colour, 120, Easing.OutQuint);
             closeIcon.ScaleTo(1.1f, 150, Easing.OutBack);
+            closeIcon.FadeColour(close_icon_hover_colour, 150, Easing.InCubic);
             return base.OnHover(e);
         }
 
         protected override void OnHoverLost(HoverLostEvent e)
         {
-            backgroundBox.FadeColour(close_bg_idle_colour, 150, Easing.OutQuint);
-            this.TransformTo(nameof(BorderColour), (ColourInfo)close_border_colour, 150, Easing.OutQuint);
             closeIcon.ScaleTo(1f, 150, Easing.OutQuint);
+            closeIcon.FadeColour(close_icon_colour, 150, Easing.InCubic);
             base.OnHoverLost(e);
         }
 
         protected override bool OnMouseDown(MouseDownEvent e)
         {
-            backgroundBox.FadeColour(close_bg_press_colour, 50, Easing.OutQuint);
             this.ScaleTo(0.9f, 50, Easing.OutQuint);
             return base.OnMouseDown(e);
         }
@@ -181,7 +171,6 @@ public partial class AttachmentPreviewCard : CompositeDrawable
         protected override void OnMouseUp(MouseUpEvent e)
         {
             this.ScaleTo(1f, 160, Easing.OutBack);
-            backgroundBox.FadeColour(IsHovered ? close_bg_hover_colour : close_bg_idle_colour, 120, Easing.OutQuint);
             base.OnMouseUp(e);
         }
     }
