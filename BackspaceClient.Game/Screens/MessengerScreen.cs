@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Threading.Tasks;
 using BackspaceClient.Game.Graphics.UserInterface;
 using BackspaceClient.Game.Graphics.UserInterface.Containers;
+using BackspaceClient.Game.Input.Bindings;
 using BackspaceClient.Game.Online.API;
 using BackspaceClient.Game.Online.API.Request;
 using BackspaceClient.Game.Online.API.Response;
@@ -12,6 +13,7 @@ using osu.Framework.Allocation;
 using osu.Framework.Graphics;
 using osu.Framework.Graphics.Containers;
 using osu.Framework.Graphics.Sprites;
+using osu.Framework.Input.Bindings;
 using osu.Framework.Input.Events;
 using osu.Framework.Logging;
 using osu.Framework.Screens;
@@ -19,7 +21,7 @@ using osuTK;
 
 namespace BackspaceClient.Game.Screens;
 
-public partial class MessengerScreen(APIProvider api, InstanceObserver instanceObserver) : Screen
+public partial class MessengerScreen(APIProvider api, InstanceObserver instanceObserver) : Screen, IKeyBindingHandler<GlobalActions>
 {
     // Network
     private readonly APIProvider provider = api;
@@ -243,18 +245,27 @@ public partial class MessengerScreen(APIProvider api, InstanceObserver instanceO
 
                 break;
             }
-            case osuTK.Input.Key.E:
-            {
-                if (e.ControlPressed)
-                {
-                    sideBar.ToggleVisibility();
-                    return true;
-                }
-
-                return false;
-            }
         }
 
         return base.OnKeyDown(e);
+    }
+
+    public bool OnPressed(KeyBindingPressEvent<GlobalActions> e)
+    {
+        if (e.Repeat)
+            return false;
+
+        switch (e.Action)
+        {
+            case GlobalActions.OpenSideBar:
+                sideBar.ToggleVisibility();
+                return true;
+        }
+
+        return false;
+    }
+
+    public void OnReleased(KeyBindingReleaseEvent<GlobalActions> e)
+    {
     }
 }

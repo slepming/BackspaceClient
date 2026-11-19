@@ -1,12 +1,15 @@
 using BackspaceClient.Game.Configuration;
 using BackspaceClient.Game.Graphics.UserInterface.Containers.Cursor;
+using BackspaceClient.Game.Input.Bindings;
 using BackspaceClient.Resources;
 using osu.Framework.Allocation;
 using osu.Framework.Configuration;
 using osu.Framework.Graphics;
 using osu.Framework.Graphics.Containers;
+using osu.Framework.Graphics.Cursor;
 using osu.Framework.IO.Stores;
 using osu.Framework.Platform;
+using osu.Framework.Screens;
 using osuTK;
 
 namespace BackspaceClient.Game
@@ -18,10 +21,17 @@ namespace BackspaceClient.Game
         // the screen scaling for all components including the test browser and framework overlays.
 
         protected Storage Storage { get; private set; }
+        protected InstanceConfiguration InstanceConfiguration;
+
         protected override Container<Drawable> Content { get; }
+
         private DependencyContainer dependencies;
 
-        protected InstanceConfiguration InstanceConfiguration;
+        protected GlobalActionContainer GlobalBindings;
+
+        [Cached]
+        protected readonly ScreenStack ScreenStack = new() { RelativeSizeAxes = Axes.Both };
+
 
         protected BackspaceClientGameBase()
         {
@@ -49,10 +59,27 @@ namespace BackspaceClient.Game
                 {
                     Children =
                     [
-                        new MenuCursorContainer()
+                        GlobalBindings = new(this)
+                        {
+                            Children =
+                            [
+#if !DEBUG
+                                new TooltipContainer()
+                                {
+                                    RelativeSizeAxes = Axes.Both,
+                                    Child = ScreenStack
+                                },
+#else
+                                ScreenStack,
+#endif
+                                new MenuCursorContainer()
+                            ]
+                        },
                     ]
                 }
             });
+
+            dependencies.Cache(GlobalBindings);
 
             InitialiseFonts();
             InitialiseFrameworkConfig(configManager);

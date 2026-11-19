@@ -123,12 +123,12 @@ public partial class MessageView : Container, IHasContextMenu
                     Anchor = Anchor.CentreLeft,
                     Origin = Anchor.CentreLeft,
                 },
-                replyContentText = new SpriteText
+                replyContentText = new TextWithTooltip
                 {
                     Font = new FontUsage(family: BackspaceFonts.Inter, size: 13),
                     Colour = reply_content_colour,
                     Truncate = true,
-                    MaxWidth = 320,
+                    MaxWidth = 420,
                     Anchor = Anchor.CentreLeft,
                     Origin = Anchor.CentreLeft,
                 }
