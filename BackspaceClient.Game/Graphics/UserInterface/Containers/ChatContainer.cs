@@ -127,7 +127,7 @@ public partial class ChatContainer : OverlayContainer
         dmChannelId.BindValueChanged(v =>
         {
             textBoxContainer.FadeTo(v.NewValue != null ? 1f : 0f, 200, Easing.OutQuint);
-        });
+        }, true);
 
         messageTextBox.OnCommit += (textBox, newValue) =>
         {
@@ -221,7 +221,8 @@ public partial class ChatContainer : OverlayContainer
             return;
 
         if (deletedMessage.Parent is FillFlowContainer parentContainer)
-            parentContainer.Remove(deletedMessage, false);
+            if (parentContainer.Parent is MessageContentContainer messageContainer)
+                messageContainer.Remove(parentContainer, false);
     }
 
     public void ClearMessages()

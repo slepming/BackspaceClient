@@ -32,7 +32,7 @@ public partial class ChatContainerTestScene : DataTestScene
     [Test]
     public void ChatManipulations()
     {
-        AddRepeatStep("Add message", () => chat.AddOrUpdateMessage(CreateMessage()), 5);
+        AddRepeatStep("Add message", () => chat.AddOrUpdateMessage(CreateMessage(large: false)), 5);
 
         AddStep("Add markdown message", () =>
         {
