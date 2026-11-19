@@ -105,6 +105,8 @@ public partial class ChatContainer : OverlayContainer, IKeyBindingHandler<Global
                         {
                             RelativeSizeAxes = Axes.X,
                             AutoSizeAxes = Axes.Y,
+                            AutoSizeDuration = 120f,
+                            AutoSizeEasing = Easing.OutQuad,
                             Width = 0.8f,
                             Padding = new MarginPadding { Horizontal = 20, Bottom = 20, Top = 5 },
                             Alpha = 0f,
@@ -157,10 +159,14 @@ public partial class ChatContainer : OverlayContainer, IKeyBindingHandler<Global
 
         messageTextBox.OnPasteImage += (in image) =>
         {
-            userMessageAttachments.Add(new AttachmentPreviewCard(image)
+            var attachment = new AttachmentPreviewCard(image)
             {
                 Margin = new(5)
-            });
+            };
+
+            attachment.OnRemove += () => attachment.RemoveAndDisposeImmediately();
+
+            userMessageAttachments.Add(attachment);
         };
 
         messageTextBox.OnCommit += (textBox, newValue) =>

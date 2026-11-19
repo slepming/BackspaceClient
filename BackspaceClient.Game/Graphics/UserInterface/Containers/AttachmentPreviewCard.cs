@@ -22,9 +22,7 @@ public partial class AttachmentPreviewCard : CompositeDrawable
     private static readonly Colour4 card_border_hover_colour = Colour4.FromHex("#3F3F46");
     private static readonly Colour4 card_shadow_colour = Colour4.Black.Opacity(0.35f);
 
-    private static readonly Colour4 close_bg_idle_colour = Colour4.FromHex("#09090B").Opacity(0.82f);
     private static readonly Colour4 close_icon_hover_colour = Colour4.FromHex("#EF4444");
-    private static readonly Colour4 close_bg_press_colour = Colour4.FromHex("#DC2626");
     private static readonly Colour4 close_border_colour = Colour4.FromHex("#3F3F46");
     private static readonly Colour4 close_icon_colour = Colour4.FromHex("#F4F4F5");
 
@@ -35,7 +33,7 @@ public partial class AttachmentPreviewCard : CompositeDrawable
     [Resolved]
     private IRenderer renderer { get; set; }
 
-    public Action OnRemove { get; init; }
+    public Action OnRemove;
 
     private readonly Image<Rgba32> sourceImage;
     private Container cardContainer;
@@ -120,6 +118,17 @@ public partial class AttachmentPreviewCard : CompositeDrawable
     {
         cardContainer.TransformTo(nameof(BorderColour), (ColourInfo)card_border_colour, 150, Easing.OutQuint);
         base.OnHoverLost(e);
+    }
+
+    protected override bool OnKeyDown(KeyDownEvent e)
+    {
+        if (e.Repeat)
+            return false;
+
+        if (e.ControlPressed && e.Key == osuTK.Input.Key.W)
+            OnRemove?.Invoke();
+
+        return base.OnKeyDown(e);
     }
 
     private partial class RemoveAttachmentButton : ClickableContainer
