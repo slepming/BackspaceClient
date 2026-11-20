@@ -53,6 +53,8 @@ public partial class ChatContainer : OverlayContainer, IKeyBindingHandler<Global
     [Resolved]
     private IRenderer renderer { get; set; }
 
+    protected override bool BlockPositionalInput => false;
+
     public ChatContainer(InstanceObserver observer)
     {
         RelativeSizeAxes = Axes.Both;
