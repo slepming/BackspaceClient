@@ -1,8 +1,10 @@
+using BackspaceClient.Game.Graphics.UserInterface.Containers;
 using osu.Framework.Allocation;
 using osu.Framework.Graphics;
 using osu.Framework.Graphics.Containers;
 using osu.Framework.Graphics.Sprites;
 using osu.Framework.Graphics.Textures;
+using osu.Framework.Input.Events;
 
 namespace BackspaceClient.Game.Graphics.UserInterface;
 
@@ -10,6 +12,12 @@ namespace BackspaceClient.Game.Graphics.UserInterface;
 public partial class ImageMimetypeSprite : Container
 {
     private string url;
+
+    [Resolved(canBeNull: true)]
+    private ImageViewerOverlay imageViewerOverlay { get; set; }
+
+    private Sprite sprite;
+
     public ImageMimetypeSprite(string url)
     {
         AutoSizeAxes = Axes.Both;
@@ -21,6 +29,13 @@ public partial class ImageMimetypeSprite : Container
     {
         var texture = store.Get(url);
 
-        Add(new Sprite { Texture = texture });
+        Add(sprite = new Sprite { Texture = texture });
+    }
+
+    protected override bool OnClick(ClickEvent e)
+    {
+        imageViewerOverlay.ShowImage(sprite.Texture);
+
+        return base.OnClick(e);
     }
 }

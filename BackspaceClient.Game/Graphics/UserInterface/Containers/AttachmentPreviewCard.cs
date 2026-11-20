@@ -30,8 +30,13 @@ public partial class AttachmentPreviewCard : CompositeDrawable
     private const float corner_radius = 10f;
     private const float border_thickness = 1.2f;
 
+    private Texture previewTexture;
+
     [Resolved]
     private IRenderer renderer { get; set; }
+
+    [Resolved(canBeNull: true)]
+    private ImageViewerOverlay imageViewerOverlay { get; set; }
 
     public Action OnRemove;
 
@@ -58,7 +63,7 @@ public partial class AttachmentPreviewCard : CompositeDrawable
     [BackgroundDependencyLoader]
     private void load()
     {
-        Texture previewTexture = sourceImage != null ? CreateTextureFromImage(renderer, sourceImage) : null;
+        previewTexture = sourceImage != null ? CreateTextureFromImage(renderer, sourceImage) : null;
 
         InternalChild = cardContainer = new Container
         {
@@ -104,8 +109,7 @@ public partial class AttachmentPreviewCard : CompositeDrawable
     {
         base.LoadComplete();
 
-        this.FadeIn(200, Easing.OutQuint);
-        this.ScaleTo(1f, 260, Easing.OutBack);
+        this.FadeIn(200, Easing.OutQuint).ScaleTo(1f, 260, Easing.OutBack);
     }
 
     protected override bool OnHover(HoverEvent e)
@@ -129,6 +133,13 @@ public partial class AttachmentPreviewCard : CompositeDrawable
             OnRemove?.Invoke();
 
         return base.OnKeyDown(e);
+    }
+
+    protected override bool OnClick(ClickEvent e)
+    {
+        imageViewerOverlay?.ShowImage(previewTexture);
+
+        return base.OnClick(e);
     }
 
     private partial class RemoveAttachmentButton : ClickableContainer

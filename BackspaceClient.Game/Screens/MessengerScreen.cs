@@ -31,6 +31,9 @@ public partial class MessengerScreen(APIProvider api, InstanceObserver instanceO
     private MessengerSideBar sideBar;
     private ChatContainer chatContainer;
 
+    [Cached]
+    private ImageViewerOverlay imageViewerOverlay = new() { Depth = float.MinValue };
+
     [Resolved]
     private ScreenStack screenStack { get; set; }
 
@@ -44,6 +47,7 @@ public partial class MessengerScreen(APIProvider api, InstanceObserver instanceO
             RelativeSizeAxes = Axes.Both,
             Children =
             [
+                imageViewerOverlay,
                 new FillFlowContainer()
                 {
                     Direction = FillDirection.Horizontal,
