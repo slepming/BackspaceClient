@@ -1,6 +1,6 @@
 using System.Collections;
 using System.Linq;
-using BackspaceClient.Game.Online.API.Models;
+using BackspaceClient.Game.Models;
 using BackspaceClient.Game.Online.API.Response;
 using BackspaceClient.Game.Utils;
 using osu.Framework.Allocation;

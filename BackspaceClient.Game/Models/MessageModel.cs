@@ -3,7 +3,7 @@ using System.Linq;
 using BackspaceClient.Game.Online.API.Response;
 using osu.Framework.Bindables;
 
-namespace BackspaceClient.Game.Online.API.Models;
+namespace BackspaceClient.Game.Models;
 
 public class MessageModel
 {
