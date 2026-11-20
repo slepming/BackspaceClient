@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Linq;
 using BackspaceClient.Game.Models;
+using BackspaceClient.Game.Online.API;
 using BackspaceClient.Game.Online.API.Response;
 using BackspaceClient.Game.Utils;
 using osu.Framework.Allocation;
@@ -45,6 +46,7 @@ public partial class MessageView : Container, IHasContextMenu
     public MenuItem[] ContextMenuItems =>
     [
         new("Copy", copyContentToClipboard),
+        new("Delete", () => Model?.IsDeleted?.Value = true),
     ];
 
     private SpriteText usernameText;
@@ -59,10 +61,13 @@ public partial class MessageView : Container, IHasContextMenu
 
     private readonly string instanceUrl;
 
-    public MessageView(DmChatMessageResponse data, string instanceUrl)
+    private InstanceObserver observer;
+
+    public MessageView(DmChatMessageResponse data, string instanceUrl, InstanceObserver observer)
     {
         Model = new MessageModel(data);
         this.instanceUrl = instanceUrl;
+        this.observer = observer;
 
         Masking = true;
         CornerRadius = 10f;
@@ -294,5 +299,10 @@ public partial class MessageView : Container, IHasContextMenu
     private void copyContentToClipboard()
     {
         clipboard.SetText(Model.Content?.Value);
+    }
+
+    private void deleteContent()
+    {
+        Model.IsDeleted.Value = true;
     }
 }

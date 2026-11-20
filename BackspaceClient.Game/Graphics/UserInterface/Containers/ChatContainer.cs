@@ -219,6 +219,8 @@ public partial class ChatContainer : OverlayContainer, IKeyBindingHandler<Global
             return;
         }
 
+        var messageView = new MessageView(data, InstanceObserver?.Current.Value);
+
         if (messagesFlow.Count > 0)
         {
             var message = messagesFlow.ChildrenOfType<MessageContentContainer>().Last();
@@ -227,14 +229,13 @@ public partial class ChatContainer : OverlayContainer, IKeyBindingHandler<Global
                 && string.Equals(data.User.CanonicalKey(), message.WhoseMessage?.CanonicalKey())
                 && message.IsCanBeConsecutive)
             {
-                message.Add(new MessageView(data, InstanceObserver?.Current.Value));
+                message.Add(messageView);
                 goto scroll;
             }
         }
 
-        var view = new MessageView(data, InstanceObserver?.Current.Value);
-        var container = new MessageContentContainer(view);
-        messagesById[data.Id] = view;
+        var container = new MessageContentContainer(messageView);
+        messagesById[data.Id] = messageView;
         Schedule(() => messagesFlow.Add(container));
 
     scroll:
