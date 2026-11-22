@@ -91,7 +91,7 @@ public partial class ChatContainer : OverlayContainer, IKeyBindingHandler<Global
                             Child = messagesFlow = new FillFlowContainer
                             {
                                 RelativeSizeAxes = Axes.X,
-                                Width = .8f,
+                                //Width = .8f,
                                 AutoSizeAxes = Axes.Y,
                                 Direction = FillDirection.Vertical,
                                 Padding = new MarginPadding { Vertical = 20 },
@@ -106,7 +106,7 @@ public partial class ChatContainer : OverlayContainer, IKeyBindingHandler<Global
                             AutoSizeAxes = Axes.Y,
                             AutoSizeDuration = 120f,
                             AutoSizeEasing = Easing.OutQuad,
-                            Width = 0.8f,
+                            //Width = 0.8f,
                             Padding = new MarginPadding { Horizontal = 20, Bottom = 20, Top = 5 },
                             Alpha = 0f,
                             Children =

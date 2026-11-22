@@ -3,8 +3,6 @@ using System.Linq;
 using BackspaceClient.Game.Graphics.UserInterface;
 using BackspaceClient.Game.Online.API.Response;
 using NUnit.Framework;
-using osu.Framework.Graphics;
-using osuTK;
 
 namespace BackspaceClient.Game.Tests.Visual.UserInterface;
 
@@ -20,11 +18,7 @@ public partial class MessengerSideBarTestScene : BackspaceClientTestScene
         Scheduler.Add(() =>
         {
             Clear();
-            sideBar = new()
-            {
-                RelativeSizeAxes = Axes.Both,
-                Size = new Vector2(.2f, 1f)
-            };
+            sideBar = new();
             Add(sideBar);
             sideBar.Show();
         });

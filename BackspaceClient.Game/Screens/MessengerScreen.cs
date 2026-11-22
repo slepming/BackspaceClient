@@ -7,12 +7,10 @@ using BackspaceClient.Game.Input.Bindings;
 using BackspaceClient.Game.Online.API;
 using BackspaceClient.Game.Online.API.Request;
 using BackspaceClient.Game.Online.API.Response;
-using BackspaceClient.Game.Utils;
 using Newtonsoft.Json;
 using osu.Framework.Allocation;
 using osu.Framework.Graphics;
 using osu.Framework.Graphics.Containers;
-using osu.Framework.Graphics.Sprites;
 using osu.Framework.Input.Bindings;
 using osu.Framework.Input.Events;
 using osu.Framework.Logging;
@@ -55,23 +53,11 @@ public partial class MessengerScreen : Screen, IKeyBindingHandler<GlobalActions>
                     RelativeSizeAxes = Axes.Both,
                     Children =
                     [
-                        sideBar = new()
-                        {
-                            RelativeSizeAxes = Axes.Both,
-                            Size = new Vector2(.2f, 1f),
-                        },
                         new Container
                         {
                             RelativeSizeAxes = Axes.Both,
                             Children =
                             [
-                                new SpriteText
-                                {
-                                    Text = "To toggle side bar use Ctrl + E",
-                                    Font = new(family: BackspaceFonts.Inter, size: 35),
-                                    Anchor = Anchor.Centre,
-                                    Origin = Anchor.Centre,
-                                },
                                 chatContainer = new(instanceObserver)
                                 {
                                     RelativeSizeAxes = Axes.Both,
@@ -79,7 +65,8 @@ public partial class MessengerScreen : Screen, IKeyBindingHandler<GlobalActions>
                             ]
                         }
                     ]
-                }
+                },
+                sideBar = new(),
             ]
         });
 
@@ -261,7 +248,7 @@ public partial class MessengerScreen : Screen, IKeyBindingHandler<GlobalActions>
         switch (e.Action)
         {
             case GlobalActions.OpenSideBar:
-                sideBar.ToggleVisibility();
+                //sideBar.ToggleVisibility();
                 return true;
         }
 

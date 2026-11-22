@@ -4,61 +4,64 @@ using System.Linq;
 using BackspaceClient.Game.Extensions;
 using BackspaceClient.Game.Graphics.UserInterface.Containers;
 using BackspaceClient.Game.Online.API.Response;
-using BackspaceClient.Game.Utils;
 using osu.Framework.Allocation;
 using osu.Framework.Bindables;
 using osu.Framework.Extensions.IEnumerableExtensions;
 using osu.Framework.Graphics;
 using osu.Framework.Graphics.Containers;
+using osu.Framework.Graphics.Effects;
 using osu.Framework.Graphics.Shapes;
-using osu.Framework.Graphics.Sprites;
 using osu.Framework.Graphics.UserInterface;
+using osu.Framework.Input.Events;
 using osuTK;
 
 namespace BackspaceClient.Game.Graphics.UserInterface;
 
-public partial class MessengerSideBar : OverlayContainer
+public partial class MessengerSideBar : Container
 {
-    private static readonly Vector2 sidebar_size = new(0.2f, 1f);
+    private static readonly Colour4 drawer_bg_colour = Colour4.FromHex("#121215");
+    private static readonly Colour4 drawer_border_colour = Colour4.FromHex("#27272A");
+    private static readonly Colour4 handle_colour = Colour4.FromHex("#52525B");
+    private static readonly Colour4 search_bg_colour = Colour4.FromHex("#09090B");
+    private static readonly Colour4 search_header_bg_colour = Colour4.FromHex("#121215");
 
-    // TODO: In the future I have to create theme management
-    private static readonly Colour4 surface_channel = Colour4.FromHex("#121215");
-    private static readonly Colour4 surface_input = Colour4.FromHex("#09090B");
-    private static readonly Colour4 border_divider = Colour4.FromHex("#1F1F23");
-    private static readonly Colour4 border_input = Colour4.FromHex("#27272A");
-    private static readonly Colour4 border_input_focused = Colour4.FromHex("#52525B");
-    private static readonly Colour4 text_tertiary = Colour4.FromHex("#71717A");
-    private static readonly Colour4 icon_search = Colour4.FromHex("#52525B");
-
-    private const float search_bar_height = 52;
-    private const float section_header_height = 34;
-    private const float cards_bottom_padding = 78;
-    private const float horizontal_gutter = 10;
-
-    public string DmSectionTitle { get; } = "Direct Messages";
+    private const float drawer_width = 230f;
+    private const float collapsed_peek = 8f;
+    private const float expanded_x = 0f;
+    private const float search_height = 36f;
+    private const float search_header_height = search_height + 20f;
 
     public readonly Bindable<string> Selected = new();
 
     public IDictionary<string, UserCardContainer> Channels { get; } = new Dictionary<string, UserCardContainer>();
+
     /// <summary>
     /// User canonical id->channel id
     /// </summary>
     public IDictionary<string, string> Users { get; } = new Dictionary<string, string>();
 
-    private Box backgroundBox;
-    private Container searchBarContainer;
-    private Container searchInputContainer;
     private BasicTextBox searchTextBox;
-    private Box searchDivider;
-    private Container sectionHeaderContainer;
-    private SpriteText sectionTitleText;
-    private Container cardsAreaContainer;
-    private SearchContainer cardsContainer;
+    private SearchContainer<UserCardContainer> usersFlow;
 
     public MessengerSideBar()
     {
-        RelativeSizeAxes = Axes.Both;
-        Size = sidebar_size;
+        Anchor = Anchor.CentreLeft;
+        Origin = Anchor.CentreLeft;
+        RelativeSizeAxes = Axes.Y;
+        Height = 0.85f;
+        Width = drawer_width;
+        X = -(drawer_width - collapsed_peek);
+
+        Masking = true;
+        CornerRadius = 12f;
+        BorderThickness = 1.2f;
+        BorderColour = drawer_border_colour;
+        EdgeEffect = new() {
+            Type = EdgeEffectType.Shadow,
+            Colour = Colour4.Black.Opacity(.6f),
+            Radius = 32,
+            Offset = new Vector2(0, 12),
+        };
     }
 
     [BackgroundDependencyLoader]
@@ -66,112 +69,112 @@ public partial class MessengerSideBar : OverlayContainer
     {
         InternalChildren =
         [
-            backgroundBox = new Box
-            {
-                RelativeSizeAxes = Axes.Both,
-                Colour = surface_channel,
-            },
             new Box
             {
-                Anchor = Anchor.TopRight,
-                Origin = Anchor.TopRight,
-                RelativeSizeAxes = Axes.Y,
-                Width = 1f,
-                Colour = border_divider,
+                RelativeSizeAxes = Axes.Both,
+                Colour = drawer_bg_colour,
             },
-            searchBarContainer = new Container
-            {
-                Anchor = Anchor.TopLeft,
-                Origin = Anchor.TopLeft,
-                RelativeSizeAxes = Axes.X,
-                Height = search_bar_height,
-                Padding = new MarginPadding { Horizontal = 12, Vertical = 10 },
-                Child = searchInputContainer = new Container
-                {
-                    RelativeSizeAxes = Axes.Both,
-                    Masking = true,
-                    CornerRadius = 6f,
-                    BorderThickness = 1.2f,
-                    BorderColour = border_input,
-                    Children =
-                    [
-                        new Box
-                        {
-                            RelativeSizeAxes = Axes.Both,
-                            Colour = surface_input,
-                        },
-                        new SpriteIcon
-                        {
-                            Anchor = Anchor.CentreLeft,
-                            Origin = Anchor.CentreLeft,
-                            Icon = FontAwesome.Solid.Search,
-                            Size = new Vector2(12),
-                            Colour = icon_search,
-                            Margin = new MarginPadding { Left = 10 },
-                        },
-                        new Container
-                        {
-                            RelativeSizeAxes = Axes.Both,
-                            Padding = new MarginPadding { Left = 22 },
-                            Child = searchTextBox = new SearchTextBox
-                            {
-                                RelativeSizeAxes = Axes.Both,
-                                PlaceholderText = "Find or start conversation",
-                            },
-                        },
-                    ],
-                },
-            },
-            searchDivider = new Box
-            {
-                Anchor = Anchor.TopLeft,
-                Origin = Anchor.TopLeft,
-                RelativeSizeAxes = Axes.X,
-                Height = 1,
-                Position = new Vector2(0, search_bar_height),
-                Colour = border_divider,
-            },
-            sectionHeaderContainer = new Container
-            {
-                Anchor = Anchor.TopLeft,
-                Origin = Anchor.TopLeft,
-                RelativeSizeAxes = Axes.X,
-                Height = section_header_height,
-                Position = new Vector2(0, search_bar_height + 2),
-                Padding = new MarginPadding { Horizontal = 14 },
-                Child = sectionTitleText = new SpriteText
-                {
-                    Text = DmSectionTitle.ToUpperInvariant(),
-                    Anchor = Anchor.CentreLeft,
-                    Origin = Anchor.CentreLeft,
-                    Font = new FontUsage(family: BackspaceFonts.Inter, size: 11, weight: "Bold"),
-                    Colour = text_tertiary,
-                    Spacing = new Vector2(0.8f, 0),
-                },
-            },
-            cardsAreaContainer = new Container
+            new Container
             {
                 RelativeSizeAxes = Axes.Both,
                 Padding = new MarginPadding
                 {
-                    Top = search_bar_height + section_header_height + 2,
+                    Left = 12,
+                    Right = 14,
+                    Top = search_header_height,
+                    Bottom = 12,
                 },
                 Child = new BackspaceScrollContainer
                 {
                     RelativeSizeAxes = Axes.Both,
-                    Child = cardsContainer = new SearchContainer
+                    Child = usersFlow = new SearchContainer<UserCardContainer>
                     {
                         RelativeSizeAxes = Axes.X,
                         AutoSizeAxes = Axes.Y,
                         Direction = FillDirection.Vertical,
-                        Spacing = new Vector2(0, 4),
-                        Padding = new MarginPadding { Horizontal = horizontal_gutter },
+                        Spacing = new Vector2(0, 6),
+                        Padding = new MarginPadding { Top = 6 },
+                    }
+                }
+            },
+            new Container
+            {
+                RelativeSizeAxes = Axes.X,
+                Height = search_header_height,
+                Children =
+                [
+                    new Box
+                    {
+                        RelativeSizeAxes = Axes.Both,
+                        Colour = search_header_bg_colour,
                     },
-                },
+                    new Box
+                    {
+                        Anchor = Anchor.BottomLeft,
+                        Origin = Anchor.BottomLeft,
+                        RelativeSizeAxes = Axes.X,
+                        Height = 1f,
+                        Colour = drawer_border_colour,
+                    },
+                    new Container
+                    {
+                        RelativeSizeAxes = Axes.Both,
+                        Padding = new MarginPadding { Left = 12, Right = 14, Top = 12, Bottom = 8 },
+                        Child = new Container
+                        {
+                            RelativeSizeAxes = Axes.Both,
+                            Masking = true,
+                            CornerRadius = 6f,
+                            BorderThickness = 1f,
+                            BorderColour = drawer_border_colour,
+                            Children =
+                            [
+                                new Box
+                                {
+                                    RelativeSizeAxes = Axes.Both,
+                                    Colour = search_bg_colour,
+                                },
+                                searchTextBox = new SearchTextBox
+                                {
+                                    RelativeSizeAxes = Axes.Both,
+                                    PlaceholderText = "Search...",
+                                }
+                            ]
+                        }
+                    }
+                ]
+            },
+            new Container
+            {
+                Anchor = Anchor.CentreRight,
+                Origin = Anchor.CentreRight,
+                Size = new Vector2(3, 44),
+                Margin = new MarginPadding { Right = 2.5f },
+                Masking = true,
+                CornerRadius = 1.5f,
+                Child = new Box
+                {
+                    RelativeSizeAxes = Axes.Both,
+                    Colour = handle_colour,
+                }
             },
         ];
 
-        searchTextBox.Current.BindValueChanged(v => cardsContainer.SearchTerm = v.NewValue);
+        searchTextBox.Current.BindValueChanged(v => usersFlow.SearchTerm = v.NewValue);
+    }
+
+    protected override bool OnHover(HoverEvent e)
+    {
+        this.MoveToX(expanded_x, 260, Easing.OutQuint);
+        return base.OnHover(e);
+    }
+
+    protected override void OnHoverLost(HoverLostEvent e)
+    {
+        if (!searchTextBox.HasFocus)
+            this.MoveToX(-(drawer_width - collapsed_peek), 260, Easing.OutQuint);
+
+        base.OnHoverLost(e);
     }
 
     /// <summary>
@@ -204,12 +207,12 @@ public partial class MessengerSideBar : OverlayContainer
 
                     s.Value = true;
                     Selected.Value = id;
-                    Channels.Values.Where(c => c.Id != id).ForEach(c => c.Selected.Value = false); // lol
+                    Channels.Values.Where(c => c.Id != id).ForEach(c => c.Selected.Value = false);
                 }
             };
             Users[user.CanonicalKey()] = key;
             Channels[key] = card;
-            cardsContainer.Add(card);
+            usersFlow.Add(card);
         }
 
         card.Username.Value = user.Username;
@@ -217,9 +220,9 @@ public partial class MessengerSideBar : OverlayContainer
         card.AvatarUrl.Value = user.Avatar;
         card.Status.Value = user.Status;
         card.AvatarColor.Value = user.AvatarColor;
-        if (unreadCount != null)
-            if (unreadCount.TryGetValue(data.Id, out var count))
-                card.UnreadMessagesCount.Value = count;
+
+        if (unreadCount != null && unreadCount.TryGetValue(data.Id, out var count))
+            card.UnreadMessagesCount.Value = count;
 
         card.Show();
     }
@@ -250,17 +253,8 @@ public partial class MessengerSideBar : OverlayContainer
 
     public void ClearChannels()
     {
-        cardsContainer.Clear();
+        usersFlow.Clear();
         Channels.Clear();
-    }
-
-    protected override void PopIn()
-    {
-        this.FadeIn(250, Easing.OutQuint).MoveToX(0, 300, Easing.OutQuint);
-    }
-
-    protected override void PopOut()
-    {
-        this.FadeOut(200, Easing.InQuint).MoveToX(-40, 250, Easing.InQuint);
+        Users.Clear();
     }
 }

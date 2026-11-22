@@ -187,7 +187,6 @@ public partial class UserCardContainer : Container, IFilterable
                                         Scale = new Vector2(0.8f),
                                         Children =
                                         [
-                                            // Минимальная ширина 20px, чтобы для "1" был ровный круг, а для "12" или "99+" — капсула
                                             new Container
                                             {
                                                 Width = 20f,
