@@ -2,6 +2,7 @@ using System.Collections;
 using System.Linq;
 using BackspaceClient.Game.Models;
 using BackspaceClient.Game.Online.API;
+using BackspaceClient.Game.Online.API.Request;
 using BackspaceClient.Game.Online.API.Response;
 using BackspaceClient.Game.Utils;
 using osu.Framework.Allocation;
@@ -13,6 +14,7 @@ using osu.Framework.Graphics.Shapes;
 using osu.Framework.Graphics.Sprites;
 using osu.Framework.Graphics.UserInterface;
 using osu.Framework.Input.Events;
+using osu.Framework.Logging;
 using osu.Framework.Platform;
 using osuTK;
 
@@ -36,7 +38,7 @@ public partial class MessageView : Container, IHasContextMenu
     public MessageModel Model { get; }
     public BindableBool IsConsecutive { get; } = new();
 
-    public string MessageId { get; set; }
+    public string MessageId => Model.Id;
 
     public bool IsCanBeConsecutive => Model.Attachments.Count == 0 || Model.ReplyTo.Value == null;
 
@@ -46,7 +48,7 @@ public partial class MessageView : Container, IHasContextMenu
     public MenuItem[] ContextMenuItems =>
     [
         new("Copy", copyContentToClipboard),
-        new("Delete", () => Model?.IsDeleted?.Value = true),
+        new("Delete", deleteContent),
     ];
 
     private SpriteText usernameText;
@@ -61,9 +63,9 @@ public partial class MessageView : Container, IHasContextMenu
 
     private readonly string instanceUrl;
 
-    private InstanceObserver observer;
+    private ICanPerformNetworkRequest observer;
 
-    public MessageView(DmChatMessageResponse data, string instanceUrl, InstanceObserver observer)
+    public MessageView(DmChatMessageResponse data, string instanceUrl, ICanPerformNetworkRequest observer)
     {
         Model = new MessageModel(data);
         this.instanceUrl = instanceUrl;
@@ -304,5 +306,12 @@ public partial class MessageView : Container, IHasContextMenu
     private void deleteContent()
     {
         Model.IsDeleted.Value = true;
+
+        var request = new DeleteDmMessageRequest()
+        {
+            MessageId = MessageId
+        };
+
+        observer.PerformAPIRequest(request);
     }
 }

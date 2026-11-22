@@ -21,10 +21,8 @@ using osuTK;
 
 namespace BackspaceClient.Game.Screens;
 
-public partial class MessengerScreen(APIProvider api, InstanceObserver instanceObserver) : Screen, IKeyBindingHandler<GlobalActions>
+public partial class MessengerScreen : Screen, IKeyBindingHandler<GlobalActions>
 {
-    // Network
-    private readonly APIProvider provider = api;
     private readonly WsDispatcher webSocketDispatcher = new();
 
     // Design
@@ -36,6 +34,9 @@ public partial class MessengerScreen(APIProvider api, InstanceObserver instanceO
 
     [Resolved]
     private ScreenStack screenStack { get; set; }
+
+    [Resolved]
+    private InstanceObserver instanceObserver { get; set; }
 
     [BackgroundDependencyLoader]
     private void load()
@@ -74,7 +75,6 @@ public partial class MessengerScreen(APIProvider api, InstanceObserver instanceO
                                 chatContainer = new(instanceObserver)
                                 {
                                     RelativeSizeAxes = Axes.Both,
-                                    Provider = provider,
                                 }
                             ]
                         }
@@ -94,7 +94,6 @@ public partial class MessengerScreen(APIProvider api, InstanceObserver instanceO
                 lock (instanceObserver)
                 {
                     var messageRequest = new GetMessagesRequest(c.NewValue);
-                    messageRequest.AttachApi(provider);
                     instanceObserver.PerformAPIRequest(messageRequest);
 
                     Schedule(() =>
@@ -136,7 +135,7 @@ public partial class MessengerScreen(APIProvider api, InstanceObserver instanceO
             try
             {
                 await instanceObserver.WebSocketClient.Start();
-                await instanceObserver.WebSocketClient.SendAsync(JsonConvert.SerializeObject(new AuthMessage() { Token = provider.AccessKey }));
+                await instanceObserver.WebSocketClient.SendAsync(JsonConvert.SerializeObject(new AuthMessage() { Token = instanceObserver.Provider.AccessKey }));
             }
             catch (Exception e)
             {

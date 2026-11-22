@@ -219,7 +219,7 @@ public partial class ChatContainer : OverlayContainer, IKeyBindingHandler<Global
             return;
         }
 
-        var messageView = new MessageView(data, InstanceObserver?.Current.Value);
+        var messageView = new MessageView(data, InstanceObserver?.Current.Value, InstanceObserver);
 
         if (messagesFlow.Count > 0)
         {

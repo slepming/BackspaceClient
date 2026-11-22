@@ -1,3 +1,4 @@
+using System.Net.Http;
 using BackspaceClient.Game.Online.API.Response;
 
 namespace BackspaceClient.Game.Online.API.Request;
