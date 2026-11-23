@@ -48,7 +48,7 @@ public partial class MessageView : Container, IHasContextMenu
     public MenuItem[] ContextMenuItems =>
     [
         new("Copy", copyContentToClipboard),
-        new("Delete", deleteContent),
+        new("Delete", deleteContentManually),
     ];
 
     private SpriteText usernameText;
@@ -270,6 +270,8 @@ public partial class MessageView : Container, IHasContextMenu
         {
             contentText.Text = "**This message was deleted**";
             contentText.Colour = text_deleted;
+            attachmentsContainer.Clear();
+            replyContainer.Hide();
 
             editedMarker.Alpha = 0;
         }
@@ -298,12 +300,10 @@ public partial class MessageView : Container, IHasContextMenu
         base.OnHoverLost(e);
     }
 
-    private void copyContentToClipboard()
-    {
+    private void copyContentToClipboard() =>
         clipboard.SetText(Model.Content?.Value);
-    }
 
-    private void deleteContent()
+    private void deleteContentManually()
     {
         Model.IsDeleted.Value = true;
 

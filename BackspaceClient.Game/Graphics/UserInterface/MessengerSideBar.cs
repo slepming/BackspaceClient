@@ -12,12 +12,13 @@ using osu.Framework.Graphics.Containers;
 using osu.Framework.Graphics.Effects;
 using osu.Framework.Graphics.Shapes;
 using osu.Framework.Graphics.UserInterface;
+using osu.Framework.Input;
 using osu.Framework.Input.Events;
 using osuTK;
 
 namespace BackspaceClient.Game.Graphics.UserInterface;
 
-public partial class MessengerSideBar : Container
+public partial class MessengerSideBar : Container, IHandleGlobalKeyboardInput
 {
     private static readonly Colour4 drawer_bg_colour = Colour4.FromHex("#121215");
     private static readonly Colour4 drawer_border_colour = Colour4.FromHex("#27272A");
@@ -56,7 +57,8 @@ public partial class MessengerSideBar : Container
         CornerRadius = 12f;
         BorderThickness = 1.2f;
         BorderColour = drawer_border_colour;
-        EdgeEffect = new() {
+        EdgeEffect = new()
+        {
             Type = EdgeEffectType.Shadow,
             Colour = Colour4.Black.Opacity(.6f),
             Radius = 32,
@@ -165,14 +167,20 @@ public partial class MessengerSideBar : Container
 
     protected override bool OnHover(HoverEvent e)
     {
-        this.MoveToX(expanded_x, 260, Easing.OutQuint);
+        slideBarToRight();
         return base.OnHover(e);
     }
+
+    private void slideBarToRight() =>
+        this.MoveToX(expanded_x, 260, Easing.OutQuint);
+
+    private void slideBarToLeft() =>
+            this.MoveToX(-(drawer_width - collapsed_peek), 260, Easing.OutQuint);
 
     protected override void OnHoverLost(HoverLostEvent e)
     {
         if (!searchTextBox.HasFocus)
-            this.MoveToX(-(drawer_width - collapsed_peek), 260, Easing.OutQuint);
+            slideBarToLeft();
 
         base.OnHoverLost(e);
     }
@@ -256,5 +264,21 @@ public partial class MessengerSideBar : Container
         usersFlow.Clear();
         Channels.Clear();
         Users.Clear();
+    }
+
+    protected override bool OnKeyDown(KeyDownEvent e)
+    {
+        if (e.Key == osuTK.Input.Key.LControl)
+            slideBarToRight();
+
+        return base.OnKeyDown(e);
+    }
+
+    protected override void OnKeyUp(KeyUpEvent e)
+    {
+        if (e.Key == osuTK.Input.Key.LControl && !IsHovered && !searchTextBox.HasFocus)
+            slideBarToLeft();
+
+        base.OnKeyUp(e);
     }
 }
