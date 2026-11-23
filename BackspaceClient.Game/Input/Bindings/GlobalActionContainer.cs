@@ -21,7 +21,8 @@ public partial class GlobalActionContainer : KeyBindingContainer<GlobalActions>,
             handler = h;
     }
 
-    public static IEnumerable<KeyBinding> GetBindingsFor(GlobalActionCategories cat) {
+    public static IEnumerable<KeyBinding> GetBindingsFor(GlobalActionCategories cat)
+    {
         switch (cat)
         {
             case GlobalActionCategories.Messenger:
@@ -30,7 +31,8 @@ public partial class GlobalActionContainer : KeyBindingContainer<GlobalActions>,
                 return chatBindings;
             default:
                 throw new ArgumentOutOfRangeException(nameof(cat), cat, $"Unexpected {nameof(GlobalActionCategories)}");
-        };
+        }
+        ;
     }
 
     public static IEnumerable<GlobalActions> GetBindingsActionsFor(GlobalActionCategories cat) =>

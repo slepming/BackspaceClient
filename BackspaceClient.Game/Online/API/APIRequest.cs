@@ -21,11 +21,13 @@ public abstract class APIRequest<T> where T : class
 
     protected WebRequest WebRequest;
 
+    protected HttpMethod Method = HttpMethod.Get;
+
     public virtual void Perform()
     {
         Logger.Log($@"Performing request {this}", LoggingTarget.Network);
         WebRequest = CreateWebRequest();
-        WebRequest.Method = HttpMethod.Get;
+        WebRequest.Method = Method;
         WebRequest.AllowRetryOnTimeout = false;
 
         WebRequest.AddHeader(@"Accept-Language", "en");

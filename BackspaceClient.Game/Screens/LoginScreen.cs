@@ -24,9 +24,14 @@ public partial class LoginScreen : Screen
     private AuthorizationContainer loginContainer, signUpContainer;
     private ShakerContainer shakeContainer;
 
-    private TrianglesV2 backgroundTriangles;
+    private DependencyContainer dependencies;
 
     private InstanceObserver instanceObserver;
+
+    private TrianglesV2 backgroundTriangles;
+
+    [Resolved]
+    private ScreenStack stack { get; set; }
 
     [BackgroundDependencyLoader]
     private void load(InstanceConfiguration instanceConfig)
@@ -102,7 +107,17 @@ public partial class LoginScreen : Screen
                     triangles_colour.Opacity(0.55f)
                 ), 300, Easing.OutQuint);
         };
+
+        loginContainer.LoginSuccess += provider =>
+        {
+            instanceObserver.SetProvider(provider);
+            dependencies.Cache(instanceObserver);
+
+            Schedule(() => stack.Push(new MessengerScreen()));
+        };
     }
+
+    protected override IReadOnlyDependencyContainer CreateChildDependencies(IReadOnlyDependencyContainer parent) => dependencies = new(parent);
 
     public override void OnEntering(ScreenTransitionEvent e)
     {

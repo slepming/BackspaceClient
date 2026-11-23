@@ -1,6 +1,8 @@
 using System.Collections;
 using System.Linq;
 using BackspaceClient.Game.Models;
+using BackspaceClient.Game.Online.API;
+using BackspaceClient.Game.Online.API.Request;
 using BackspaceClient.Game.Online.API.Response;
 using BackspaceClient.Game.Utils;
 using osu.Framework.Allocation;
@@ -12,6 +14,7 @@ using osu.Framework.Graphics.Shapes;
 using osu.Framework.Graphics.Sprites;
 using osu.Framework.Graphics.UserInterface;
 using osu.Framework.Input.Events;
+using osu.Framework.Logging;
 using osu.Framework.Platform;
 using osuTK;
 
@@ -35,7 +38,7 @@ public partial class MessageView : Container, IHasContextMenu
     public MessageModel Model { get; }
     public BindableBool IsConsecutive { get; } = new();
 
-    public string MessageId { get; set; }
+    public string MessageId => Model.Id;
 
     public bool IsCanBeConsecutive => Model.Attachments.Count == 0 || Model.ReplyTo.Value == null;
 
@@ -45,6 +48,7 @@ public partial class MessageView : Container, IHasContextMenu
     public MenuItem[] ContextMenuItems =>
     [
         new("Copy", copyContentToClipboard),
+        new("Delete", deleteContentManually),
     ];
 
     private SpriteText usernameText;
@@ -59,10 +63,13 @@ public partial class MessageView : Container, IHasContextMenu
 
     private readonly string instanceUrl;
 
-    public MessageView(DmChatMessageResponse data, string instanceUrl)
+    private ICanPerformNetworkRequest observer;
+
+    public MessageView(DmChatMessageResponse data, string instanceUrl, ICanPerformNetworkRequest observer)
     {
         Model = new MessageModel(data);
         this.instanceUrl = instanceUrl;
+        this.observer = observer;
 
         Masking = true;
         CornerRadius = 10f;
@@ -263,6 +270,8 @@ public partial class MessageView : Container, IHasContextMenu
         {
             contentText.Text = "**This message was deleted**";
             contentText.Colour = text_deleted;
+            attachmentsContainer.Clear();
+            replyContainer.Hide();
 
             editedMarker.Alpha = 0;
         }
@@ -291,8 +300,18 @@ public partial class MessageView : Container, IHasContextMenu
         base.OnHoverLost(e);
     }
 
-    private void copyContentToClipboard()
-    {
+    private void copyContentToClipboard() =>
         clipboard.SetText(Model.Content?.Value);
+
+    private void deleteContentManually()
+    {
+        Model.IsDeleted.Value = true;
+
+        var request = new DeleteDmMessageRequest()
+        {
+            MessageId = MessageId
+        };
+
+        observer.PerformAPIRequest(request);
     }
 }

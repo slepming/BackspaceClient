@@ -91,7 +91,7 @@ public partial class ChatContainer : OverlayContainer, IKeyBindingHandler<Global
                             Child = messagesFlow = new FillFlowContainer
                             {
                                 RelativeSizeAxes = Axes.X,
-                                Width = .8f,
+                                //Width = .8f,
                                 AutoSizeAxes = Axes.Y,
                                 Direction = FillDirection.Vertical,
                                 Padding = new MarginPadding { Vertical = 20 },
@@ -106,7 +106,7 @@ public partial class ChatContainer : OverlayContainer, IKeyBindingHandler<Global
                             AutoSizeAxes = Axes.Y,
                             AutoSizeDuration = 120f,
                             AutoSizeEasing = Easing.OutQuad,
-                            Width = 0.8f,
+                            //Width = 0.8f,
                             Padding = new MarginPadding { Horizontal = 20, Bottom = 20, Top = 5 },
                             Alpha = 0f,
                             Children =
@@ -219,6 +219,8 @@ public partial class ChatContainer : OverlayContainer, IKeyBindingHandler<Global
             return;
         }
 
+        var messageView = new MessageView(data, InstanceObserver?.Current.Value, InstanceObserver);
+
         if (messagesFlow.Count > 0)
         {
             var message = messagesFlow.ChildrenOfType<MessageContentContainer>().Last();
@@ -227,14 +229,13 @@ public partial class ChatContainer : OverlayContainer, IKeyBindingHandler<Global
                 && string.Equals(data.User.CanonicalKey(), message.WhoseMessage?.CanonicalKey())
                 && message.IsCanBeConsecutive)
             {
-                message.Add(new MessageView(data, InstanceObserver?.Current.Value));
+                message.Add(messageView);
                 goto scroll;
             }
         }
 
-        var view = new MessageView(data, InstanceObserver?.Current.Value);
-        var container = new MessageContentContainer(view);
-        messagesById[data.Id] = view;
+        var container = new MessageContentContainer(messageView);
+        messagesById[data.Id] = messageView;
         Schedule(() => messagesFlow.Add(container));
 
     scroll:

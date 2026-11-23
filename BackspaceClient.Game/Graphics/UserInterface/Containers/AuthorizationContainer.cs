@@ -56,6 +56,8 @@ public abstract partial class AuthorizationContainer : FillFlowContainer
     /// </summary>
     public event Action<Exception> ErrorOccurred;
 
+    public event Action<APIProvider> LoginSuccess;
+
     protected abstract string TitleText { get; }
 
     protected virtual string SubtitleText => "Enter your credentials to connect to the server";
@@ -216,13 +218,7 @@ public abstract partial class AuthorizationContainer : FillFlowContainer
 
                     Schedule(() =>
                     {
-                        if (Stack is null)
-                        {
-                            Logger.Log("Screen stack is null", level: LogLevel.Important);
-                            return;
-                        }
-
-                        Stack.Push(new MessengerScreen(provider, InstanceObserver));
+                        LoginSuccess?.Invoke(provider);
                     });
                 }
                 catch (Exception e)
@@ -269,3 +265,4 @@ public abstract partial class AuthorizationContainer : FillFlowContainer
         ]
     };
 }
+
