@@ -14,6 +14,7 @@ using osu.Framework.Graphics.Shapes;
 using osu.Framework.Graphics.UserInterface;
 using osu.Framework.Input;
 using osu.Framework.Input.Events;
+using osu.Framework.Testing;
 using osuTK;
 
 namespace BackspaceClient.Game.Graphics.UserInterface;
@@ -98,6 +99,7 @@ public partial class MessengerSideBar : Container, IHandleGlobalKeyboardInput
                         Direction = FillDirection.Vertical,
                         Spacing = new Vector2(0, 6),
                         Padding = new MarginPadding { Top = 6 },
+                        AllowNonContiguousMatching = true,
                     }
                 }
             },
@@ -165,6 +167,16 @@ public partial class MessengerSideBar : Container, IHandleGlobalKeyboardInput
         ];
 
         searchTextBox.Current.BindValueChanged(v => usersFlow.SearchTerm = v.NewValue);
+
+        searchTextBox.OnCommit += (sender, new_text) =>
+        {
+            if (usersFlow.Children.Count > 0)
+            {
+                var children = usersFlow.ChildrenOfType<UserCardContainer>().First(f => f.Alpha > 0);
+
+                children.Action?.Invoke(children.Id, children.Selected);
+            }
+        };
     }
 
     protected override bool OnHover(HoverEvent e)
@@ -176,13 +188,13 @@ public partial class MessengerSideBar : Container, IHandleGlobalKeyboardInput
     private void slideBarToRight()
     {
         this.MoveToX(expanded_x, 260, Easing.OutQuint);
-        uvulaContainer.ResizeTo(new Vector2(3, 48));
+        uvulaContainer.ResizeTo(new Vector2(3, 48), 300, Easing.OutQuad);
     }
 
     private void slideBarToLeft()
     {
         this.MoveToX(-(drawer_width - collapsed_peek), 260, Easing.OutQuint);
-        uvulaContainer.ResizeTo(new Vector2(4, 54));
+        uvulaContainer.ResizeTo(new Vector2(4, 54), 300, Easing.OutQuint);
     }
 
     protected override void OnHoverLost(HoverLostEvent e)
@@ -277,7 +289,20 @@ public partial class MessengerSideBar : Container, IHandleGlobalKeyboardInput
     protected override bool OnKeyDown(KeyDownEvent e)
     {
         if (e.Key == osuTK.Input.Key.LControl)
+        {
             slideBarToRight();
+        }
+
+        if (e.ControlPressed)
+        {
+            switch (e.Key)
+            {
+                case osuTK.Input.Key.S:
+                    GetContainingFocusManager().ChangeFocus(searchTextBox);
+                    break;
+            }
+        }
+
 
         return base.OnKeyDown(e);
     }

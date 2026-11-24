@@ -1,10 +1,10 @@
 using System;
+using System.Linq;
 using System.Net.Http;
 using System.Threading.Tasks;
 using BackspaceClient.Game.Configuration;
 using BackspaceClient.Game.Graphics.UserInterface.Buttons;
 using BackspaceClient.Game.Online.API;
-using BackspaceClient.Game.Screens;
 using BackspaceClient.Game.Utils;
 using osu.Framework.Allocation;
 using osu.Framework.Graphics;
@@ -15,6 +15,7 @@ using osu.Framework.Graphics.UserInterface;
 using osu.Framework.Input;
 using osu.Framework.Logging;
 using osu.Framework.Screens;
+using osu.Framework.Testing;
 using osuTK;
 
 namespace BackspaceClient.Game.Graphics.UserInterface.Containers;
@@ -164,6 +165,13 @@ public abstract partial class AuthorizationContainer : FillFlowContainer
             errorBannerContainer,
             FinalButton,
         ];
+    }
+
+    protected override void LoadComplete()
+    {
+        var firstField = this.ChildrenOfType<TextBox>().First();
+
+        GetContainingFocusManager().ChangeFocus(firstField);
     }
 
     protected void HideErrorContainer() => errorBannerContainer.FadeOut(150, Easing.OutQuint);
