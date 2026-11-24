@@ -195,6 +195,13 @@ public partial class ChatContainer : OverlayContainer, IKeyBindingHandler<Global
         };
     }
 
+    protected override void LoadComplete()
+    {
+        GetContainingFocusManager().ChangeFocus(messageTextBox);
+
+        base.LoadComplete();
+    }
+
     protected override void UpdateAfterChildren()
     {
         base.UpdateAfterChildren();

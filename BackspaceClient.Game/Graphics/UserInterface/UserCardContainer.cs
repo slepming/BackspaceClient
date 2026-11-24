@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using BackspaceClient.Game.Graphics.UserInterface.Containers;
 using BackspaceClient.Game.Utils;
 using osu.Framework.Allocation;
 using osu.Framework.Bindables;
@@ -30,6 +31,8 @@ public partial class UserCardContainer : Container, IFilterable
     private static readonly Colour4 status_online_colour = Colour4.FromHex("#22C55E");
     private static readonly Colour4 status_dnd_colour = Colour4.FromHex("#EF4444");
     private static readonly Colour4 status_default_colour = Colour4.FromHex("#A855F7");
+
+    private static readonly Colour4 triangles_colour = Colour4.FromHex("#27272A");
 
     public string Id { get; set; } = string.Empty;
 
@@ -81,6 +84,8 @@ public partial class UserCardContainer : Container, IFilterable
 
     private CircularContainer unreadIndicatorContainer;
 
+    private TrianglesV2 trianglesV2;
+
     private readonly string instanceUrl;
 
     public UserCardContainer(string currentInstance)
@@ -111,6 +116,12 @@ public partial class UserCardContainer : Container, IFilterable
                         RelativeSizeAxes = Axes.Both,
                         Colour = card_bg_colour,
                         Alpha = 0,
+                    },
+                    trianglesV2 = new()
+                    {
+                        Colour = triangles_colour,
+                        Alpha = 0f,
+                        RelativeSizeAxes = Axes.Both,
                     },
                     accentBarContainer = new Container
                     {
@@ -293,24 +304,28 @@ public partial class UserCardContainer : Container, IFilterable
         float targetBgAlpha;
         float targetAccentAlpha;
         float targetAccentHeight;
+        float targetShaderAlpha;
 
         if (isSelected)
         {
             targetBgAlpha = 0.85f;
             targetAccentAlpha = 1f;
             targetAccentHeight = 22f;
+            targetShaderAlpha = 0.8f;
         }
         else if (IsHovered)
         {
             targetBgAlpha = 0.45f;
             targetAccentAlpha = hasUnread ? 0.85f : 0f;
             targetAccentHeight = hasUnread ? 14f : 8f;
+            targetShaderAlpha = 0.1f;
         }
         else
         {
             targetBgAlpha = hasUnread ? 0.25f : 0f;
             targetAccentAlpha = hasUnread ? 0.9f : 0f;
             targetAccentHeight = 8f;
+            targetShaderAlpha = 0f;
         }
 
         const Easing easing = Easing.OutQuint;
@@ -328,5 +343,7 @@ public partial class UserCardContainer : Container, IFilterable
 
         accentBarContainer.FadeTo(targetAccentAlpha, duration, easing);
         accentBarContainer.ResizeHeightTo(targetAccentHeight, duration, easing);
+
+        trianglesV2.FadeTo(targetShaderAlpha, duration, easing);
     }
 }

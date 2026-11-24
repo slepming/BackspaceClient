@@ -7,6 +7,7 @@ using osu.Framework.Configuration;
 using osu.Framework.Graphics;
 using osu.Framework.Graphics.Containers;
 using osu.Framework.Graphics.Cursor;
+using osu.Framework.Input;
 using osu.Framework.IO.Stores;
 using osu.Framework.Platform;
 using osu.Framework.Screens;
@@ -98,6 +99,7 @@ namespace BackspaceClient.Game
         {
             configManager.SetValue(FrameworkSetting.ExecutionMode, ExecutionMode.SingleThread);
             configManager.SetValue(FrameworkSetting.FrameSync, FrameSync.VSync);
+            configManager.SetValue(FrameworkSetting.ConfineMouseMode, ConfineMouseMode.Never);
         }
 
         protected void InitialiseFonts()
