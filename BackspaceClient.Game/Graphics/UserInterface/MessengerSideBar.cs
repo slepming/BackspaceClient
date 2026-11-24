@@ -44,6 +44,8 @@ public partial class MessengerSideBar : Container, IHandleGlobalKeyboardInput
     private BasicTextBox searchTextBox;
     private SearchContainer<UserCardContainer> usersFlow;
 
+    private Container uvulaContainer;
+
     public MessengerSideBar()
     {
         Anchor = Anchor.CentreLeft;
@@ -146,7 +148,7 @@ public partial class MessengerSideBar : Container, IHandleGlobalKeyboardInput
                     }
                 ]
             },
-            new Container
+            uvulaContainer = new Container
             {
                 Anchor = Anchor.CentreRight,
                 Origin = Anchor.CentreRight,
@@ -171,11 +173,17 @@ public partial class MessengerSideBar : Container, IHandleGlobalKeyboardInput
         return base.OnHover(e);
     }
 
-    private void slideBarToRight() =>
+    private void slideBarToRight()
+    {
         this.MoveToX(expanded_x, 260, Easing.OutQuint);
+        uvulaContainer.ResizeTo(new Vector2(3, 48));
+    }
 
-    private void slideBarToLeft() =>
-            this.MoveToX(-(drawer_width - collapsed_peek), 260, Easing.OutQuint);
+    private void slideBarToLeft()
+    {
+        this.MoveToX(-(drawer_width - collapsed_peek), 260, Easing.OutQuint);
+        uvulaContainer.ResizeTo(new Vector2(4, 54));
+    }
 
     protected override void OnHoverLost(HoverLostEvent e)
     {
