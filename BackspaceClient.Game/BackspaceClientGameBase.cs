@@ -10,6 +10,7 @@ using osu.Framework.Graphics.Containers;
 using osu.Framework.Graphics.Cursor;
 using osu.Framework.Input;
 using osu.Framework.Input.Handlers.Mouse;
+using osu.Framework.Input.Handlers.Tablet;
 using osu.Framework.IO.Stores;
 using osu.Framework.Platform;
 using osu.Framework.Screens;
@@ -95,6 +96,7 @@ namespace BackspaceClient.Game
             host.Window?.CursorState |= CursorState.Hidden;
 
             host.AvailableInputHandlers.OfType<MouseHandler>().First().UseRelativeMode.Value = false;
+            host.AvailableInputHandlers.OfType<ITabletHandler>().First().Enabled.Value = false;
         }
 
         protected override IReadOnlyDependencyContainer CreateChildDependencies(IReadOnlyDependencyContainer parent) => dependencies = new DependencyContainer(base.CreateChildDependencies(parent));
