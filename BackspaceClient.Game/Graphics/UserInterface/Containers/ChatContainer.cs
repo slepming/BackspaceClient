@@ -106,7 +106,6 @@ public partial class ChatContainer : OverlayContainer, IKeyBindingHandler<Global
                             AutoSizeAxes = Axes.Y,
                             AutoSizeDuration = 120f,
                             AutoSizeEasing = Easing.OutQuad,
-                            //Width = 0.8f,
                             Padding = new MarginPadding { Horizontal = 20, Bottom = 20, Top = 5 },
                             Alpha = 0f,
                             Children =
@@ -138,7 +137,7 @@ public partial class ChatContainer : OverlayContainer, IKeyBindingHandler<Global
                                         {
                                             RelativeSizeAxes = Axes.X,
                                             Height = 44,
-                                            PlaceholderText = "Write a message...",
+                                            PlaceholderText = "Write a message...(Press 'T' to enter)",
                                             ReleaseFocusOnCommit = false,
                                             FontSize = 32
                                         },
@@ -306,8 +305,15 @@ public partial class ChatContainer : OverlayContainer, IKeyBindingHandler<Global
         if (e.Repeat)
             return false;
 
-        if (e.Action == GlobalActions.ClearAttachments)
-            userMessageAttachments.Clear();
+        switch (e.Action)
+        {
+            case GlobalActions.ClearAttachments:
+                userMessageAttachments.Clear();
+                break;
+            case GlobalActions.EnterChat:
+                GetContainingFocusManager().ChangeFocus(messageTextBox);
+                break;
+        }
 
         return false;
     }

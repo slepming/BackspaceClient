@@ -50,6 +50,7 @@ public partial class GlobalActionContainer : KeyBindingContainer<GlobalActions>,
     private static IEnumerable<KeyBinding> chatBindings =>
     [
         new KeyBinding(new[] {InputKey.Control, InputKey.C}, GlobalActions.ClearAttachments),
+        new KeyBinding(new[] {InputKey.T}, GlobalActions.EnterChat),
     ];
 }
 
@@ -57,7 +58,8 @@ public enum GlobalActions
 {
     OpenRecentMessengerCards,
     OpenSideBar,
-    ClearAttachments
+    ClearAttachments,
+    EnterChat
 }
 
 public enum GlobalActionCategories
