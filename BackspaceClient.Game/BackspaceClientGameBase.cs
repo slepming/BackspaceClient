@@ -95,8 +95,11 @@ namespace BackspaceClient.Game
             Storage = host.Storage;
             host.Window?.CursorState |= CursorState.Hidden;
 
-            host.AvailableInputHandlers.OfType<MouseHandler>().First().UseRelativeMode.Value = false;
-            host.AvailableInputHandlers.OfType<ITabletHandler>().First().Enabled.Value = false;
+            if (host.AvailableInputHandlers.Count() > 0)
+            {
+                host.AvailableInputHandlers.OfType<MouseHandler>().First()?.UseRelativeMode.Value = false;
+                host.AvailableInputHandlers.OfType<ITabletHandler>().First()?.Enabled.Value = false;
+            }
         }
 
         protected override IReadOnlyDependencyContainer CreateChildDependencies(IReadOnlyDependencyContainer parent) => dependencies = new DependencyContainer(base.CreateChildDependencies(parent));
